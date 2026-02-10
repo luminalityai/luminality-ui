@@ -1,2 +1,4 @@
-// Component barrel exports will be added as components are extracted.
-// See: LMT-314 (Button, Card, Dialog), LMT-316 (Breadcrumb, PageHeader, Separator), etc.
+export * from "./button.js"
+export * from "./card.js"
+export * from "./dialog.js"
+export * from "./alert-dialog.js"
