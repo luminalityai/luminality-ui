@@ -1,12 +1,9 @@
 // For format details, see https://containers.dev/implementors/json_reference/.
 {
   "name": "luminality-ui",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
-  "features": {
-    "ghcr.io/devcontainers/features/github-cli:1": {}
-  },
+  "dockerComposeFile": "compose.yaml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
   "containerEnv": {
     "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
   },
