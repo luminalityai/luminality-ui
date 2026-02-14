@@ -1,0 +1,12 @@
+name: "luminalityui"
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+
+    volumes:
+      - ..:/workspace:z,cached
+
+    command: sleep infinity
