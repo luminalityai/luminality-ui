@@ -60,8 +60,8 @@ jobs:
 
       - name: Pack tarball
         run: |
-          npm pack
-          echo "TARBALL=$(ls *.tgz)" >> "$GITHUB_ENV"
+          TARBALL=$(npm pack --json | jq -r '.[0].filename')
+          echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
 
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v2
@@ -71,9 +71,10 @@ jobs:
       - name: Publish package
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry-run }}" = "true" ]; then
-            echo "Dry run — skipping publish"
+            echo "::notice::Dry run — skipping publish"
             npm publish --dry-run
           else
+            echo "::notice::Publishing ${{ env.TARBALL }}"
             npm publish
           fi
         env:
