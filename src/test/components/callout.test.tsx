@@ -29,4 +29,27 @@ describe("Callout", () => {
       unmount()
     }
   })
+
+  it("no title element when title omitted", () => {
+    const { container } = render(<Callout>Content only</Callout>)
+    expect(container.querySelector("h4")).not.toBeInTheDocument()
+  })
+
+  it("title renders as h4", () => {
+    const { container } = render(<Callout title="Important">Content</Callout>)
+    const h4 = container.querySelector("h4")
+    expect(h4).toBeInTheDocument()
+    expect(h4).toHaveTextContent("Important")
+  })
+
+  it("forwards className", () => {
+    const { container } = render(<Callout className="custom-callout">Content</Callout>)
+    expect((container.firstChild as HTMLElement).className).toContain("custom-callout")
+  })
+
+  it("icons have aria-hidden=true", () => {
+    const { container } = render(<Callout>Content</Callout>)
+    const svg = container.querySelector("svg")
+    expect(svg).toHaveAttribute("aria-hidden", "true")
+  })
 })

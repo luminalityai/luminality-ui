@@ -1,0 +1,41 @@
+name: Bug Report
+description: Report a bug in luminality-ui
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal steps or code to reproduce the issue.
+      placeholder: |
+        1. Import `<Button>` component
+        2. Pass `variant="primary"` and `disabled`
+        3. Click the button
+        4. onClick handler is called (should not be)
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package Version
+      placeholder: "0.2.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Next.js
+        - Vite
+        - Rails + Inertia
+        - Other
+    validations:
+      required: false

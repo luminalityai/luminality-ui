@@ -28,4 +28,31 @@ describe("Blockquote", () => {
     const { container } = render(<Blockquote>Quote</Blockquote>)
     expect(container.querySelector("blockquote")).toBeInTheDocument()
   })
+
+  it("no footer when no author or source", () => {
+    const { container } = render(<Blockquote>Just a quote</Blockquote>)
+    expect(container.querySelector("footer")).not.toBeInTheDocument()
+  })
+
+  it("author inside cite element", () => {
+    const { container } = render(<Blockquote author="Shakespeare">Quote</Blockquote>)
+    const cite = container.querySelector("cite")
+    expect(cite).toBeInTheDocument()
+    expect(cite).toHaveTextContent("Shakespeare")
+  })
+
+  it("separator between author and source", () => {
+    const { container } = render(
+      <Blockquote author="Shakespeare" source="Hamlet">Quote</Blockquote>
+    )
+    const footer = container.querySelector("footer")
+    expect(footer).toHaveTextContent("Shakespeare - Hamlet")
+  })
+
+  it("source without cite when no author", () => {
+    const { container } = render(<Blockquote source="Hamlet">Quote</Blockquote>)
+    expect(container.querySelector("cite")).not.toBeInTheDocument()
+    expect(screen.getByText("Hamlet")).toBeInTheDocument()
+    expect(container.querySelector("footer")).toBeInTheDocument()
+  })
 })
