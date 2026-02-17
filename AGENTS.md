@@ -33,7 +33,7 @@ npm run test:coverage  # Run with v8 coverage report
 
 - Test framework: **Vitest** with **jsdom** environment
 - Assertion/DOM: `@testing-library/react`, `@testing-library/jest-dom`
-- Interactions: `@testing-library/user-event` (use named import: `import { userEvent } from "..."`)
+- Interactions: `@testing-library/user-event` (import as `import { userEvent } from "@testing-library/user-event"`, then use `userEvent.setup()`)
 - Tests live in `src/test/components/<component>.test.tsx`
 - Each component has its own test file matching the component name
 

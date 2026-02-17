@@ -46,7 +46,10 @@ describe("Blockquote", () => {
       <Blockquote author="Shakespeare" source="Hamlet">Quote</Blockquote>
     )
     const footer = container.querySelector("footer")
-    expect(footer).toHaveTextContent("Shakespeare - Hamlet")
+    expect(footer).toHaveTextContent("Shakespeare")
+    expect(footer).toHaveTextContent("Hamlet")
+    expect(container.querySelector("cite")).toHaveTextContent("Shakespeare")
+    expect(screen.getByText("Hamlet")).toBeInTheDocument()
   })
 
   it("source without cite when no author", () => {
