@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react"
+import { userEvent } from "@testing-library/user-event"
 import { createRef } from "react"
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import { Button } from "../../components/button.js"
 
 describe("Button", () => {
@@ -48,5 +49,31 @@ describe("Button", () => {
     const link = screen.getByRole("link", { name: "Link button" })
     expect(link).toBeInTheDocument()
     expect(link.tagName).toBe("A")
+  })
+
+  it("calls onClick when clicked", async () => {
+    const user = userEvent.setup()
+    const handleClick = vi.fn()
+    render(<Button onClick={handleClick}>Click me</Button>)
+    await user.click(screen.getByRole("button", { name: "Click me" }))
+    expect(handleClick).toHaveBeenCalledTimes(1)
+  })
+
+  it("does not call onClick when disabled", async () => {
+    const user = userEvent.setup()
+    const handleClick = vi.fn()
+    render(<Button disabled onClick={handleClick}>Click me</Button>)
+    await user.click(screen.getByRole("button", { name: "Click me" }))
+    expect(handleClick).not.toHaveBeenCalled()
+  })
+
+  it("applies disabled attribute", () => {
+    render(<Button disabled>Click me</Button>)
+    expect(screen.getByRole("button", { name: "Click me" })).toBeDisabled()
+  })
+
+  it("forwards className", () => {
+    render(<Button className="custom-class">Click me</Button>)
+    expect(screen.getByRole("button", { name: "Click me" }).className).toContain("custom-class")
   })
 })

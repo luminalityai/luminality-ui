@@ -55,4 +55,50 @@ describe("Breadcrumb", () => {
     const { container } = render(<BreadcrumbSeparator />)
     expect(container.querySelector("svg")).toBeInTheDocument()
   })
+
+  it("separators have aria-hidden=true", () => {
+    render(
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem><BreadcrumbLink href="/">Home</BreadcrumbLink></BreadcrumbItem>
+          <BreadcrumbSeparator data-testid="sep" />
+          <BreadcrumbItem><BreadcrumbPage>Current</BreadcrumbPage></BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    )
+
+    expect(screen.getByTestId("sep")).toHaveAttribute("aria-hidden", "true")
+  })
+
+  it("separators have role=presentation", () => {
+    render(
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem><BreadcrumbLink href="/">Home</BreadcrumbLink></BreadcrumbItem>
+          <BreadcrumbSeparator data-testid="sep" />
+          <BreadcrumbItem><BreadcrumbPage>Current</BreadcrumbPage></BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    )
+
+    expect(screen.getByTestId("sep")).toHaveAttribute("role", "presentation")
+  })
+
+  it("BreadcrumbLink supports asChild", () => {
+    render(
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button type="button">Custom</button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    )
+
+    const btn = screen.getByRole("button", { name: "Custom" })
+    expect(btn).toBeInTheDocument()
+    expect(btn.tagName).toBe("BUTTON")
+  })
 })

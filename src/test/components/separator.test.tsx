@@ -20,4 +20,24 @@ describe("Separator", () => {
     const separator = container.firstChild as HTMLElement
     expect(separator.className).toContain("border-dashed")
   })
+
+  it("has role=separator when not decorative", () => {
+    const { container } = render(<Separator decorative={false} />)
+    const separator = container.firstChild as HTMLElement
+    expect(separator).toHaveAttribute("role", "separator")
+  })
+
+  it("has no separator role when decorative (default)", () => {
+    const { container } = render(<Separator />)
+    const separator = container.firstChild as HTMLElement
+    expect(separator).toHaveAttribute("role", "none")
+  })
+
+  it("has correct data-orientation attribute", () => {
+    const { container: h } = render(<Separator orientation="horizontal" />)
+    expect(h.firstChild).toHaveAttribute("data-orientation", "horizontal")
+
+    const { container: v } = render(<Separator orientation="vertical" />)
+    expect(v.firstChild).toHaveAttribute("data-orientation", "vertical")
+  })
 })

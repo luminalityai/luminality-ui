@@ -60,4 +60,37 @@ describe("Card", () => {
     expect(screen.getByTestId("content").className).toContain("p-6")
     expect(screen.getByTestId("footer").className).toContain("p-6")
   })
+
+  it("default md padding classes applied", () => {
+    render(
+      <Card>
+        <CardHeader data-testid="header">Header</CardHeader>
+        <CardContent data-testid="content">Content</CardContent>
+        <CardFooter data-testid="footer">Footer</CardFooter>
+      </Card>
+    )
+
+    expect(screen.getByTestId("header").className).toContain("p-4")
+    expect(screen.getByTestId("content").className).toContain("p-4")
+    expect(screen.getByTestId("footer").className).toContain("p-4")
+  })
+
+  it("forwards className to Card root", () => {
+    const { container } = render(<Card className="custom-card">Content</Card>)
+    expect((container.firstChild as HTMLElement).className).toContain("custom-card")
+  })
+
+  it("CardTitle renders as h3", () => {
+    const { container } = render(
+      <Card>
+        <CardHeader>
+          <CardTitle>My Title</CardTitle>
+        </CardHeader>
+      </Card>
+    )
+
+    const h3 = container.querySelector("h3")
+    expect(h3).toBeInTheDocument()
+    expect(h3).toHaveTextContent("My Title")
+  })
 })
