@@ -6,7 +6,7 @@ import { SelectControl, ToggleControl } from "../../components/prop-control"
 const orientations = ["horizontal", "vertical"] as const
 
 export function SeparatorPage() {
-  const [orientation, setOrientation] = useState<string>("horizontal")
+  const [orientation, setOrientation] = useState<typeof orientations[number]>("horizontal")
   const [dashed, setDashed] = useState(false)
 
   return (

@@ -7,8 +7,8 @@ const variants = ["primary", "secondary", "accent", "info", "success", "danger",
 const sizes = ["sm", "md", "lg"] as const
 
 export function ButtonPage() {
-  const [variant, setVariant] = useState<string>("primary")
-  const [size, setSize] = useState<string>("md")
+  const [variant, setVariant] = useState<typeof variants[number]>("primary")
+  const [size, setSize] = useState<typeof sizes[number]>("md")
   const [disabled, setDisabled] = useState(false)
   const [label, setLabel] = useState("Click me")
 
@@ -27,8 +27,8 @@ export function ButtonPage() {
           </div>
           <div className="flex items-center justify-center rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border)] p-8 min-h-[120px]">
             <Button
-              variant={variant as typeof variants[number]}
-              size={size as typeof sizes[number]}
+              variant={variant}
+              size={size}
               disabled={disabled}
             >
               {label}

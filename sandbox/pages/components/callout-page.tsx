@@ -6,7 +6,7 @@ import { SelectControl, TextControl, ToggleControl } from "../../components/prop
 const variants = ["info", "warning", "success", "danger", "note"] as const
 
 export function CalloutPage() {
-  const [variant, setVariant] = useState<string>("info")
+  const [variant, setVariant] = useState<typeof variants[number]>("info")
   const [title, setTitle] = useState("Heads up")
   const [showTitle, setShowTitle] = useState(true)
 
@@ -24,7 +24,7 @@ export function CalloutPage() {
           </div>
           <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border)] p-8">
             <Callout
-              variant={variant as typeof variants[number]}
+              variant={variant}
               title={showTitle ? title : undefined}
             >
               This is a {variant} callout with important information for the user.

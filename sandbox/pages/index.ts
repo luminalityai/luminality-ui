@@ -53,5 +53,7 @@ export function getGroupedPages() {
     if (!groups[cat]) groups[cat] = []
     groups[cat].push({ key, ...entry })
   }
-  return categoryOrder.map((cat) => ({ category: cat, items: groups[cat] || [] }))
+  return categoryOrder
+    .map((cat) => ({ category: cat, items: groups[cat] || [] }))
+    .filter((g) => g.items.length > 0)
 }

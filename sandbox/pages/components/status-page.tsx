@@ -6,7 +6,7 @@ import { SelectControl, TextControl } from "../../components/prop-control"
 const variants = ["active", "online", "offline", "completed", "failed", "cancelled", "processing"] as const
 
 export function StatusPage() {
-  const [variant, setVariant] = useState<string>("active")
+  const [variant, setVariant] = useState<typeof variants[number]>("active")
   const [label, setLabel] = useState("Active")
 
   return (
@@ -21,7 +21,7 @@ export function StatusPage() {
             <TextControl label="Label" value={label} onChange={setLabel} />
           </div>
           <div className="flex items-center justify-center rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border)] p-8 min-h-[120px]">
-            <Status variant={variant as typeof variants[number]}>{label}</Status>
+            <Status variant={variant}>{label}</Status>
           </div>
         </div>
       </Section>

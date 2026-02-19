@@ -9,7 +9,7 @@ import { SelectControl, ToggleControl, TextControl } from "../../components/prop
 const paddings = ["sm", "md", "lg"] as const
 
 export function CardPage() {
-  const [padding, setPadding] = useState<string>("md")
+  const [padding, setPadding] = useState<typeof paddings[number]>("md")
   const [showFooter, setShowFooter] = useState(true)
   const [title, setTitle] = useState("Card Title")
 
@@ -27,17 +27,17 @@ export function CardPage() {
           </div>
           <div className="flex items-start justify-center rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border)] p-8">
             <Card className="w-full max-w-sm">
-              <CardHeader padding={padding as typeof paddings[number]}>
+              <CardHeader padding={padding}>
                 <CardTitle>{title}</CardTitle>
                 <CardDescription>A card description goes here.</CardDescription>
               </CardHeader>
-              <CardContent padding={padding as typeof paddings[number]}>
+              <CardContent padding={padding}>
                 <p className="text-sm text-[var(--color-text-secondary)]">
                   Card body content with some example text.
                 </p>
               </CardContent>
               {showFooter && (
-                <CardFooter padding={padding as typeof paddings[number]}>
+                <CardFooter padding={padding}>
                   <Button size="sm">Action</Button>
                 </CardFooter>
               )}

@@ -6,7 +6,7 @@ import { Section } from "../../components/section"
 import { SelectControl, ToggleControl } from "../../components/prop-control"
 
 export function AccordionPage() {
-  const [type, setType] = useState<string>("single")
+  const [type, setType] = useState<"single" | "multiple">("single")
   const [collapsible, setCollapsible] = useState(true)
 
   return (

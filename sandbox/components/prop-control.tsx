@@ -1,17 +1,17 @@
-interface SelectControlProps {
+interface SelectControlProps<T extends string> {
   label: string
-  value: string
-  options: string[]
-  onChange: (value: string) => void
+  value: T
+  options: readonly T[]
+  onChange: (value: T) => void
 }
 
-export function SelectControl({ label, value, options, onChange }: SelectControlProps) {
+export function SelectControl<T extends string>({ label, value, options, onChange }: SelectControlProps<T>) {
   return (
     <label className="flex flex-col gap-1 text-sm">
       <span className="font-medium text-[var(--color-text-secondary)]">{label}</span>
       <select
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value as T)}
         className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-1.5 text-sm text-[var(--color-text)] cursor-pointer"
       >
         {options.map((opt) => (

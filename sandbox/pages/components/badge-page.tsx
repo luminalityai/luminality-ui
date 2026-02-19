@@ -7,8 +7,8 @@ const variants = ["primary", "secondary", "accent", "info", "success", "warning"
 const sizes = ["sm", "md"] as const
 
 export function BadgePage() {
-  const [variant, setVariant] = useState<string>("primary")
-  const [size, setSize] = useState<string>("md")
+  const [variant, setVariant] = useState<typeof variants[number]>("primary")
+  const [size, setSize] = useState<typeof sizes[number]>("md")
   const [label, setLabel] = useState("Badge")
 
   return (
@@ -25,8 +25,8 @@ export function BadgePage() {
           </div>
           <div className="flex items-center justify-center rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border)] p-8 min-h-[120px]">
             <Badge
-              variant={variant as typeof variants[number]}
-              size={size as typeof sizes[number]}
+              variant={variant}
+              size={size}
             >
               {label}
             </Badge>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 
 export function ThemeToggle() {
   const [dark, setDark] = useState(() => {
+    if (typeof document === "undefined") return false
     return document.documentElement.getAttribute("data-theme") === "dark"
   })
 

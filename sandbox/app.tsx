@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { pages, getGroupedPages } from "./pages"
 import { ThemeToggle } from "./components/theme-toggle"
 
@@ -17,7 +17,7 @@ export function App() {
 
   const currentPage = pages[route] || pages["kitchen-sink"]
   const Component = currentPage.component
-  const grouped = getGroupedPages()
+  const grouped = useMemo(() => getGroupedPages(), [])
 
   return (
     <div className="flex h-screen overflow-hidden">
