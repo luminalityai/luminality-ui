@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { Button } from "@lib/components/button"
 import { Section } from "../../components/section"
 import { SelectControl, ToggleControl, TextControl } from "../../components/prop-control"
@@ -40,15 +40,15 @@ export function ButtonPage() {
       <Section title="All Variants">
         <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 items-center">
           {variants.map((v) => (
-            <>
-              <span key={`label-${v}`} className="text-sm text-[var(--color-text-muted)] text-right">{v}</span>
-              <div key={`buttons-${v}`} className="flex gap-2">
+            <Fragment key={v}>
+              <span className="text-sm text-[var(--color-text-muted)] text-right">{v}</span>
+              <div className="flex gap-2">
                 {sizes.map((s) => (
-                  <Button key={`${v}-${s}`} variant={v} size={s}>{s}</Button>
+                  <Button key={s} variant={v} size={s}>{s}</Button>
                 ))}
                 <Button variant={v} disabled>disabled</Button>
               </div>
-            </>
+            </Fragment>
           ))}
         </div>
       </Section>

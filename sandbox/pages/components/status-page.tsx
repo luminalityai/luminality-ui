@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { Status } from "@lib/components/status"
 import { Section } from "../../components/section"
 import { SelectControl, TextControl } from "../../components/prop-control"
@@ -29,10 +29,10 @@ export function StatusPage() {
       <Section title="All Variants">
         <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 items-center">
           {variants.map((v) => (
-            <>
-              <span key={`label-${v}`} className="text-sm text-[var(--color-text-muted)] text-right font-mono">{v}</span>
-              <Status key={`status-${v}`} variant={v}>{v}</Status>
-            </>
+            <Fragment key={v}>
+              <span className="text-sm text-[var(--color-text-muted)] text-right font-mono">{v}</span>
+              <Status variant={v}>{v}</Status>
+            </Fragment>
           ))}
         </div>
       </Section>

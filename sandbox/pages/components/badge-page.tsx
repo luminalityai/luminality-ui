@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { Badge } from "@lib/components/badge"
 import { Section } from "../../components/section"
 import { SelectControl, TextControl } from "../../components/prop-control"
@@ -37,14 +37,14 @@ export function BadgePage() {
       <Section title="All Variants">
         <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 items-center">
           {variants.map((v) => (
-            <>
-              <span key={`label-${v}`} className="text-sm text-[var(--color-text-muted)] text-right">{v}</span>
-              <div key={`badges-${v}`} className="flex gap-2">
+            <Fragment key={v}>
+              <span className="text-sm text-[var(--color-text-muted)] text-right">{v}</span>
+              <div className="flex gap-2">
                 {sizes.map((s) => (
-                  <Badge key={`${v}-${s}`} variant={v} size={s}>{s}</Badge>
+                  <Badge key={s} variant={v} size={s}>{s}</Badge>
                 ))}
               </div>
-            </>
+            </Fragment>
           ))}
         </div>
       </Section>
