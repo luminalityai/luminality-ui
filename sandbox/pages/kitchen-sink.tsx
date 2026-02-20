@@ -21,7 +21,7 @@ import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel,
 } from "@lib/components/dropdown-menu"
 import {
-  Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage,
+  Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage as BreadcrumbPageItem,
 } from "@lib/components/breadcrumb"
 import { PageHeader } from "@lib/components/page-header"
 import {
@@ -196,7 +196,7 @@ export function KitchenSink() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+              <BreadcrumbPageItem>Breadcrumb</BreadcrumbPageItem>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

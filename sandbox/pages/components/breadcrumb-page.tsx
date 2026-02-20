@@ -1,5 +1,5 @@
 import {
-  Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage,
+  Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage as BreadcrumbPageItem,
 } from "@lib/components/breadcrumb"
 import { Section } from "../../components/section"
 
@@ -7,7 +7,7 @@ export function BreadcrumbPage() {
   return (
     <>
       <h1 className="text-2xl font-bold text-[var(--color-text)]">Breadcrumb</h1>
-      <p className="text-[var(--color-text-muted)]">Navigation aid showing the user&apos;s location in a hierarchy.</p>
+      <p className="text-[var(--color-text-muted)]">Navigation aid showing the user's location in a hierarchy.</p>
 
       <Section title="Interactive Preview">
         <div className="flex items-center justify-center rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border)] p-8 min-h-[120px]">
@@ -22,7 +22,7 @@ export function BreadcrumbPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                <BreadcrumbPageItem>Breadcrumb</BreadcrumbPageItem>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -37,7 +37,7 @@ export function BreadcrumbPage() {
               <BreadcrumbList>
                 <BreadcrumbItem><BreadcrumbLink href="#">Home</BreadcrumbLink></BreadcrumbItem>
                 <BreadcrumbSeparator />
-                <BreadcrumbItem><BreadcrumbPage>Settings</BreadcrumbPage></BreadcrumbItem>
+                <BreadcrumbItem><BreadcrumbPageItem>Settings</BreadcrumbPageItem></BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
@@ -51,7 +51,7 @@ export function BreadcrumbPage() {
                 <BreadcrumbSeparator />
                 <BreadcrumbItem><BreadcrumbLink href="#">Account</BreadcrumbLink></BreadcrumbItem>
                 <BreadcrumbSeparator />
-                <BreadcrumbItem><BreadcrumbPage>Security</BreadcrumbPage></BreadcrumbItem>
+                <BreadcrumbItem><BreadcrumbPageItem>Security</BreadcrumbPageItem></BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
@@ -72,7 +72,7 @@ export function BreadcrumbPage() {
     </BreadcrumbItem>
     <BreadcrumbSeparator />
     <BreadcrumbItem>
-      <BreadcrumbPage>Current</BreadcrumbPage>
+      <BreadcrumbPageItem>Current</BreadcrumbPageItem>
     </BreadcrumbItem>
   </BreadcrumbList>
 </Breadcrumb>`}

@@ -18,7 +18,7 @@ export function DropdownMenuPage() {
       <h1 className="text-2xl font-bold text-[var(--color-text)]">DropdownMenu</h1>
       <p className="text-[var(--color-text-muted)]">Contextual menu triggered by a button click.</p>
 
-      <Section title="Basic">
+      <Section title="Interactive Preview">
         <div className="flex items-center justify-center rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border)] p-8 min-h-[120px]">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

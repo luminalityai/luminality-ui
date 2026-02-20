@@ -52,7 +52,7 @@ export function CardPage() {
             <Card key={p}>
               <CardHeader padding={p}>
                 <CardTitle>{p} padding</CardTitle>
-                <CardDescription>padding=&quot;{p}&quot;</CardDescription>
+                <CardDescription>padding="{p}"</CardDescription>
               </CardHeader>
               <CardContent padding={p}>
                 <p className="text-sm text-[var(--color-text-secondary)]">Content area.</p>
