@@ -43,7 +43,8 @@
     "prepack": "npm run lint && npm run build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "prepare": "git rev-parse --git-dir > /dev/null 2>&1 && lefthook install || true"
   },
   "keywords": [
     "design-system",
@@ -91,6 +92,7 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",
+    "lefthook": "^2.1",
     "vitest": "^4.0.18"
   }
 }

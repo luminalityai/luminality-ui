@@ -6,3 +6,4 @@ sandbox/dist/
 .DS_Store
 .env*
 coverage/
+.lefthook-local.yml

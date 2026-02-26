@@ -1,0 +1,23 @@
+# Lefthook manages git hooks for pre-push checks.
+#
+# Install:  npm install (auto-installs via prepare script)
+# Skip:     LEFTHOOK=0 git push
+
+pre-push:
+  parallel: true
+  commands:
+    whitespace:
+      run: git diff --check HEAD~ 2>/dev/null || true
+    signed-commits:
+      run: .lefthook/verify-signatures.sh
+    eslint:
+      run: npm run lint
+      glob: "*.{ts,tsx,js,jsx}"
+    typecheck:
+      run: npm run typecheck
+      glob: "*.{ts,tsx,js,jsx}"
+    test:
+      run: npm test
+      glob: "*.{ts,tsx,js,jsx}"
+    build:
+      run: npm run build
