@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Separator } from "@lib/components/separator"
+import { Separator } from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 import { SelectControl, ToggleControl } from "../../components/prop-control"
 

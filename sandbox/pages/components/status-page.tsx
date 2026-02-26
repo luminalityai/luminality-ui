@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react"
-import { Status } from "@lib/components/status"
+import { Status } from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 import { SelectControl, TextControl } from "../../components/prop-control"
 

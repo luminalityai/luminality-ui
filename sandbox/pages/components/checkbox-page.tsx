@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Checkbox } from "@lib/components/checkbox"
+import { Checkbox } from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 import { ToggleControl } from "../../components/prop-control"
 

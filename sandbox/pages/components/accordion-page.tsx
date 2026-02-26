@@ -1,7 +1,7 @@
 import { useState } from "react"
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
-} from "@lib/components/accordion"
+} from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 import { SelectControl, ToggleControl } from "../../components/prop-control"
 

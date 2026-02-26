@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Avatar, AvatarImage, AvatarFallback } from "@lib/components/avatar"
+import { Avatar, AvatarImage, AvatarFallback } from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 import { TextControl } from "../../components/prop-control"
 

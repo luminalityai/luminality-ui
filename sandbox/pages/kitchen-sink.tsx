@@ -1,35 +1,16 @@
 import { useState } from "react"
 import { Section } from "../components/section"
-import { Button } from "@lib/components/button"
-import { Checkbox } from "@lib/components/checkbox"
-import { Badge } from "@lib/components/badge"
-import { Status } from "@lib/components/status"
-import { Callout } from "@lib/components/callout"
 import {
+  Button, Checkbox, Badge, Status, Callout, Separator, Blockquote, PageHeader,
   Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
-} from "@lib/components/card"
-import { Avatar, AvatarFallback } from "@lib/components/avatar"
-import { Blockquote } from "@lib/components/blockquote"
-import { Separator } from "@lib/components/separator"
-import {
+  Avatar, AvatarFallback,
   Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose,
-} from "@lib/components/dialog"
-import {
   AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel,
-} from "@lib/components/alert-dialog"
-import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel,
-} from "@lib/components/dropdown-menu"
-import {
   Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage as BreadcrumbPageItem,
-} from "@lib/components/breadcrumb"
-import { PageHeader } from "@lib/components/page-header"
-import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
-} from "@lib/components/accordion"
-import {
   List, ListSection, ListItem, ListItemTitle, ListItemDescription,
-} from "@lib/components/list"
+} from "@rarebit-one/luminality-ui"
 
 export function KitchenSink() {
   const [checked, setChecked] = useState(false)

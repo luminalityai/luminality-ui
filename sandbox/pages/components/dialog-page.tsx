@@ -1,7 +1,7 @@
 import {
   Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose,
-} from "@lib/components/dialog"
-import { Button } from "@lib/components/button"
+  Button,
+} from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 
 export function DialogPage() {

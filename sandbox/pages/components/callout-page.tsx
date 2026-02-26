@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Callout } from "@lib/components/callout"
+import { Callout } from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 import { SelectControl, TextControl, ToggleControl } from "../../components/prop-control"
 
