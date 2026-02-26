@@ -1,7 +1,7 @@
 import {
   AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel,
-} from "@lib/components/alert-dialog"
-import { Button } from "@lib/components/button"
+  Button,
+} from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 
 export function AlertDialogPage() {

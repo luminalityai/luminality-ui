@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@lib": path.resolve(__dirname, "../src"),
+      "@rarebit-one/luminality-ui": path.resolve(__dirname, "../src/index.ts"),
     },
   },
   server: {

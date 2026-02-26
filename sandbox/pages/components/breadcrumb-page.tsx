@@ -1,6 +1,6 @@
 import {
   Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage as BreadcrumbPageItem,
-} from "@lib/components/breadcrumb"
+} from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 
 export function BreadcrumbPage() {

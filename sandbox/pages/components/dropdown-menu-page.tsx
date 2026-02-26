@@ -4,8 +4,8 @@ import {
   DropdownMenuCheckboxItem, DropdownMenuRadioGroup, DropdownMenuRadioItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut,
   DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuPortal,
-} from "@lib/components/dropdown-menu"
-import { Button } from "@lib/components/button"
+  Button,
+} from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 
 export function DropdownMenuPage() {

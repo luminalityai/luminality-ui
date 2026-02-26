@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Blockquote } from "@lib/components/blockquote"
+import { Blockquote } from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 import { TextControl, ToggleControl } from "../../components/prop-control"
 

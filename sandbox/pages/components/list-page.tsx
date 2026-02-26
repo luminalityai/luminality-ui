@@ -1,8 +1,8 @@
 import { useState } from "react"
 import {
   List, ListSection, ListItem, ListItemTitle, ListItemDescription, ListItemMeta,
-} from "@lib/components/list"
-import { Badge } from "@lib/components/badge"
+  Badge,
+} from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 import { ToggleControl } from "../../components/prop-control"
 

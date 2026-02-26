@@ -1,6 +1,5 @@
 import { useState } from "react"
-import { PageHeader } from "@lib/components/page-header"
-import { Button } from "@lib/components/button"
+import { PageHeader, Button } from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 import { ToggleControl, TextControl } from "../../components/prop-control"
 

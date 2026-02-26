@@ -1,8 +1,8 @@
 import { useState } from "react"
 import {
   Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
-} from "@lib/components/card"
-import { Button } from "@lib/components/button"
+  Button,
+} from "@rarebit-one/luminality-ui"
 import { Section } from "../../components/section"
 import { SelectControl, ToggleControl, TextControl } from "../../components/prop-control"
 
