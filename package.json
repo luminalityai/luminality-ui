@@ -44,7 +44,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "prepare": "git rev-parse --git-dir > /dev/null 2>&1 && lefthook install || true"
+    "prepare": "git rev-parse --git-dir > /dev/null 2>&1 && (lefthook install || echo 'Warning: lefthook install failed')"
   },
   "keywords": [
     "design-system",

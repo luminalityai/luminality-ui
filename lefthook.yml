@@ -4,6 +4,8 @@
 # Skip:     LEFTHOOK=0 git push
 
 pre-push:
+  # Runs all checks in parallel. On resource-constrained machines, use
+  # LEFTHOOK_JOBS=1 to run sequentially.
   parallel: true
   commands:
     whitespace:
@@ -21,3 +23,4 @@ pre-push:
       glob: "**/*.{ts,tsx,js,jsx}"
     build:
       run: npm run build
+      glob: "**/*.{ts,tsx,js,jsx,css}"
