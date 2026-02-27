@@ -7,17 +7,17 @@ pre-push:
   parallel: true
   commands:
     whitespace:
-      run: git --no-pager log --check $(git merge-base origin/main HEAD)..HEAD
+      run: .lefthook/whitespace-check.sh
     signed-commits:
       run: .lefthook/verify-signatures.sh
     eslint:
       run: npm run lint
-      glob: "*.{ts,tsx,js,jsx}"
+      glob: "**/*.{ts,tsx,js,jsx}"
     typecheck:
       run: npm run typecheck
-      glob: "*.{ts,tsx,js,jsx}"
+      glob: "**/*.{ts,tsx,js,jsx}"
     test:
       run: npm test
-      glob: "*.{ts,tsx,js,jsx}"
+      glob: "**/*.{ts,tsx,js,jsx}"
     build:
       run: npm run build
