@@ -1,0 +1,22 @@
+# Lefthook manages git hooks for pre-push checks.
+#
+# Install:  npm install (auto-installs via prepare script)
+# Skip:     LEFTHOOK=0 git push
+
+pre-push:
+  # Runs all checks in parallel. On resource-constrained machines, use
+  # LEFTHOOK_JOBS=1 to run sequentially.
+  parallel: true
+  commands:
+    whitespace:
+      run: .lefthook/whitespace-check.sh
+    signed-commits:
+      run: .lefthook/verify-signatures.sh
+    eslint:
+      run: npm run lint
+    typecheck:
+      run: npm run typecheck
+    test:
+      run: npm test
+    build:
+      run: npm run build

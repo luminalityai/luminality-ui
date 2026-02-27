@@ -43,7 +43,8 @@
     "prepack": "npm run lint && npm run build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "prepare": "git rev-parse --git-dir > /dev/null 2>&1 && (lefthook install || echo 'Warning: lefthook install failed') || true"
   },
   "keywords": [
     "design-system",
@@ -84,6 +85,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "globals": "^17.3.0",
     "jsdom": "^28.1.0",
+    "lefthook": "^2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.2.0",
