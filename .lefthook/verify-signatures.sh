@@ -9,13 +9,7 @@
 
 set -eo pipefail
 
-# Detect the upstream tracking branch, falling back to origin/main.
-UPSTREAM=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null) || UPSTREAM="origin/main"
-
-MERGE_BASE=$(git merge-base "$UPSTREAM" HEAD 2>/dev/null) || {
-  echo "Failed to find merge-base with $UPSTREAM" >&2
-  exit 1
-}
+source "$(dirname "$0")/lib/git-upstream.sh"
 
 COMMITS=$(git log "$MERGE_BASE..HEAD" --format="%H" 2>/dev/null) || {
   echo "Failed to list commits between merge-base and HEAD" >&2
@@ -29,7 +23,10 @@ fi
 
 UNSIGNED_COMMITS=()
 while IFS= read -r commit; do
-  SIG_STATUS=$(git log --format="%G?" -1 "$commit" 2>/dev/null || echo "N")
+  SIG_STATUS=$(git log --format="%G?" -1 "$commit") || {
+    echo "Failed to get signature status for $(git rev-parse --short "$commit")" >&2
+    exit 1
+  }
   # Accept G (good) and U (good but untrusted key). U is allowed because developers
   # may use locally-generated keys not yet in the team's trust store. The goal is to
   # ensure all commits are signed, not to verify signer identity.
