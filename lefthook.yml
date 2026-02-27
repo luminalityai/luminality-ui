@@ -7,7 +7,7 @@ pre-push:
   parallel: true
   commands:
     whitespace:
-      run: git diff --check HEAD~ 2>/dev/null || true
+      run: git --no-pager log --check $(git merge-base origin/main HEAD)..HEAD
     signed-commits:
       run: .lefthook/verify-signatures.sh
     eslint:
