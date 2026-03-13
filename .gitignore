@@ -7,3 +7,6 @@ sandbox/dist/
 .env*
 coverage/
 /.lefthook-local.yml
+
+# Git worktrees
+.worktrees/
