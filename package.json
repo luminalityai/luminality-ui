@@ -84,7 +84,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "globals": "^17.4.0",
-    "jsdom": "^28.1.0",
+    "jsdom": "^29.0.0",
     "lefthook": "^2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
