@@ -9,7 +9,7 @@ import {
   AlertDialogDescription,
   AlertDialogAction,
   AlertDialogCancel,
-} from "../../components/alert-dialog.js"
+} from "@/components/alert-dialog"
 
 describe("AlertDialog", () => {
   it("renders trigger", () => {

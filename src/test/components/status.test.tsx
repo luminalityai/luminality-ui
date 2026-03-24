@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
-import { Status } from "../../components/status.js"
+import { Status } from "@/components/status"
 
 describe("Status", () => {
   it("renders with default variant", () => {

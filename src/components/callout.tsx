@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cn } from "../lib/utils.js"
+import { cn } from "@/lib/utils"
 
 export interface CalloutProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "info" | "warning" | "success" | "danger" | "note"

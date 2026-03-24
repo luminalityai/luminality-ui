@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 import { createRef } from "react"
 import { describe, it, expect, vi } from "vitest"
-import { Button } from "../../components/button.js"
+import { Button } from "@/components/button"
 
 describe("Button", () => {
   it("renders with default props", () => {
@@ -14,7 +14,7 @@ describe("Button", () => {
   it("renders each variant", () => {
     const variants = [
       "primary", "secondary", "accent", "info", "success",
-      "danger", "warning", "ghost", "muted", "outline",
+      "danger", "warning", "ghost", "muted", "outline", "link",
     ] as const
 
     for (const variant of variants) {
@@ -25,7 +25,7 @@ describe("Button", () => {
   })
 
   it("renders each size", () => {
-    const sizes = ["sm", "md", "lg"] as const
+    const sizes = ["sm", "md", "lg", "auto"] as const
 
     for (const size of sizes) {
       const { unmount } = render(<Button size={size}>{size}</Button>)

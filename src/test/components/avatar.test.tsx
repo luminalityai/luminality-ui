@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
-import { Avatar, AvatarFallback } from "../../components/avatar.js"
+import { Avatar, AvatarFallback } from "@/components/avatar"
 
 describe("Avatar", () => {
   it("renders fallback text", () => {

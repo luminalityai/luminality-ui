@@ -8,7 +8,7 @@ import {
   ListItemTitle,
   ListItemDescription,
   ListItemMeta,
-} from "../../components/list.js"
+} from "@/components/list"
 
 describe("List", () => {
   it("renders items", () => {

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cn } from "../lib/utils.js"
+import { cn } from "@/lib/utils"
 
 export interface StatusProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: "active" | "online" | "offline" | "completed" | "failed" | "cancelled" | "processing"
