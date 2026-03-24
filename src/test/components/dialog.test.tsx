@@ -9,7 +9,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogFooter,
-} from "../../components/dialog.js"
+} from "@/components/dialog"
 
 describe("Dialog", () => {
   it("renders trigger", () => {

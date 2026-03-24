@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "../../components/accordion.js"
+} from "@/components/accordion"
 
 describe("Accordion", () => {
   it("renders items with triggers", () => {

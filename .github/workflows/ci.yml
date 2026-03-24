@@ -36,7 +36,7 @@ jobs:
         run: npm test
 
       - name: Run TypeScript type check
-        run: npm run typecheck
+        run: npm run check
 
       - name: Build package
         run: npm run build

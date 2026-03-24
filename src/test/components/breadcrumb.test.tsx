@@ -7,7 +7,7 @@ import {
   BreadcrumbLink,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "../../components/breadcrumb.js"
+} from "@/components/breadcrumb"
 
 describe("Breadcrumb", () => {
   it("renders a full navigation path", () => {

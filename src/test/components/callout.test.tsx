@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
-import { Callout } from "../../components/callout.js"
+import { Callout } from "@/components/callout"
 
 describe("Callout", () => {
   it("renders with default note variant", () => {

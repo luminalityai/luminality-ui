@@ -1,10 +1,10 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
-import { cn } from "../lib/utils.js"
+import { cn } from '@/lib/utils'
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "accent" | "info" | "success" | "danger" | "warning" | "ghost" | "muted" | "outline"
-  size?: "sm" | "md" | "lg"
+  variant?: "primary" | "secondary" | "accent" | "info" | "success" | "danger" | "warning" | "ghost" | "muted" | "outline" | "link"
+  size?: "sm" | "md" | "lg" | "auto"
   asChild?: boolean
 }
 
@@ -25,12 +25,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       ghost: "hover:bg-[var(--color-surface-hover)] text-[var(--color-text-secondary)] border-transparent",
       muted: "bg-[var(--color-muted)] text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted-hover)] border-[var(--color-border)]",
       outline: "border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-[var(--color-primary-foreground)]",
+      link: "bg-transparent border-0 text-[var(--color-text)] hover:text-[var(--color-primary)]",
     }
 
     const sizes = {
       sm: "h-8 px-3 text-sm",
       md: "h-10 px-4 text-sm",
       lg: "h-12 px-6 text-base",
+      auto: "",
     }
 
     return (

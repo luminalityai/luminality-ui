@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cn } from "../lib/utils.js"
+import { cn } from "@/lib/utils"
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -7,7 +7,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "./breadcrumb.js"
+} from "@/components/breadcrumb"
 
 interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string

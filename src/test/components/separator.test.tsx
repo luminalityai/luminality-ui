@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
-import { Separator } from "../../components/separator.js"
+import { Separator } from "@/components/separator"
 
 describe("Separator", () => {
   it("renders horizontal separator by default", () => {

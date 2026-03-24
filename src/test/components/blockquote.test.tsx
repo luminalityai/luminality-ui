@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
-import { Blockquote } from "../../components/blockquote.js"
+import { Blockquote } from "@/components/blockquote"
 
 describe("Blockquote", () => {
   it("renders quote text", () => {

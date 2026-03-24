@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from "../../components/dropdown-menu.js"
+} from "@/components/dropdown-menu"
 
 describe("DropdownMenu", () => {
   it("renders trigger", () => {
