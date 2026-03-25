@@ -20,7 +20,7 @@ describe("List", () => {
         <ListItem>
           <ListItemTitle>Item two</ListItemTitle>
         </ListItem>
-      </List>
+      </List>,
     )
 
     expect(screen.getByText("Item one")).toBeInTheDocument()
@@ -35,7 +35,7 @@ describe("List", () => {
             <ListItemTitle>Child</ListItemTitle>
           </ListItem>
         </ListSection>
-      </List>
+      </List>,
     )
 
     expect(screen.getByText("Section A")).toBeInTheDocument()
@@ -50,7 +50,7 @@ describe("List", () => {
           <ListItemDescription>Description text</ListItemDescription>
           <ListItemMeta>Meta info</ListItemMeta>
         </ListItem>
-      </List>
+      </List>,
     )
 
     expect(screen.getByText("Description text")).toBeInTheDocument()
@@ -61,12 +61,17 @@ describe("List", () => {
     render(
       <List>
         <ListSection title="Collapsible" collapsible>
-          <ListItem><ListItemTitle>Child</ListItemTitle></ListItem>
+          <ListItem>
+            <ListItemTitle>Child</ListItemTitle>
+          </ListItem>
         </ListSection>
-      </List>
+      </List>,
     )
 
-    expect(screen.getByRole("button", { name: "Collapsible" })).toHaveAttribute("aria-expanded", "true")
+    expect(screen.getByRole("button", { name: "Collapsible" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    )
     expect(screen.getByText("Child")).toBeInTheDocument()
   })
 
@@ -75,13 +80,18 @@ describe("List", () => {
     render(
       <List>
         <ListSection title="Collapsible" collapsible>
-          <ListItem><ListItemTitle>Child</ListItemTitle></ListItem>
+          <ListItem>
+            <ListItemTitle>Child</ListItemTitle>
+          </ListItem>
         </ListSection>
-      </List>
+      </List>,
     )
 
     await user.click(screen.getByRole("button", { name: "Collapsible" }))
-    expect(screen.getByRole("button", { name: "Collapsible" })).toHaveAttribute("aria-expanded", "false")
+    expect(screen.getByRole("button", { name: "Collapsible" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    )
     expect(screen.queryByText("Child")).not.toBeInTheDocument()
   })
 
@@ -90,9 +100,11 @@ describe("List", () => {
     render(
       <List>
         <ListSection title="Collapsible" collapsible defaultOpen={false}>
-          <ListItem><ListItemTitle>Child</ListItemTitle></ListItem>
+          <ListItem>
+            <ListItemTitle>Child</ListItemTitle>
+          </ListItem>
         </ListSection>
-      </List>
+      </List>,
     )
 
     expect(screen.queryByText("Child")).not.toBeInTheDocument()
@@ -103,10 +115,14 @@ describe("List", () => {
   it("renders action buttons on ListItem", () => {
     render(
       <List>
-        <ListItem actions={[{ icon: <span>icon</span>, label: "Edit", onClick: vi.fn() }]}>
+        <ListItem
+          actions={[
+            { icon: <span>icon</span>, label: "Edit", onClick: vi.fn() },
+          ]}
+        >
           <ListItemTitle>Item</ListItemTitle>
         </ListItem>
-      </List>
+      </List>,
     )
 
     expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument()
@@ -117,10 +133,14 @@ describe("List", () => {
     const handleClick = vi.fn()
     render(
       <List>
-        <ListItem actions={[{ icon: <span>icon</span>, label: "Delete", onClick: handleClick }]}>
+        <ListItem
+          actions={[
+            { icon: <span>icon</span>, label: "Delete", onClick: handleClick },
+          ]}
+        >
           <ListItemTitle>Item</ListItemTitle>
         </ListItem>
-      </List>
+      </List>,
     )
 
     await user.click(screen.getByRole("button", { name: "Delete" }))
@@ -133,7 +153,7 @@ describe("List", () => {
         <ListItem prefix="AB">
           <ListItemTitle>Item</ListItemTitle>
         </ListItem>
-      </List>
+      </List>,
     )
 
     expect(screen.getByText("AB")).toBeInTheDocument()
@@ -145,9 +165,11 @@ describe("List", () => {
         <ListItem active data-testid="active-item">
           <ListItemTitle>Item</ListItemTitle>
         </ListItem>
-      </List>
+      </List>,
     )
 
-    expect(screen.getByTestId("active-item").className).toContain("bg-[var(--color-surface-hover)]")
+    expect(screen.getByTestId("active-item").className).toContain(
+      "bg-[var(--color-surface-hover)]",
+    )
   })
 })

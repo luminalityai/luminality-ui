@@ -12,13 +12,15 @@ describe("useDebounce", () => {
     vi.useFakeTimers()
     const { result, rerender } = renderHook(
       ({ value }) => useDebounce(value, 500),
-      { initialProps: { value: "hello" } }
+      { initialProps: { value: "hello" } },
     )
 
     rerender({ value: "world" })
     expect(result.current).toBe("hello")
 
-    act(() => { vi.advanceTimersByTime(500) })
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
     expect(result.current).toBe("world")
 
     vi.useRealTimers()

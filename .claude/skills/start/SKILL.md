@@ -14,6 +14,7 @@ This skill requires the Linear MCP server to be configured. If Linear tools (`mc
 ## Scope
 
 This skill sets up local development for Linear issues. It does **NOT**:
+
 - Merge PRs to main (merging is a human decision)
 - Delete branches or worktrees automatically
 - Close or complete Linear issues
@@ -72,6 +73,7 @@ Before starting, verify:
 ```
 
 If blocked:
+
 ```
 Warning: LMT-123 is blocked by:
   - LMT-120: "Set up middleware" (In Progress)
@@ -83,6 +85,7 @@ Options:
 ```
 
 **Check issue readiness:**
+
 - Has description/acceptance criteria?
 - Has assigned estimate?
 
@@ -115,6 +118,7 @@ git worktree add .worktrees/<identifier> -b <branch-name> "origin/$DEFAULT_BRANC
 ```
 
 **`--no-worktree` flag:** If the user explicitly passes `--no-worktree`, check the current state:
+
 - On the default branch with a clean working tree → fall back to a simple branch:
   ```bash
   DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@refs/remotes/origin/@@')
@@ -158,26 +162,26 @@ Based on the issue description, create a todo list to track progress.
 
 ## Flags Reference
 
-| Flag | Description |
-|------|-------------|
-| `--mine` | List my assigned issues in Todo state |
-| `--backlog` | List team backlog issues |
-| `--no-worktree` | Skip worktree if on the default branch + clean; stops with error otherwise |
-| `--no-status` | Skip status update (just create branch) |
-| `--team <name>` | Filter by team (default: Luminality) |
-| `--project <name>` | Filter by project |
+| Flag               | Description                                                                |
+| ------------------ | -------------------------------------------------------------------------- |
+| `--mine`           | List my assigned issues in Todo state                                      |
+| `--backlog`        | List team backlog issues                                                   |
+| `--no-worktree`    | Skip worktree if on the default branch + clean; stops with error otherwise |
+| `--no-status`      | Skip status update (just create branch)                                    |
+| `--team <name>`    | Filter by team (default: Luminality)                                       |
+| `--project <name>` | Filter by project                                                          |
 
 ## Error Handling
 
-| Error | Solution |
-|-------|----------|
-| Linear MCP unavailable | Warn and offer to proceed with just git setup |
-| Issue not found | Verify identifier, check team access |
-| Issue already in progress | Ask if user wants to continue anyway |
-| Issue is done/canceled | Warn and suggest reopening or selecting different issue |
-| Status update fails | Offer to continue with local setup, retry, or cancel |
-| Branch already exists | Offer to checkout existing or create with suffix |
-| Worktree already exists | Offer to use existing worktree or create with suffix |
+| Error                     | Solution                                                |
+| ------------------------- | ------------------------------------------------------- |
+| Linear MCP unavailable    | Warn and offer to proceed with just git setup           |
+| Issue not found           | Verify identifier, check team access                    |
+| Issue already in progress | Ask if user wants to continue anyway                    |
+| Issue is done/canceled    | Warn and suggest reopening or selecting different issue |
+| Status update fails       | Offer to continue with local setup, retry, or cancel    |
+| Branch already exists     | Offer to checkout existing or create with suffix        |
+| Worktree already exists   | Offer to use existing worktree or create with suffix    |
 
 ## Integration with Other Skills
 

@@ -16,7 +16,7 @@ describe("Dialog", () => {
     render(
       <Dialog>
         <DialogTrigger>Open</DialogTrigger>
-      </Dialog>
+      </Dialog>,
     )
     expect(screen.getByText("Open")).toBeInTheDocument()
   })
@@ -28,7 +28,7 @@ describe("Dialog", () => {
           <DialogTitle>Dialog title</DialogTitle>
           <DialogDescription>Dialog description</DialogDescription>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     )
 
     expect(screen.getByText("Dialog title")).toBeInTheDocument()
@@ -44,7 +44,7 @@ describe("Dialog", () => {
           <DialogTitle>Title</DialogTitle>
           <DialogDescription>Desc</DialogDescription>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     )
 
     expect(screen.queryByText("Title")).not.toBeInTheDocument()
@@ -60,7 +60,7 @@ describe("Dialog", () => {
           <DialogTitle>Title</DialogTitle>
           <DialogDescription>Desc</DialogDescription>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     )
 
     expect(screen.getByText("Title")).toBeInTheDocument()
@@ -80,7 +80,7 @@ describe("Dialog", () => {
           <DialogTitle>Title</DialogTitle>
           <DialogDescription>Desc</DialogDescription>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     )
 
     await user.click(screen.getByText("Open"))
@@ -96,7 +96,7 @@ describe("Dialog", () => {
           <DialogTitle>Title</DialogTitle>
           <DialogDescription>Desc</DialogDescription>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     )
 
     await user.keyboard("{Escape}")
@@ -114,7 +114,7 @@ describe("Dialog", () => {
           <DialogHeader data-testid="header">Header content</DialogHeader>
           <DialogFooter data-testid="footer">Footer content</DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     )
 
     expect(screen.getByTestId("header")).toHaveTextContent("Header content")

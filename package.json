@@ -42,6 +42,8 @@
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "knip": "knip",
+    "prepare": "lefthook install",
     "prepublishOnly": "npm run build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -89,6 +91,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "globals": "^17.4.0",
     "jsdom": "^29.0.1",
+    "knip": "^6.0.5",
     "lefthook": "^2.1",
     "prettier": "^3.8.1",
     "react": "^19.0.0",

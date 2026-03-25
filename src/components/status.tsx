@@ -2,7 +2,14 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 export interface StatusProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "active" | "online" | "offline" | "completed" | "failed" | "cancelled" | "processing"
+  variant?:
+    | "active"
+    | "online"
+    | "offline"
+    | "completed"
+    | "failed"
+    | "cancelled"
+    | "processing"
 }
 
 const Status = React.forwardRef<HTMLSpanElement, StatusProps>(
@@ -23,14 +30,14 @@ const Status = React.forwardRef<HTMLSpanElement, StatusProps>(
         className={cn(
           "text-xs font-medium uppercase tracking-wide",
           variants[variant],
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </span>
     )
-  }
+  },
 )
 Status.displayName = "Status"
 

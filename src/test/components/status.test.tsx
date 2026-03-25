@@ -10,8 +10,13 @@ describe("Status", () => {
 
   it("renders each variant", () => {
     const variants = [
-      "active", "online", "offline", "completed",
-      "failed", "cancelled", "processing",
+      "active",
+      "online",
+      "offline",
+      "completed",
+      "failed",
+      "cancelled",
+      "processing",
     ] as const
 
     for (const variant of variants) {

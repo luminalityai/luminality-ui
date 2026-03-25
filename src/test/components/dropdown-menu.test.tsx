@@ -15,7 +15,7 @@ describe("DropdownMenu", () => {
     render(
       <DropdownMenu>
         <DropdownMenuTrigger>Open menu</DropdownMenuTrigger>
-      </DropdownMenu>
+      </DropdownMenu>,
     )
     expect(screen.getByText("Open menu")).toBeInTheDocument()
   })
@@ -28,7 +28,7 @@ describe("DropdownMenu", () => {
           <DropdownMenuItem>Action 1</DropdownMenuItem>
           <DropdownMenuItem>Action 2</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     )
 
     expect(screen.getByText("Action 1")).toBeInTheDocument()
@@ -43,7 +43,7 @@ describe("DropdownMenu", () => {
         <DropdownMenuContent>
           <DropdownMenuItem>Action 1</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     )
 
     expect(screen.queryByText("Action 1")).not.toBeInTheDocument()
@@ -60,7 +60,7 @@ describe("DropdownMenu", () => {
         <DropdownMenuContent>
           <DropdownMenuItem onSelect={handleSelect}>Action 1</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     )
 
     await user.click(screen.getByText("Action 1"))
@@ -75,7 +75,7 @@ describe("DropdownMenu", () => {
         <DropdownMenuContent>
           <DropdownMenuItem>Action 1</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     )
 
     expect(screen.getByText("Action 1")).toBeInTheDocument()
@@ -94,7 +94,7 @@ describe("DropdownMenu", () => {
         <DropdownMenuContent>
           <DropdownMenuItem>Action 1</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     )
 
     await user.click(screen.getByText("Open menu"))
@@ -109,7 +109,7 @@ describe("DropdownMenu", () => {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuItem>Action 1</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     )
 
     expect(screen.getByText("My Account")).toBeInTheDocument()
@@ -124,7 +124,7 @@ describe("DropdownMenu", () => {
           <DropdownMenuSeparator data-testid="separator" />
           <DropdownMenuItem>Action 2</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>,
     )
 
     expect(screen.getByTestId("separator")).toBeInTheDocument()

@@ -16,7 +16,7 @@ describe("AlertDialog", () => {
     render(
       <AlertDialog>
         <AlertDialogTrigger>Delete</AlertDialogTrigger>
-      </AlertDialog>
+      </AlertDialog>,
     )
     expect(screen.getByText("Delete")).toBeInTheDocument()
   })
@@ -26,11 +26,13 @@ describe("AlertDialog", () => {
       <AlertDialog open>
         <AlertDialogContent>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          <AlertDialogDescription>
+            This cannot be undone.
+          </AlertDialogDescription>
           <AlertDialogAction>Confirm</AlertDialogAction>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>,
     )
 
     expect(screen.getByText("Are you sure?")).toBeInTheDocument()
@@ -47,7 +49,7 @@ describe("AlertDialog", () => {
           <AlertDialogDescription>Description</AlertDialogDescription>
           <AlertDialogAction data-testid="action">Delete</AlertDialogAction>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>,
     )
 
     const action = screen.getByTestId("action")
@@ -62,7 +64,7 @@ describe("AlertDialog", () => {
           <AlertDialogDescription>Description</AlertDialogDescription>
           <AlertDialogCancel data-testid="cancel">Cancel</AlertDialogCancel>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>,
     )
 
     const cancel = screen.getByTestId("cancel")
@@ -76,11 +78,13 @@ describe("AlertDialog", () => {
         <AlertDialogTrigger>Delete</AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          <AlertDialogDescription>
+            This cannot be undone.
+          </AlertDialogDescription>
           <AlertDialogAction>Confirm</AlertDialogAction>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>,
     )
 
     expect(screen.queryByText("Are you sure?")).not.toBeInTheDocument()
@@ -94,11 +98,13 @@ describe("AlertDialog", () => {
       <AlertDialog defaultOpen>
         <AlertDialogContent>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          <AlertDialogDescription>
+            This cannot be undone.
+          </AlertDialogDescription>
           <AlertDialogAction>Confirm</AlertDialogAction>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>,
     )
 
     expect(screen.getByText("Are you sure?")).toBeInTheDocument()
@@ -114,11 +120,13 @@ describe("AlertDialog", () => {
       <AlertDialog defaultOpen>
         <AlertDialogContent>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          <AlertDialogDescription>
+            This cannot be undone.
+          </AlertDialogDescription>
           <AlertDialogAction>Confirm</AlertDialogAction>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>,
     )
 
     expect(screen.getByText("Are you sure?")).toBeInTheDocument()
@@ -135,11 +143,13 @@ describe("AlertDialog", () => {
       <AlertDialog defaultOpen onOpenChange={handleOpenChange}>
         <AlertDialogContent>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          <AlertDialogDescription>
+            This cannot be undone.
+          </AlertDialogDescription>
           <AlertDialogAction>Confirm</AlertDialogAction>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>,
     )
 
     await user.click(screen.getByRole("button", { name: "Cancel" }))
@@ -154,11 +164,13 @@ describe("AlertDialog", () => {
       <AlertDialog defaultOpen>
         <AlertDialogContent>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          <AlertDialogDescription>
+            This cannot be undone.
+          </AlertDialogDescription>
           <AlertDialogAction>Confirm</AlertDialogAction>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>,
     )
 
     await user.keyboard("{Escape}")
@@ -173,9 +185,11 @@ describe("AlertDialog", () => {
         <AlertDialogContent>
           <AlertDialogTitle>Confirm</AlertDialogTitle>
           <AlertDialogDescription>Description</AlertDialogDescription>
-          <AlertDialogAction variant="primary" data-testid="action">OK</AlertDialogAction>
+          <AlertDialogAction variant="primary" data-testid="action">
+            OK
+          </AlertDialogAction>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog>,
     )
 
     const action = screen.getByTestId("action")

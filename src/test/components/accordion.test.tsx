@@ -20,7 +20,7 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 2</AccordionTrigger>
           <AccordionContent>Content 2</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     )
 
     expect(screen.getByText("Section 1")).toBeInTheDocument()
@@ -34,7 +34,7 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 1</AccordionTrigger>
           <AccordionContent>Expanded content</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     )
 
     expect(screen.getByText("Expanded content")).toBeInTheDocument()
@@ -48,7 +48,7 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 1</AccordionTrigger>
           <AccordionContent>Hidden content</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     )
 
     expect(screen.queryByText("Hidden content")).not.toBeInTheDocument()
@@ -64,7 +64,7 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 1</AccordionTrigger>
           <AccordionContent>Content 1</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     )
 
     expect(screen.getByText("Content 1")).toBeInTheDocument()
@@ -79,10 +79,13 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 1</AccordionTrigger>
           <AccordionContent>Content</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     )
 
-    expect(screen.getByRole("button", { name: "Section 1" })).toHaveAttribute("aria-expanded", "true")
+    expect(screen.getByRole("button", { name: "Section 1" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    )
   })
 
   it("has aria-expanded=false on closed trigger", () => {
@@ -92,10 +95,13 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 1</AccordionTrigger>
           <AccordionContent>Content</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     )
 
-    expect(screen.getByRole("button", { name: "Section 1" })).toHaveAttribute("aria-expanded", "false")
+    expect(screen.getByRole("button", { name: "Section 1" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    )
   })
 
   it("allows multiple items open in type=multiple", async () => {
@@ -110,7 +116,7 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 2</AccordionTrigger>
           <AccordionContent>Content 2</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     )
 
     await user.click(screen.getByRole("button", { name: "Section 1" }))
@@ -131,7 +137,7 @@ describe("Accordion", () => {
           <AccordionTrigger>Section 2</AccordionTrigger>
           <AccordionContent>Content 2</AccordionContent>
         </AccordionItem>
-      </Accordion>
+      </Accordion>,
     )
 
     await user.click(screen.getByRole("button", { name: "Section 1" }))

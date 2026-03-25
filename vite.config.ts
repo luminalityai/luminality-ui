@@ -1,41 +1,41 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import dts from 'vite-plugin-dts'
-import { resolve } from 'path'
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import tailwindcss from "@tailwindcss/vite"
+import dts from "vite-plugin-dts"
+import { resolve } from "path"
 
 export default defineConfig({
   plugins: [
-    react({ jsxRuntime: 'automatic' }),
+    react({ jsxRuntime: "automatic" }),
     tailwindcss(),
     dts({
-      include: ['src'],
-      outDir: 'dist',
+      include: ["src"],
+      outDir: "dist",
       rollupTypes: true,
     }),
   ],
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
+      "@": resolve(__dirname, "./src"),
     },
   },
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      formats: ['es'],
-      fileName: 'index',
+      entry: resolve(__dirname, "src/index.ts"),
+      formats: ["es"],
+      fileName: "index",
     },
     rollupOptions: {
       external: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
+        "react",
+        "react-dom",
+        "react/jsx-runtime",
         /^@radix-ui\//,
-        'clsx',
-        'tailwind-merge',
+        "clsx",
+        "tailwind-merge",
       ],
       output: {
-        assetFileNames: 'styles/[name][extname]',
+        assetFileNames: "styles/[name][extname]",
       },
     },
     cssCodeSplit: false,

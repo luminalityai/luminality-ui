@@ -22,7 +22,7 @@ describe("Callout", () => {
       const { container, unmount } = render(
         <Callout variant={variant} title={variant}>
           {variant} content
-        </Callout>
+        </Callout>,
       )
       expect(screen.getByText(variant)).toBeInTheDocument()
       expect(container.querySelector("svg")).toBeInTheDocument()
@@ -43,8 +43,12 @@ describe("Callout", () => {
   })
 
   it("forwards className", () => {
-    const { container } = render(<Callout className="custom-callout">Content</Callout>)
-    expect((container.firstChild as HTMLElement).className).toContain("custom-callout")
+    const { container } = render(
+      <Callout className="custom-callout">Content</Callout>,
+    )
+    expect((container.firstChild as HTMLElement).className).toContain(
+      "custom-callout",
+    )
   })
 
   it("icons have aria-hidden=true", () => {

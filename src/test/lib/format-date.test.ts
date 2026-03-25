@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest"
-import { formatDate, formatDateTime, formatDateTimeWithTimezone, formatRelativeTime, getLocalTimezone } from "@/lib/format-date"
+import {
+  formatDate,
+  formatDateTime,
+  formatDateTimeWithTimezone,
+  formatRelativeTime,
+  getLocalTimezone,
+} from "@/lib/format-date"
 
 describe("formatDate", () => {
   it("formats ISO date string", () => {
@@ -17,7 +23,9 @@ describe("formatDate", () => {
 
 describe("formatDateTime", () => {
   it("formats date and time", () => {
-    expect(formatDateTime("2024-06-15T14:30:00Z", false, "UTC")).toBe("2024.06.15 14:30")
+    expect(formatDateTime("2024-06-15T14:30:00Z", false, "UTC")).toBe(
+      "2024.06.15 14:30",
+    )
   })
 
   it("includes timezone when requested", () => {

@@ -8,7 +8,16 @@ const Separator = React.forwardRef<
     dashed?: boolean
   }
 >(
-  ({ className, orientation = "horizontal", decorative = true, dashed = false, ...props }, ref) => (
+  (
+    {
+      className,
+      orientation = "horizontal",
+      decorative = true,
+      dashed = false,
+      ...props
+    },
+    ref,
+  ) => (
     <SeparatorPrimitive.Root
       ref={ref}
       decorative={decorative}
@@ -19,14 +28,14 @@ const Separator = React.forwardRef<
         dashed
           ? cn(
               "border-dashed bg-transparent border-[var(--color-border)]",
-              orientation === "horizontal" ? "border-t" : "border-l"
+              orientation === "horizontal" ? "border-t" : "border-l",
             )
           : "bg-[var(--color-border)]",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  ),
 )
 Separator.displayName = SeparatorPrimitive.Root.displayName
 

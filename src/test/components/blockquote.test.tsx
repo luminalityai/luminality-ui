@@ -17,7 +17,7 @@ describe("Blockquote", () => {
     render(
       <Blockquote author="Shakespeare" source="Hamlet">
         To be or not to be
-      </Blockquote>
+      </Blockquote>,
     )
 
     expect(screen.getByText("Shakespeare")).toBeInTheDocument()
@@ -35,7 +35,9 @@ describe("Blockquote", () => {
   })
 
   it("author inside cite element", () => {
-    const { container } = render(<Blockquote author="Shakespeare">Quote</Blockquote>)
+    const { container } = render(
+      <Blockquote author="Shakespeare">Quote</Blockquote>,
+    )
     const cite = container.querySelector("cite")
     expect(cite).toBeInTheDocument()
     expect(cite).toHaveTextContent("Shakespeare")
@@ -43,7 +45,9 @@ describe("Blockquote", () => {
 
   it("separator between author and source", () => {
     const { container } = render(
-      <Blockquote author="Shakespeare" source="Hamlet">Quote</Blockquote>
+      <Blockquote author="Shakespeare" source="Hamlet">
+        Quote
+      </Blockquote>,
     )
     const footer = container.querySelector("footer")
     expect(footer).toHaveTextContent("Shakespeare")
