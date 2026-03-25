@@ -5,7 +5,7 @@
 #            LEFTHOOK=0 git commit
 
 pre-commit:
-  parallel: true
+  parallel: false
   commands:
     lint-fix:
       glob: "*.{ts,tsx}"
