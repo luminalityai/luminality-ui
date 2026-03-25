@@ -16,6 +16,7 @@ Every new piece of work gets its own worktree. This eliminates the most common s
 ## Why `.worktrees/`
 
 Worktrees are created inside the repo at `.worktrees/<name>` (not under `.claude/worktrees/`). This ensures:
+
 - Worktrees are accessible inside devcontainers (mounted at `/workspace/.worktrees/`)
 - Consistent convention across all repos in the workspace
 - The `.worktrees/` directory is gitignored in each repo
@@ -67,11 +68,13 @@ This ensures any new branch or worktree starts from the latest codebase.
 **Naming convention:**
 
 If a name is provided (e.g., from a Linear issue identifier):
+
 ```bash
 git worktree add .worktrees/<name> -b <branch-name> "origin/$DEFAULT_BRANCH"
 ```
 
 If no name is provided, generate one from context:
+
 - If starting a Linear issue: use the issue identifier (e.g., `swe-123`)
 - If the user described the task: use a short slug (e.g., `fix-auth-timeout`)
 - Fallback: use today's date in `YYYY-MM-DD` format
@@ -115,11 +118,13 @@ To create a new branch:
 ## Integration with /start
 
 The `/start` skill always creates a worktree as part of its workflow. Both skills follow the same conventions:
+
 - Worktrees go in `.worktrees/`
 - Always fetch latest before creating
 - Naming follows the `<identifier>` convention (e.g., `.worktrees/swe-123`)
 
 **Opt-out flags differ by context:**
+
 - `/worktree --stay` — "stay in current checkout" (you invoked the worktree tool, you're opting out of its action; dirty state is allowed)
 - `/start --no-worktree` — "don't create a worktree" (you're starting new work, skipping one aspect; dirty state causes a hard stop)
 
@@ -127,13 +132,13 @@ This `/worktree` skill can also be invoked independently when you want to isolat
 
 ## Error Handling
 
-| Error | Solution |
-|-------|----------|
-| `.worktrees/<name>` already exists | Offer to reuse existing or create with suffix |
-| Branch name already exists | Check out existing branch in the worktree instead of `-b` |
-| No origin remote | Create worktree from local default branch HEAD |
-| Fetch fails | Warn and create from local default branch HEAD |
-| `.gitignore` is read-only | Warn the user to add `.worktrees/` manually |
+| Error                              | Solution                                                  |
+| ---------------------------------- | --------------------------------------------------------- |
+| `.worktrees/<name>` already exists | Offer to reuse existing or create with suffix             |
+| Branch name already exists         | Check out existing branch in the worktree instead of `-b` |
+| No origin remote                   | Create worktree from local default branch HEAD            |
+| Fetch fails                        | Warn and create from local default branch HEAD            |
+| `.gitignore` is read-only          | Warn the user to add `.worktrees/` manually               |
 
 ## Safety Rules
 

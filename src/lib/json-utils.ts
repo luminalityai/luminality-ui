@@ -3,7 +3,7 @@ export function parseJsonError(error: unknown): string {
     return error.message
   }
 
-  return 'Invalid JSON'
+  return "Invalid JSON"
 }
 
 export function formatJson(value: unknown): string {

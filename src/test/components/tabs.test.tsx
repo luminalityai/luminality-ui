@@ -13,7 +13,7 @@ describe("Tabs", () => {
         </TabsList>
         <TabsContent value="tab1">Content 1</TabsContent>
         <TabsContent value="tab2">Content 2</TabsContent>
-      </Tabs>
+      </Tabs>,
     )
     expect(screen.getByRole("tab", { name: "Tab 1" })).toBeInTheDocument()
     expect(screen.getByRole("tab", { name: "Tab 2" })).toBeInTheDocument()
@@ -26,7 +26,7 @@ describe("Tabs", () => {
           <TabsTrigger value="tab1">Tab 1</TabsTrigger>
         </TabsList>
         <TabsContent value="tab1">Content 1</TabsContent>
-      </Tabs>
+      </Tabs>,
     )
     expect(screen.getByText("Content 1")).toBeInTheDocument()
   })
@@ -41,7 +41,7 @@ describe("Tabs", () => {
         </TabsList>
         <TabsContent value="tab1">Content 1</TabsContent>
         <TabsContent value="tab2">Content 2</TabsContent>
-      </Tabs>
+      </Tabs>,
     )
     await user.click(screen.getByRole("tab", { name: "Tab 2" }))
     expect(screen.getByText("Content 2")).toBeInTheDocument()
@@ -55,9 +55,15 @@ describe("Tabs", () => {
           <TabsTrigger value="tab2">Tab 2</TabsTrigger>
         </TabsList>
         <TabsContent value="tab1">Content 1</TabsContent>
-      </Tabs>
+      </Tabs>,
     )
-    expect(screen.getByRole("tab", { name: "Tab 1" })).toHaveAttribute("aria-selected", "true")
-    expect(screen.getByRole("tab", { name: "Tab 2" })).toHaveAttribute("aria-selected", "false")
+    expect(screen.getByRole("tab", { name: "Tab 1" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    )
+    expect(screen.getByRole("tab", { name: "Tab 2" })).toHaveAttribute(
+      "aria-selected",
+      "false",
+    )
   })
 })

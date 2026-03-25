@@ -11,12 +11,14 @@ Release PR (version bump + changelog) → merge → push tag → release.yml cre
 ```
 
 Two GitHub Actions workflows chain together:
+
 - **release.yml** — triggered by `v*` tag push; validates version, extracts changelog, creates GitHub Release
 - **publish.yml** — triggered by GitHub Release creation; builds, tests, publishes npm package
 
 ## Versioning
 
 This project follows [Semantic Versioning](https://semver.org/):
+
 - **Major** (1.0.0) — breaking changes to component APIs or exports
 - **Minor** (0.X.0) — new components, features, or non-breaking enhancements
 - **Patch** (0.0.X) — bug fixes, style corrections, dependency updates
@@ -39,6 +41,7 @@ npm version X.Y.Z --no-git-tag-version
 ```
 
 Update `CHANGELOG.md`:
+
 - Move items from `[Unreleased]` into a new `## [X.Y.Z] - YYYY-MM-DD` section
 - Categorize entries under: Added, Changed, Fixed, Deprecated, Removed, Security
 
@@ -64,6 +67,7 @@ git push origin vX.Y.Z
 ```
 
 This triggers the automation:
+
 1. `release.yml` validates the tag matches `package.json`, extracts the changelog section, and creates a GitHub Release
 2. The GitHub Release creation triggers `publish.yml`, which builds and publishes to GitHub Packages
 
@@ -82,6 +86,7 @@ Claude Code can assist with the manual parts of the release:
 ```
 
 This should:
+
 1. Bump the version in `package.json`
 2. Move `[Unreleased]` entries into a new changelog section
 3. Create the release branch, commit, and open a PR
@@ -99,15 +104,18 @@ To test the publish workflow without actually releasing:
 ## Tradeoffs
 
 **Why not Changesets?**
+
 - Adds tooling complexity (changeset CLI, bot PRs) for a single-package repo
 - Our release cadence doesn't warrant per-PR changelog fragments
 
 **Why not semantic-release?**
+
 - Removes human control over version numbers
 - Commit message conventions are fragile and hard to enforce across contributors
 - Over-engineered for a design system with deliberate, human-driven releases
 
 **Why tag-driven?**
+
 - Matches `standard_id` gem's release process — consistent across the org
-- Clear separation: humans decide *when* and *what version*, automation handles the rest
+- Clear separation: humans decide _when_ and _what version_, automation handles the rest
 - Two-step verification: release PR validates content, tag push triggers publish

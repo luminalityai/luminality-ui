@@ -46,6 +46,23 @@ npm run lint:fix    # ESLint with auto-fix
 
 ESLint config is in `eslint.config.mjs` (flat config format).
 
+## Format
+
+```bash
+npm run format       # Prettier auto-format
+npm run format:check # Check formatting without writing
+```
+
+Prettier config is in `.prettierrc.json`.
+
+## Code Quality
+
+```bash
+npm run knip         # Detect unused code, exports, and dependencies
+```
+
+Knip config is in `knip.json`.
+
 ## Project Structure
 
 ```
@@ -74,12 +91,15 @@ src/
 ## CI
 
 CI runs on every PR and push to `main` via GitHub Actions (`.github/workflows/ci.yml`):
+
 1. `npm ci`
 2. `npm run lint`
-3. `npm test`
-4. `npm run typecheck`
-5. `npm run build`
-6. `npm pack --dry-run`
+3. `npm run format:check`
+4. `npm run knip`
+5. `npm test`
+6. `npm run check` (typecheck)
+7. `npm run build`
+8. `npm pack --dry-run`
 
 All steps must pass before merge.
 

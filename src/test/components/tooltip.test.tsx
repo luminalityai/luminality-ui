@@ -1,7 +1,12 @@
 import { render, screen } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/tooltip"
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/tooltip"
 
 describe("Tooltip", () => {
   it("renders trigger", () => {
@@ -11,7 +16,7 @@ describe("Tooltip", () => {
           <TooltipTrigger>Hover me</TooltipTrigger>
           <TooltipContent>Tooltip text</TooltipContent>
         </Tooltip>
-      </TooltipProvider>
+      </TooltipProvider>,
     )
     expect(screen.getByText("Hover me")).toBeInTheDocument()
   })
@@ -24,9 +29,11 @@ describe("Tooltip", () => {
           <TooltipTrigger>Hover me</TooltipTrigger>
           <TooltipContent>Tooltip text</TooltipContent>
         </Tooltip>
-      </TooltipProvider>
+      </TooltipProvider>,
     )
     await user.hover(screen.getByText("Hover me"))
-    expect(await screen.findByRole("tooltip", { name: "Tooltip text" })).toBeInTheDocument()
+    expect(
+      await screen.findByRole("tooltip", { name: "Tooltip text" }),
+    ).toBeInTheDocument()
   })
 })

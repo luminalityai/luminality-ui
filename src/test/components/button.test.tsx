@@ -13,8 +13,17 @@ describe("Button", () => {
 
   it("renders each variant", () => {
     const variants = [
-      "primary", "secondary", "accent", "info", "success",
-      "danger", "warning", "ghost", "muted", "outline", "link",
+      "primary",
+      "secondary",
+      "accent",
+      "info",
+      "success",
+      "danger",
+      "warning",
+      "ghost",
+      "muted",
+      "outline",
+      "link",
     ] as const
 
     for (const variant of variants) {
@@ -44,7 +53,7 @@ describe("Button", () => {
     render(
       <Button asChild>
         <a href="/link">Link button</a>
-      </Button>
+      </Button>,
     )
     const link = screen.getByRole("link", { name: "Link button" })
     expect(link).toBeInTheDocument()
@@ -62,7 +71,11 @@ describe("Button", () => {
   it("does not call onClick when disabled", async () => {
     const user = userEvent.setup()
     const handleClick = vi.fn()
-    render(<Button disabled onClick={handleClick}>Click me</Button>)
+    render(
+      <Button disabled onClick={handleClick}>
+        Click me
+      </Button>,
+    )
     await user.click(screen.getByRole("button", { name: "Click me" }))
     expect(handleClick).not.toHaveBeenCalled()
   })
@@ -74,6 +87,8 @@ describe("Button", () => {
 
   it("forwards className", () => {
     render(<Button className="custom-class">Click me</Button>)
-    expect(screen.getByRole("button", { name: "Click me" }).className).toContain("custom-class")
+    expect(
+      screen.getByRole("button", { name: "Click me" }).className,
+    ).toContain("custom-class")
   })
 })

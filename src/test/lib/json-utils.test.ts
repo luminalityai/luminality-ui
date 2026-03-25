@@ -18,6 +18,6 @@ describe("formatJson", () => {
   })
 
   it("pretty-prints an array", () => {
-    expect(formatJson([1, 2])).toBe('[\n  1,\n  2\n]')
+    expect(formatJson([1, 2])).toBe("[\n  1,\n  2\n]")
   })
 })

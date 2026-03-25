@@ -10,8 +10,14 @@ describe("Badge", () => {
 
   it("renders each variant", () => {
     const variants = [
-      "primary", "secondary", "accent", "info",
-      "success", "warning", "danger", "muted",
+      "primary",
+      "secondary",
+      "accent",
+      "info",
+      "success",
+      "warning",
+      "danger",
+      "muted",
     ] as const
 
     for (const variant of variants) {

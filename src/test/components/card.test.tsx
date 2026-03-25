@@ -24,7 +24,7 @@ describe("Card", () => {
         </CardHeader>
         <CardContent>Content</CardContent>
         <CardFooter>Footer</CardFooter>
-      </Card>
+      </Card>,
     )
 
     expect(screen.getByText("Title")).toBeInTheDocument()
@@ -36,10 +36,16 @@ describe("Card", () => {
   it("applies sm padding classes", () => {
     render(
       <Card>
-        <CardHeader padding="sm" data-testid="header">Header</CardHeader>
-        <CardContent padding="sm" data-testid="content">Content</CardContent>
-        <CardFooter padding="sm" data-testid="footer">Footer</CardFooter>
-      </Card>
+        <CardHeader padding="sm" data-testid="header">
+          Header
+        </CardHeader>
+        <CardContent padding="sm" data-testid="content">
+          Content
+        </CardContent>
+        <CardFooter padding="sm" data-testid="footer">
+          Footer
+        </CardFooter>
+      </Card>,
     )
 
     expect(screen.getByTestId("header").className).toContain("p-3")
@@ -50,10 +56,16 @@ describe("Card", () => {
   it("applies lg padding classes", () => {
     render(
       <Card>
-        <CardHeader padding="lg" data-testid="header">Header</CardHeader>
-        <CardContent padding="lg" data-testid="content">Content</CardContent>
-        <CardFooter padding="lg" data-testid="footer">Footer</CardFooter>
-      </Card>
+        <CardHeader padding="lg" data-testid="header">
+          Header
+        </CardHeader>
+        <CardContent padding="lg" data-testid="content">
+          Content
+        </CardContent>
+        <CardFooter padding="lg" data-testid="footer">
+          Footer
+        </CardFooter>
+      </Card>,
     )
 
     expect(screen.getByTestId("header").className).toContain("p-6")
@@ -67,7 +79,7 @@ describe("Card", () => {
         <CardHeader data-testid="header">Header</CardHeader>
         <CardContent data-testid="content">Content</CardContent>
         <CardFooter data-testid="footer">Footer</CardFooter>
-      </Card>
+      </Card>,
     )
 
     expect(screen.getByTestId("header").className).toContain("p-4")
@@ -77,7 +89,9 @@ describe("Card", () => {
 
   it("forwards className to Card root", () => {
     const { container } = render(<Card className="custom-card">Content</Card>)
-    expect((container.firstChild as HTMLElement).className).toContain("custom-card")
+    expect((container.firstChild as HTMLElement).className).toContain(
+      "custom-card",
+    )
   })
 
   it("CardTitle renders as h3", () => {
@@ -86,7 +100,7 @@ describe("Card", () => {
         <CardHeader>
           <CardTitle>My Title</CardTitle>
         </CardHeader>
-      </Card>
+      </Card>,
     )
 
     const h3 = container.querySelector("h3")

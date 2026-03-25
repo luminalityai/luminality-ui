@@ -26,10 +26,13 @@ describe("Breadcrumb", () => {
             <BreadcrumbPage>Profile</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     )
 
-    expect(screen.getByRole("navigation")).toHaveAttribute("aria-label", "breadcrumb")
+    expect(screen.getByRole("navigation")).toHaveAttribute(
+      "aria-label",
+      "breadcrumb",
+    )
     expect(screen.getByText("Home")).toBeInTheDocument()
     expect(screen.getByText("Settings")).toBeInTheDocument()
     const currentPage = screen.getByText("Profile")
@@ -45,10 +48,13 @@ describe("Breadcrumb", () => {
             <BreadcrumbLink href="/home">Home</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     )
 
-    expect(screen.getByText("Home").closest("a")).toHaveAttribute("href", "/home")
+    expect(screen.getByText("Home").closest("a")).toHaveAttribute(
+      "href",
+      "/home",
+    )
   })
 
   it("renders default separator SVG", () => {
@@ -60,11 +66,15 @@ describe("Breadcrumb", () => {
     render(
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem><BreadcrumbLink href="/">Home</BreadcrumbLink></BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
           <BreadcrumbSeparator data-testid="sep" />
-          <BreadcrumbItem><BreadcrumbPage>Current</BreadcrumbPage></BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Current</BreadcrumbPage>
+          </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     )
 
     expect(screen.getByTestId("sep")).toHaveAttribute("aria-hidden", "true")
@@ -74,11 +84,15 @@ describe("Breadcrumb", () => {
     render(
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem><BreadcrumbLink href="/">Home</BreadcrumbLink></BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
           <BreadcrumbSeparator data-testid="sep" />
-          <BreadcrumbItem><BreadcrumbPage>Current</BreadcrumbPage></BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Current</BreadcrumbPage>
+          </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     )
 
     expect(screen.getByTestId("sep")).toHaveAttribute("role", "presentation")
@@ -94,7 +108,7 @@ describe("Breadcrumb", () => {
             </BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb>,
     )
 
     const btn = screen.getByRole("button", { name: "Custom" })

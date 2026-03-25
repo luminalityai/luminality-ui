@@ -12,20 +12,24 @@ const Blockquote = React.forwardRef<HTMLQuoteElement, BlockquoteProps>(
       ref={ref}
       className={cn(
         "border-l-4 border-[var(--color-primary)] pl-6 italic text-[var(--color-text-secondary)]",
-        className
+        className,
       )}
       {...props}
     >
       {children}
       {(author || source) && (
         <footer className="mt-2 text-sm text-[var(--color-text-muted)] not-italic">
-          {author && <cite className="font-medium text-[var(--color-text)]">{author}</cite>}
+          {author && (
+            <cite className="font-medium text-[var(--color-text)]">
+              {author}
+            </cite>
+          )}
           {author && source && " - "}
           {source && <span>{source}</span>}
         </footer>
       )}
     </blockquote>
-  )
+  ),
 )
 Blockquote.displayName = "Blockquote"
 

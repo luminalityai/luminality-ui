@@ -7,7 +7,7 @@ describe("Avatar", () => {
     render(
       <Avatar>
         <AvatarFallback>JD</AvatarFallback>
-      </Avatar>
+      </Avatar>,
     )
     expect(screen.getByText("JD")).toBeInTheDocument()
   })
@@ -16,7 +16,7 @@ describe("Avatar", () => {
     const { container } = render(
       <Avatar>
         <AvatarFallback>AB</AvatarFallback>
-      </Avatar>
+      </Avatar>,
     )
     const root = container.firstChild as HTMLElement
     expect(root.className).toContain("rounded-full")

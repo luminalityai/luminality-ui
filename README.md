@@ -26,7 +26,7 @@ This package requires the following peer dependencies:
 ## Usage
 
 ```tsx
-import { Button, Card, Dialog, AlertDialog } from "@rarebit-one/luminality-ui";
+import { Button, Card, Dialog, AlertDialog } from "@rarebit-one/luminality-ui"
 ```
 
 Import the stylesheet in your CSS:

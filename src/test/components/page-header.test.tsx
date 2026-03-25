@@ -17,7 +17,7 @@ describe("PageHeader", () => {
           { label: "Settings", href: "/settings" },
           { label: "Profile" },
         ]}
-      />
+      />,
     )
 
     expect(screen.getByText("Home")).toBeInTheDocument()
@@ -26,9 +26,7 @@ describe("PageHeader", () => {
   })
 
   it("renders actions slot", () => {
-    render(
-      <PageHeader title="Page" actions={<button>Save</button>} />
-    )
+    render(<PageHeader title="Page" actions={<button>Save</button>} />)
 
     expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument()
   })
@@ -37,7 +35,7 @@ describe("PageHeader", () => {
     render(
       <PageHeader>
         <span>Custom content</span>
-      </PageHeader>
+      </PageHeader>,
     )
 
     expect(screen.getByText("Custom content")).toBeInTheDocument()
@@ -58,17 +56,16 @@ describe("PageHeader", () => {
 
   it("does not render back button when showBackButton is false", () => {
     render(<PageHeader title="Page" />)
-    expect(screen.queryByRole("button", { name: "Go back" })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "Go back" }),
+    ).not.toBeInTheDocument()
   })
 
   it("last breadcrumb has aria-current=page", () => {
     render(
       <PageHeader
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          { label: "Current" },
-        ]}
-      />
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Current" }]}
+      />,
     )
 
     expect(screen.getByText("Current")).toHaveAttribute("aria-current", "page")
@@ -83,7 +80,7 @@ describe("PageHeader", () => {
       <PageHeader
         title="My Title"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Page" }]}
-      />
+      />,
     )
     expect(screen.queryByText("My Title")).not.toBeInTheDocument()
   })

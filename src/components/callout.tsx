@@ -91,24 +91,30 @@ const Callout = React.forwardRef<HTMLDivElement, CalloutProps>(
     const variants = {
       info: {
         container: "border-[var(--color-info)] bg-[var(--color-info)]/10",
-        icon: <LightbulbIcon className="w-5 h-5 text-[var(--color-info)]" />
+        icon: <LightbulbIcon className="w-5 h-5 text-[var(--color-info)]" />,
       },
       warning: {
         container: "border-[var(--color-warning)] bg-[var(--color-warning)]/10",
-        icon: <AlertTriangleIcon className="w-5 h-5 text-[var(--color-warning)]" />
+        icon: (
+          <AlertTriangleIcon className="w-5 h-5 text-[var(--color-warning)]" />
+        ),
       },
       success: {
         container: "border-[var(--color-success)] bg-[var(--color-success)]/10",
-        icon: <CheckCircleIcon className="w-5 h-5 text-[var(--color-success)]" />
+        icon: (
+          <CheckCircleIcon className="w-5 h-5 text-[var(--color-success)]" />
+        ),
       },
       danger: {
         container: "border-[var(--color-danger)] bg-[var(--color-danger)]/10",
-        icon: <AlertTriangleIcon className="w-5 h-5 text-[var(--color-danger)]" />
+        icon: (
+          <AlertTriangleIcon className="w-5 h-5 text-[var(--color-danger)]" />
+        ),
       },
       note: {
         container: "border-[var(--color-primary)] bg-[var(--color-primary)]/10",
-        icon: <PenToolIcon className="w-5 h-5 text-[var(--color-primary)]" />
-      }
+        icon: <PenToolIcon className="w-5 h-5 text-[var(--color-primary)]" />,
+      },
     }
 
     const variantConfig = variants[variant]
@@ -119,14 +125,12 @@ const Callout = React.forwardRef<HTMLDivElement, CalloutProps>(
         className={cn(
           "border-l-4 rounded-r-[var(--radius-md)] p-4",
           variantConfig.container,
-          className
+          className,
         )}
         {...props}
       >
         <div className="flex gap-3">
-          <div className="shrink-0 mt-0.5">
-            {variantConfig.icon}
-          </div>
+          <div className="shrink-0 mt-0.5">{variantConfig.icon}</div>
           <div className="flex-1">
             {title && (
               <h4 className="font-medium text-[var(--color-text)] mb-1">
@@ -140,7 +144,7 @@ const Callout = React.forwardRef<HTMLDivElement, CalloutProps>(
         </div>
       </div>
     )
-  }
+  },
 )
 Callout.displayName = "Callout"
 
