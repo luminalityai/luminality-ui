@@ -1,7 +1,18 @@
-# Lefthook manages git hooks for pre-push checks.
+# Lefthook manages git hooks for pre-commit and pre-push checks.
 #
 # Install:  npm install (auto-installs via prepare script)
 # Skip:     LEFTHOOK=0 git push
+#            LEFTHOOK=0 git commit
+
+pre-commit:
+  parallel: true
+  commands:
+    lint-fix:
+      glob: "*.{ts,tsx}"
+      run: npx eslint --fix {staged_files} && git add {staged_files}
+    format:
+      glob: "*.{ts,tsx,json,md,css,yml,yaml}"
+      run: npx prettier --write {staged_files} && git add {staged_files}
 
 pre-push:
   # Runs all checks in parallel. On resource-constrained machines, use
@@ -14,6 +25,10 @@ pre-push:
       run: .lefthook/verify-signatures.sh
     eslint:
       run: npm run lint
+    format-check:
+      run: npm run format:check
+    knip:
+      run: npm run knip
     typecheck:
       run: npm run check
     test:
