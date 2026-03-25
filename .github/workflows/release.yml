@@ -36,7 +36,7 @@ jobs:
           notes=$(awk -v ver="$version" '
             /^## \[/ {
               if (found) exit
-              if ($0 ~ "^## \\[" ver "\\]") found=1
+              if (index($0, "## [" ver "]") == 1) found=1
               next
             }
             found { print }
