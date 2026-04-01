@@ -22,7 +22,13 @@ export interface Organisation {
 }
 
 export interface PlatformSwitcherProps {
-  /** App brand icon (ReactNode, e.g. an SVG or lucide icon) */
+  /**
+   * App brand icon (ReactNode, e.g. an SVG or lucide icon).
+   * The icon is rendered inside a square button whose background uses the
+   * `--color-primary` CSS custom property. Consuming apps **must** define
+   * this variable (e.g. in their Tailwind theme or a global stylesheet)
+   * or pass a `className` override to control the button background.
+   */
   icon: React.ReactNode
   /** App name — used for tooltip / sr-only label */
   label: string
@@ -36,6 +42,8 @@ export interface PlatformSwitcherProps {
   onSwitchOrganisation?: (id: string) => void
   /** When false, renders a static icon with no dropdown (default: true) */
   interactive?: boolean
+  /** Optional className to override the trigger button styles (e.g. background color) */
+  className?: string
 }
 
 function ChevronDownIcon({ className }: { className?: string }) {
@@ -111,6 +119,7 @@ const PlatformSwitcher = React.forwardRef<
       activeOrganisationId,
       onSwitchOrganisation,
       interactive = true,
+      className: classNameProp,
     },
     ref,
   ) => {
@@ -123,6 +132,7 @@ const PlatformSwitcher = React.forwardRef<
         className={cn(
           "relative flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-primary)] text-white",
           interactive && "cursor-pointer",
+          classNameProp,
         )}
         aria-label={label}
         type="button"
@@ -136,7 +146,7 @@ const PlatformSwitcher = React.forwardRef<
       </button>
     )
 
-    if (!interactive) {
+    if (!interactive || (!hasLinkedApps && !hasOrganisations)) {
       return triggerButton
     }
 
