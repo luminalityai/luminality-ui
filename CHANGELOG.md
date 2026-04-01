@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-02
+
+### Added
+
+- `PlatformSwitcher` component for consistent sidebar headers across apps (#58)
+  - Composes `DropdownMenu` + `Avatar` for cross-app linking and org switching
+  - Supports `interactive` prop for static mode (no dropdown)
+  - Optional `className` prop for consumer style overrides
+  - Documents `--color-primary` CSS variable dependency
+
 ## [0.3.0] - 2026-03-25
 
 ### Added
