@@ -23,10 +23,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
           cache: "npm"
@@ -60,7 +60,8 @@ jobs:
 
       - name: Pack tarball
         run: |
-          TARBALL=$(npm pack --json --ignore-scripts | jq -r '.[0].filename')
+          npm pack --ignore-scripts 2>/dev/null
+          TARBALL=$(ls *.tgz)
           echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
 
       - name: Attest build provenance
