@@ -1,30 +1,36 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
+  - package-ecosystem: npm
     directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    ignore:
+      # eslint-plugin-react and eslint-plugin-react-hooks don't support ESLint 10 yet
+      - dependency-name: "eslint"
+        versions: [">=10"]
+      - dependency-name: "@eslint/js"
+        versions: [">=10"]
     groups:
       dev-dependencies:
         dependency-type: "development"
-        update-types:
-          - "minor"
-          - "patch"
       prod-dependencies:
         dependency-type: "production"
-        update-types:
-          - "minor"
-          - "patch"
 
-  - package-ecosystem: "github-actions"
+  - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 5
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    groups:
+      actions:
+        patterns:
+          - "*"
 
-  - package-ecosystem: "devcontainers"
+  - package-ecosystem: devcontainers
     directory: "/.devcontainer"
     schedule:
-      interval: "monthly"
+      interval: monthly
     open-pull-requests-limit: 5
