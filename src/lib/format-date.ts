@@ -34,7 +34,9 @@ function formatWithTimezoneFallback(
   try {
     return formatInTimeZone(date, tz, pattern)
   } catch {
-    if (process.env.NODE_ENV !== "production") {
+    const env = (globalThis as { process?: { env?: { NODE_ENV?: string } } })
+      .process?.env
+    if (env?.NODE_ENV !== "production") {
       console.warn(
         `[@rarebit-one/luminality-ui] Invalid timezone "${tz}", falling back to UTC`,
       )
