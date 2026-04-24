@@ -138,10 +138,10 @@ const ListItem = React.forwardRef<
 
       {actions.length > 0 && (
         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
-          {actions.map((action, index) => (
+          {actions.map((action) => (
             <button
               type="button"
-              key={index}
+              key={action.label}
               onClick={action.onClick}
               className="w-14 h-14 flex flex-col items-center justify-center gap-1 p-2.5 rounded-[var(--radius-sm)] hover:bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors cursor-pointer"
               title={action.label}
