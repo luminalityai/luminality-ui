@@ -3,16 +3,34 @@ import { expect, test } from "@playwright/test"
 /**
  * Visual regression tests against Storybook iframe URLs.
  *
- * Story IDs below are placeholders — update to match actual Storybook titles
- * once story files are added under `src/**\/*.stories.@(ts|tsx)`. Story IDs are
- * derived from the story file titles. Run
- * `npx playwright test --update-snapshots` once to generate baselines.
+ * Story IDs are derived from the story file titles (e.g. `Components/Button`
+ * -> `components-button`) and the exported story name. Run
+ * `npx playwright test --update-snapshots` once on a green CI run to generate
+ * baselines.
  */
 
 const stories = [
+  // Basic / atomic components
   { id: "components-button--default", name: "button-default" },
   { id: "components-button--variants", name: "button-variants" },
-  { id: "components-dialog--default", name: "dialog-default" },
+  { id: "components-badge--variants", name: "badge-variants" },
+  { id: "components-status--variants", name: "status-variants" },
+  { id: "components-callout--variants", name: "callout-variants" },
+  // Layout / composite
+  { id: "components-card--default", name: "card-default" },
+  { id: "components-emptystate--default", name: "empty-state-default" },
+  {
+    id: "components-pageheader--with-breadcrumbs-and-actions",
+    name: "page-header-with-breadcrumbs-and-actions",
+  },
+  { id: "components-list--with-sections", name: "list-with-sections" },
+  // Interactive (open state)
+  { id: "components-dialog--open", name: "dialog-open" },
+  { id: "components-alertdialog--open", name: "alert-dialog-open" },
+  { id: "components-dropdownmenu--open", name: "dropdown-menu-open" },
+  { id: "components-tooltip--open", name: "tooltip-open" },
+  { id: "components-accordion--open", name: "accordion-open" },
+  { id: "components-tabs--default", name: "tabs-default" },
 ]
 
 for (const story of stories) {
