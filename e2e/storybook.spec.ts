@@ -3,8 +3,9 @@ import { expect, test } from "@playwright/test"
 /**
  * Visual regression tests against Storybook iframe URLs.
  *
- * Story IDs are derived from the story file paths/titles; adjust the IDs below
- * if the Storybook stories use different titles. Run
+ * Story IDs below are placeholders — update to match actual Storybook titles
+ * once story files are added under `src/**\/*.stories.@(ts|tsx)`. Story IDs are
+ * derived from the story file titles. Run
  * `npx playwright test --update-snapshots` once to generate baselines.
  */
 
