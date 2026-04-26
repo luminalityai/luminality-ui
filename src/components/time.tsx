@@ -15,6 +15,8 @@ export interface TimezoneProviderProps {
 }
 
 export function TimezoneProvider({ value, children }: TimezoneProviderProps) {
+  // Skip the provider when value is undefined so a parent provider isn't shadowed.
+  if (!value) return <>{children}</>
   return <TimezoneContext value={value}>{children}</TimezoneContext>
 }
 
@@ -29,6 +31,7 @@ export interface TimeProps {
   date: string | null
   format?: TimeFormat
   className?: string
+  /** Ignored when `format="relative"` (relative time is timezone-independent). */
   timezone?: string
 }
 
@@ -38,8 +41,8 @@ export function Time({
   className,
   timezone,
 }: TimeProps) {
-  const context = React.use(TimezoneContext)
-  const resolvedTimezone = timezone || context || getLocalTimezone() || "UTC"
+  const fallbackTimezone = useTimezone()
+  const resolvedTimezone = timezone || fallbackTimezone
 
   if (date === null) {
     return <span className={className}>—</span>
@@ -60,6 +63,11 @@ export function Time({
     default:
       displayText = formatDate(date, resolvedTimezone)
       break
+  }
+
+  // formatters return "—" for unparseable input — avoid emitting <time> with an invalid dateTime attr.
+  if (displayText === "—") {
+    return <span className={className}>—</span>
   }
 
   return (

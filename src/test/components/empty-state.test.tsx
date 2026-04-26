@@ -32,7 +32,8 @@ describe("EmptyState", () => {
     const { container } = render(
       <EmptyState icon={MockIcon} heading="No items" />,
     )
-    expect(container.querySelectorAll("p")).toHaveLength(0)
+    // Description renders as a div with text-sm; absent when no prop is provided.
+    expect(container.querySelector(".text-sm")).toBeNull()
   })
 
   it("renders action when provided", () => {

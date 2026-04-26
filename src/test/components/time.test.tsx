@@ -64,4 +64,25 @@ describe("Time", () => {
     expect(time?.getAttribute("datetime")).toBe(isoDate)
     expect(time?.getAttribute("title")).toBe("UTC")
   })
+
+  it("renders em dash for unparseable date strings", () => {
+    const { container } = render(<Time date="not-a-date" className="muted" />)
+    expect(container.querySelector("time")).toBeNull()
+    const span = container.querySelector("span")
+    expect(span?.textContent).toBe("—")
+    expect(span?.className).toBe("muted")
+  })
+
+  it("inner TimezoneProvider with undefined value does not shadow outer provider", () => {
+    const { container } = render(
+      <TimezoneProvider value="America/New_York">
+        <TimezoneProvider value={undefined}>
+          <Time date={isoDate} format="datetime" />
+        </TimezoneProvider>
+      </TimezoneProvider>,
+    )
+    const time = container.querySelector("time")
+    expect(time?.textContent).toBe("2024.01.01 07:00")
+    expect(time?.getAttribute("title")).toBe("America/New_York")
+  })
 })
