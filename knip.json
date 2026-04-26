@@ -4,6 +4,7 @@
   "ignoreDependencies": [
     "tailwindcss",
     "tailwindcss-animate",
+    "@axe-core/playwright",
     "@testing-library/dom",
     "@types/react-dom",
     "eslint",
