@@ -11,33 +11,33 @@ type Story = StoryObj<typeof Checkbox>
 
 export const Default: Story = {
   render: () => (
-    <label className="flex items-center gap-2 text-sm text-[var(--color-text)]">
-      <Checkbox />
-      Accept terms and conditions
-    </label>
+    <div className="flex items-center gap-2 text-sm text-[var(--color-text)]">
+      <Checkbox id="checkbox-default" />
+      <label htmlFor="checkbox-default">Accept terms and conditions</label>
+    </div>
   ),
 }
 
 export const Checked: Story = {
   render: () => (
-    <label className="flex items-center gap-2 text-sm text-[var(--color-text)]">
-      <Checkbox defaultChecked />
-      Subscribe to newsletter
-    </label>
+    <div className="flex items-center gap-2 text-sm text-[var(--color-text)]">
+      <Checkbox id="checkbox-checked" defaultChecked />
+      <label htmlFor="checkbox-checked">Subscribe to newsletter</label>
+    </div>
   ),
 }
 
 export const Disabled: Story = {
   render: () => (
     <div className="flex flex-col gap-2 text-sm text-[var(--color-text)]">
-      <label className="flex items-center gap-2">
-        <Checkbox disabled />
-        Disabled unchecked
-      </label>
-      <label className="flex items-center gap-2">
-        <Checkbox disabled defaultChecked />
-        Disabled checked
-      </label>
+      <div className="flex items-center gap-2">
+        <Checkbox id="checkbox-disabled-unchecked" disabled />
+        <label htmlFor="checkbox-disabled-unchecked">Disabled unchecked</label>
+      </div>
+      <div className="flex items-center gap-2">
+        <Checkbox id="checkbox-disabled-checked" disabled defaultChecked />
+        <label htmlFor="checkbox-disabled-checked">Disabled checked</label>
+      </div>
     </div>
   ),
 }

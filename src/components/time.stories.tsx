@@ -9,7 +9,9 @@ const meta: Meta<typeof Time> = {
 export default meta
 type Story = StoryObj<typeof Time>
 
-const sampleDate = "2026-04-26T14:30:00Z"
+// Fixed past date so the `Formats` story (which renders relative time) produces
+// stable Storybook output instead of drifting from "just now" over time.
+const sampleDate = "2025-01-15T09:30:00Z"
 
 export const Default: Story = {
   args: {

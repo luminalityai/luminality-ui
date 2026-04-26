@@ -55,8 +55,10 @@ export const Open: Story = {
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
-        <AccordionTrigger>Closed</AccordionTrigger>
-        <AccordionContent>This panel is closed.</AccordionContent>
+        <AccordionTrigger>Collapsible</AccordionTrigger>
+        <AccordionContent>
+          This panel collapses when another item is expanded.
+        </AccordionContent>
       </AccordionItem>
     </Accordion>
   ),
