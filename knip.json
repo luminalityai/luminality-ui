@@ -2,8 +2,6 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "project": ["src/**/*.{ts,tsx}"],
   "ignoreDependencies": [
-    "tailwindcss",
-    "tailwindcss-animate",
     "@testing-library/dom",
     "@types/react-dom",
     "eslint",
@@ -16,6 +14,7 @@
     "eslint",
     "knip",
     "lefthook",
+    "playwright",
     "prettier",
     "storybook",
     "tsc",
