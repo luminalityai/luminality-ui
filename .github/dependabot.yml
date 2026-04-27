@@ -15,6 +15,12 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: "development"
+        # Keep type-rollup toolchain ungrouped: a TS major bump silently breaks
+        # vite-plugin-dts → api-extractor (see sidekick-ui#71, CORE-395).
+        exclude-patterns:
+          - "typescript"
+          - "@microsoft/api-extractor"
+          - "vite-plugin-dts"
       prod-dependencies:
         dependency-type: "production"
 
