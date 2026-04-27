@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-04-27
+
+### Added
+
+- `EmptyState` component — dashed-border placeholder with icon + heading + description + action slot, ported from `@sidekick-labs/ui` (#79)
+- `Time` component, `TimezoneProvider`, and `useTimezone()` hook for consistent date/time rendering (#79)
+  - Resolution order: explicit `timezone` prop → `TimezoneProvider` context → browser tz → `"UTC"`
+  - Supports `date`, `datetime`, `datetime-tz`, and `relative` format variants
+  - Framework-agnostic — consumers wire up their own timezone source (Inertia shared props, user setting, etc.)
+- Storybook stories for all components, with Playwright visual regression suite (#80, #81)
+- Unit tests for `cn()` utility and axe-based a11y assertions (#80)
+- Expanded `format-date` test coverage (boundary cases, abbreviation, fake-timers) (#79)
+
+### Fixed
+
+- All react-doctor warnings cleared (100/100 score) (#78)
+- ESLint 10 compatibility: replaced `eslint-plugin-react` with `@eslint-react` (#69)
+
+### Security
+
+- Hardened all GitHub Actions workflows with pinned versions and minimal permissions (#75)
+
 ## [0.4.1] - 2026-04-07
 
 ### Fixed
