@@ -20,9 +20,10 @@ describe("Checkbox (a11y)", () => {
 
   it("has no axe violations when paired with a visible label", async () => {
     const { container } = render(
-      <label>
-        <Checkbox /> Subscribe to newsletter
-      </label>,
+      <>
+        <Checkbox id="newsletter" />
+        <label htmlFor="newsletter">Subscribe to newsletter</label>
+      </>,
     )
     const results = await axe(container)
     expect(results).toHaveNoViolations()

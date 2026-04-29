@@ -16,7 +16,7 @@ describe("Separator (a11y)", () => {
     expect(results).toHaveNoViolations()
   })
 
-  it("has no axe violations with role=separator", async () => {
+  it("has no axe violations as a semantic (non-decorative) separator", async () => {
     const { container } = render(
       <div>
         <p>Above</p>
