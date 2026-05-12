@@ -25,3 +25,11 @@ Then work inside `.worktrees/<name>/` for the rest of the session.
 **Why this matters:** Working directly on the main checkout causes cross-contamination between sessions — uncommitted changes, wrong branches, and dirty state leak into unrelated work. Worktrees eliminate this entirely.
 
 See the `/worktree` and `/start` skills for full conventions and flags.
+
+## Consumers
+
+Currently consumed by `luminality-web` (sibling repo in the rarebit-one workspace), via the `@rarebit-one/luminality-ui` npm package published to GitHub Packages.
+
+`fundbright-web` and `nutripod-web` do not consume this package — they have their own design systems.
+
+This package is published to GitHub Packages, not RubyGems — the workspace-level `/rollout-gem` skill (which targets rubygems consumers) does NOT apply here. To roll out a new version, bump the `@rarebit-one/luminality-ui` version in `luminality-web/package.json` and run `npm install`.
