@@ -28,7 +28,7 @@ See the `/worktree` and `/start` skills for full conventions and flags.
 
 ## Consumers
 
-Currently consumed by `luminality-web` (sibling repo in the rarebit-one workspace), via the `@rarebit-one/luminality-ui` npm package published to GitHub Packages.
+`luminality-ui` is currently consumed by `luminality-web` in the rarebit-one workspace, via the `@rarebit-one/luminality-ui` npm package published to GitHub Packages.
 
 `fundbright-web` and `nutripod-web` do not consume this package — they have their own design systems.
 
