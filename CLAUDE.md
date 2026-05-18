@@ -28,8 +28,8 @@ See the `/worktree` and `/start` skills for full conventions and flags.
 
 ## Consumers
 
-`luminality-ui` is currently consumed by `luminality-web` in the rarebit-one workspace, via the `@rarebit-one/luminality-ui` npm package published to GitHub Packages.
+`luminality-ui` is currently consumed by `luminality-web` in the rarebit-one workspace, via the `@rarebit-one/luminality-ui` public npm package.
 
 `fundbright-web` and `nutripod-web` do not consume this package — they have their own design systems.
 
-This package is published to GitHub Packages, not RubyGems — the workspace-level `/rollout-gem` skill (which targets rubygems consumers) does NOT apply here. To roll out a new version, bump the `@rarebit-one/luminality-ui` version in `luminality-web/package.json` and run `npm install`.
+This package is published to npm (registry.npmjs.org), not RubyGems — the workspace-level `/rollout-gem` skill (which targets rubygems consumers) does NOT apply here. To roll out a new version, bump the `@rarebit-one/luminality-ui` version in `luminality-web/package.json` and run `npm install`.
