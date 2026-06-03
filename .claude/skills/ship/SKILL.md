@@ -1,6 +1,6 @@
 ---
 name: ship
-description: "Finalize changes in luminality-ui (npm design-system package), create a signed commit, and open a PR. Runs typecheck, lint, format, knip, tests, build, and a dts emission guard before pushing. Invoke when the user says 'ship', 'create a PR', 'open a pull request', 'push changes', 'finalize', 'ready for review', or '/ship'."
+description: "Finalize changes in luminality-ui (npm design-system package), create a signed commit, open a PR, then babysit it to a mergeable state and hand the merge off. Runs typecheck, lint, format, knip, tests, build, and a dts emission guard before pushing; after opening the PR it addresses review findings, fixes CI, and rebases until ready-to-merge, then hands off (never merges — that's a human decision). Invoke when the user says 'ship', 'create a PR', 'open a pull request', 'push changes', 'finalize', 'ready for review', 'babysit', 'get this merged', or '/ship'."
 model: sonnet
 ---
 
@@ -12,9 +12,9 @@ Finalize changes in the `@rarebit-one/luminality-ui` design-system package, crea
 
 ## Scope
 
-This skill creates and updates PRs. It does **NOT**:
+This skill creates and updates PRs, then babysits them to a mergeable state and hands the merge off (see "Babysit to merge" below). It does **NOT**:
 
-- Merge PRs to main (merging is a human decision — workspace Critical Rule #7)
+- Merge PRs to main. After opening the PR it drives it toward ready-to-merge — addressing review findings, fixing CI, rebasing — but the final merge is a human decision (workspace Critical Rule #7), so it stops at "ready to merge, awaiting you" and hands off.
 - Cut a release / bump the package version / push a tag — that flow is documented in `RELEASING.md` (release branch -> release PR -> tag push -> `release.yml` -> `publish.yml`). `/ship` is for the regular PR loop only. If the user asks to "ship a release" or "publish a new version", point them at `RELEASING.md` and stop.
 - Bypass commit signing, lefthook validation, or the worktree-only hook under any circumstance.
 
@@ -265,6 +265,80 @@ The `Closes <IDENTIFIER>` syntax auto-links the PR to Linear and transitions the
 
 If this PR is a release prep (version bump + CHANGELOG move), follow `RELEASING.md` instead of this skill — title is `chore: release vX.Y.Z`, no `Closes`, body is the release notes. `/ship` will still work for the PR mechanics, but **do not** push a tag or trigger `release.yml` from this skill. Tagging is a deliberate human step.
 
+## Babysit to merge (always-on)
+
+Opening the PR is not the end of `/ship`. After the PR exists, **drive it to a
+mergeable state and then hand the merge off** — don't stop at "PR created," and
+don't merge it yourself (merging is a human decision — workspace CLAUDE.md
+Critical Rule #7).
+
+**Skip this phase entirely if the PR is a draft** — report the URL and stop. A
+draft signals the work isn't ready for the merge path yet.
+
+Otherwise loop until the **ready gate** passes or a **stop condition** trips:
+
+1. **Read PR state.**
+
+   ```bash
+   gh pr view <n> --json number,headRefName,baseRefName,mergeable,mergeStateStatus,reviewDecision,statusCheckRollup,isDraft
+   ```
+
+   plus review threads and comments (`gh pr view <n> --comments`,
+   `gh api repos/<owner>/<repo>/pulls/<n>/reviews`, and `.../pulls/<n>/comments`
+   for inline threads).
+
+2. **Address review findings.** For each unresolved, actionable comment or
+   requested change, make the fix **in this worktree** following the repo's
+   conventions, then re-run this skill's own validation / pre-flight steps
+   before pushing. Reply to or resolve the thread so it's clear it was handled.
+   A comment that needs a product/owner decision → stop and ask (see stop
+   conditions).
+
+3. **Fix failing CI.** Pull the failing job's log (`gh pr checks <n>`,
+   `gh run view <id> --log-failed`), reproduce locally where feasible, and fix
+   the root cause. Never disable, skip, or weaken a check to go green.
+
+4. **Rebase if behind.** If the branch is behind its base or conflicted, rebase
+   on the base branch and resolve conflicts honestly. Re-push the same way this
+   skill's push step does (so the same pre-push checks run) — with
+   `--force-with-lease`, **never** `--force`. Never bypass signing and never
+   reach for `LEFTHOOK=0` or other push bypasses.
+
+5. **Re-check.** Push fixes, let CI re-run, re-read state. Iterate.
+
+**Ready gate (all must hold):**
+
+- every required check has **actually run and is green** (`statusCheckRollup` —
+  no required failures). An empty/absent rollup means CI hasn't started yet —
+  wait and re-read; never treat "no checks reported" as a pass;
+- `reviewDecision == APPROVED`, or the repo genuinely requires no review. An
+  empty `reviewDecision` with a requested reviewer still pending is **not** a
+  pass — that's "awaiting review," so hand off and say so. No unresolved
+  blocking change-requests remain;
+- `mergeable == MERGEABLE` — not behind, no conflicts;
+- not a draft.
+
+When the gate holds, **stop and hand off**: report the PR URL and state plainly
+that it is ready to merge and awaiting the user. **Do not merge** — that's the
+user's call (Critical Rule #7).
+
+**Stop conditions — pause, summarize, and ask the user:**
+
+- a comment needs a **product/owner decision** (scope, a trade-off, "is this
+  what you actually want") rather than a mechanical fix;
+- the **same required check keeps failing after ~3 fix attempts**, or it's
+  environmental/flaky-but-required and you can't resolve it;
+- you've gone **~3 full loops without converging** on the ready gate (e.g. a
+  base that keeps moving, oscillating fixes) — stop and report rather than
+  looping indefinitely;
+- a fix would be **destructive or out of scope** (rewriting shared history,
+  touching unrelated code, force-pushing over others' commits, disabling a
+  check, relaxing branch protection);
+- a finding raises a **security or privacy concern**;
+- merge conflicts you can't resolve with confidence;
+- branch protection needs an approval you **cannot** satisfy (a required human
+  reviewer / CODEOWNERS).
+
 ## Output
 
 After completing the workflow, report:
@@ -273,6 +347,15 @@ After completing the workflow, report:
 2. PR URL
 3. Whether the dts guard fired any warnings
 4. Note: Linear transitions happen automatically on merge
+5. **Babysit outcome**, one of:
+   - **Ready to merge (handed off)** — the ready gate holds (required checks
+     green, approved or no review required, `mergeable == MERGEABLE`, not a
+     draft); state the PR is awaiting the user's merge. **Not merged** —
+     Critical Rule #7.
+   - **Blocked / awaiting user** — a stop condition tripped or the PR is
+     awaiting review/CI; summarize what's outstanding and what the user needs to
+     decide or do next.
+   - **Draft** — babysit skipped; PR opened as draft, URL reported.
 
 ## Error Handling
 
