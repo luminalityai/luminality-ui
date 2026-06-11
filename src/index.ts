@@ -1,4 +1,4 @@
-// Theme styles — consumers import via '@rarebit-one/luminality-ui/styles'
+// Theme styles — consumers import via '@luminalityai/ui/styles'
 import "./styles/index.css"
 
 // Utilities

@@ -4,7 +4,7 @@
 
 ## Overview
 
-`@rarebit-one/luminality-ui` is a React 19 component library (design system) built with TypeScript, Radix UI primitives, and Tailwind CSS v4. It is published to GitHub Packages as a scoped npm package.
+`@luminalityai/ui` is a React 19 component library (design system) built with TypeScript, Radix UI primitives, and Tailwind CSS v4. It is published to the public npm registry (registry.npmjs.org) as a scoped package.
 
 ## Setup
 
@@ -105,4 +105,4 @@ All steps must pass before merge.
 
 ## Publishing
 
-Published to GitHub Packages (`npm.pkg.github.com`) via `.github/workflows/publish.yml`. Version is managed manually in `package.json`.
+Published to the public npm registry (registry.npmjs.org) via `.github/workflows/publish.yml`. Version is managed manually in `package.json`.

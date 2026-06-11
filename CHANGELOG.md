@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-06-12
+
+### Changed
+
+- **Renamed package `@rarebit-one/luminality-ui` → `@luminalityai/ui`** after moving this repository to the `luminalityai` GitHub org. No API or behavior changes — update import specifiers and your `package.json` dependency accordingly.
+
 ## [0.5.0] - 2026-04-27
 
 ### Added
@@ -92,13 +98,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial package scaffold for `@rarebit-one/luminality-ui`
+- Initial package scaffold for `@luminalityai/ui`
 - Core UI components: Button, Card, Dialog, AlertDialog (#2)
 - Design tokens and `cn()` utility (#1)
 
-[Unreleased]: https://github.com/rarebit-one/luminality-ui/compare/v0.4.1...HEAD
-[0.4.1]: https://github.com/rarebit-one/luminality-ui/compare/v0.4.0...v0.4.1
-[0.4.0]: https://github.com/rarebit-one/luminality-ui/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/rarebit-one/luminality-ui/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/rarebit-one/luminality-ui/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/rarebit-one/luminality-ui/releases/tag/v0.1.0
+[Unreleased]: https://github.com/luminalityai/luminality-ui/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/luminalityai/luminality-ui/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/luminalityai/luminality-ui/compare/v0.4.1...v0.5.0
+[0.4.1]: https://github.com/luminalityai/luminality-ui/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/luminalityai/luminality-ui/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/luminalityai/luminality-ui/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/luminalityai/luminality-ui/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/luminalityai/luminality-ui/releases/tag/v0.1.0
