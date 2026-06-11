@@ -1,13 +1,13 @@
 # Releasing
 
-This document describes the release process for `@rarebit-one/luminality-ui`.
+This document describes the release process for `@luminalityai/ui`.
 
 ## Overview
 
 Releases follow a **tag-driven** workflow:
 
 ```
-Release PR (version bump + changelog) → merge → push tag → release.yml creates GitHub Release → publish.yml publishes to GitHub Packages
+Release PR (version bump + changelog) → merge → push tag → release.yml creates GitHub Release → publish.yml publishes to npm
 ```
 
 Two GitHub Actions workflows chain together:
@@ -69,13 +69,13 @@ git push origin vX.Y.Z
 This triggers the automation:
 
 1. `release.yml` validates the tag matches `package.json`, extracts the changelog section, and creates a GitHub Release
-2. The GitHub Release creation triggers `publish.yml`, which builds and publishes to GitHub Packages
+2. The GitHub Release creation triggers `publish.yml`, which builds and publishes to npm
 
 ### 4. Verify
 
-- Check the [Actions tab](https://github.com/rarebit-one/luminality-ui/actions) for both workflow runs
-- Confirm the [GitHub Release](https://github.com/rarebit-one/luminality-ui/releases) has the correct changelog body
-- Verify the package is available: `npm view @rarebit-one/luminality-ui@X.Y.Z`
+- Check the [Actions tab](https://github.com/luminalityai/luminality-ui/actions) for both workflow runs
+- Confirm the [GitHub Release](https://github.com/luminalityai/luminality-ui/releases) has the correct changelog body
+- Verify the package is available: `npm view @luminalityai/ui@X.Y.Z`
 
 ## Using Claude Code
 

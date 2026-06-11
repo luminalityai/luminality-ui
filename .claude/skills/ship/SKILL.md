@@ -6,7 +6,7 @@ model: sonnet
 
 # Ship Skill (luminality-ui)
 
-Finalize changes in the `@rarebit-one/luminality-ui` design-system package, create a signed commit, and open a GitHub PR.
+Finalize changes in the `@luminalityai/ui` design-system package, create a signed commit, and open a GitHub PR.
 
 `luminality-ui` is an npm package published to npm (registry.npmjs.org) via a tag-driven release workflow — it builds with Vite library mode and emits rolled-up `.d.ts` via `vite-plugin-dts`. The dts plugin has historically shipped a near-empty `export {}` when something silently broke, so this skill explicitly guards against that on every PR.
 

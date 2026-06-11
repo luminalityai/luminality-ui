@@ -1,17 +1,13 @@
-# @rarebit-one/luminality-ui
+# @luminalityai/ui
 
 Shared design system package for Luminality applications.
 
 ## Installation
 
-This package is published to GitHub Packages. Configure the registry scope and install:
+Published to the public npm registry:
 
 ```bash
-# Add to your project's .npmrc (requires GitHub authentication)
-@rarebit-one:registry=https://npm.pkg.github.com
-
-# Install
-npm install @rarebit-one/luminality-ui
+npm install @luminalityai/ui
 ```
 
 ### Peer dependencies
@@ -26,13 +22,13 @@ This package requires the following peer dependencies:
 ## Usage
 
 ```tsx
-import { Button, Card, Dialog, AlertDialog } from "@rarebit-one/luminality-ui"
+import { Button, Card, Dialog, AlertDialog } from "@luminalityai/ui"
 ```
 
 Import the stylesheet in your CSS:
 
 ```css
-@import "@rarebit-one/luminality-ui/styles/index.css";
+@import "@luminalityai/ui/styles/index.css";
 ```
 
 ## Scripts
