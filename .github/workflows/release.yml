@@ -13,6 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      # Mint an installation token from the luminality-release-bot GitHub App.
+      # Releases created with this token (unlike the default GITHUB_TOKEN) DO
+      # trigger downstream workflows — so creating the Release fires publish.yml.
+      - name: Generate release-bot token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.RELEASE_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+
       - uses: actions/checkout@v6
 
       - name: Set up Node.js
@@ -57,7 +67,7 @@ jobs:
 
       - name: Create GitHub Release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           RELEASE_NOTES: ${{ steps.changelog.outputs.notes }}
         run: |
           printf "%s" "$RELEASE_NOTES" > /tmp/release_notes.txt
