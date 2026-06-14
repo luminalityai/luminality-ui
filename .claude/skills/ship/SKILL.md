@@ -12,9 +12,9 @@ Finalize changes in the `@luminalityai/ui` design-system package, create a signe
 
 ## Scope
 
-This skill creates and updates PRs, then babysits them to a mergeable state and hands the merge off (see "Babysit to merge" below). It does **NOT**:
+This skill creates and updates PRs, then continues into the `/babysit` phase, which drives them to ready and merges autonomously once the Rule #7 gate holds (see "Hand off to babysit" below). It does **NOT**:
 
-- Merge PRs to main. After opening the PR it drives it toward ready-to-merge — addressing review findings, fixing CI, rebasing — but the final merge is a human decision (workspace Critical Rule #7), so it stops at "ready to merge, awaiting you" and hands off.
+- Run `gh pr merge` from `/ship` itself. After opening the PR it continues into `/babysit`, which drives it to ready — addressing review findings, fixing CI, rebasing — and **merges it autonomously once the Rule #7 gate holds** (required checks green, mergeable, any required review satisfied). `/babysit` hands off only if a safeguard is missing.
 - Cut a release / bump the package version / push a tag — that flow is documented in `RELEASING.md` (release branch -> release PR -> tag push -> `release.yml` -> `publish.yml`). `/ship` is for the regular PR loop only. If the user asks to "ship a release" or "publish a new version", point them at `RELEASING.md` and stop.
 - Bypass commit signing, lefthook validation, or the worktree-only hook under any circumstance.
 
@@ -291,10 +291,9 @@ After completing the workflow, report:
 3. Whether the dts guard fired any warnings
 4. Note: Linear transitions happen automatically on merge
 5. **Babysit outcome**, one of:
-   - **Ready to merge (handed off)** — the ready gate holds (required checks
-     green, approved or no review required, `mergeable == MERGEABLE`, not a
-     draft); state the PR is awaiting the user's merge. **Not merged** —
-     Critical Rule #7.
+   - **Merged** — the ready gate held (required checks green, approved or no
+     review required, `mergeable == MERGEABLE`, not a draft), so the `/babysit`
+     phase merged it autonomously (Critical Rule #7). Report the merge.
    - **Blocked / awaiting user** — a stop condition tripped or the PR is
      awaiting review/CI; summarize what's outstanding and what the user needs to
      decide or do next.
