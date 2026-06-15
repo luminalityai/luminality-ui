@@ -1,62 +1,56 @@
 ---
 name: start
-description: "Start working on Linear issues. Use when the user says 'start working on', 'pick up issue', 'work on LMT-123', or wants to begin development on Linear issues. Handles status updates, branch creation, and context gathering."
+description: "Start working on GitHub issues. Use when the user says 'start working on', 'pick up issue', 'work on #123', or wants to begin development on GitHub issues. Handles assignment, branch creation, and context gathering."
 ---
 
 # Start Skill
 
-Begin working on Linear issues with proper setup: update status, create branches, gather context, and track progress.
+Begin working on GitHub issues with proper setup: assign the issue, create branches, gather context, and track progress.
+
+Issues live in the **`luminalityai/delivery-ops`** repo (issues are disabled on `luminality-ui` itself). All `gh issue` calls target `--repo luminalityai/delivery-ops`.
 
 ## Prerequisites
 
-This skill requires the Linear MCP server to be configured. If Linear tools (`mcp__linear__*`) are not available, the skill will warn and offer to proceed with git-only setup (branch creation without status updates).
+This skill uses the `gh` CLI to read and assign issues. If `gh` is unavailable or unauthenticated, the skill will warn and offer to proceed with git-only setup (branch creation without assignment).
 
 ## Scope
 
-This skill sets up local development for Linear issues. It does **NOT**:
+This skill sets up local development for GitHub issues. It does **NOT**:
 
 - Merge PRs to main (merging is a human decision)
 - Delete branches or worktrees automatically
-- Close or complete Linear issues
+- Close or complete GitHub issues
 
 ## Usage
 
 ```
-/start <issue-identifiers...>   # Start specific issues (e.g., /start LMT-123 LMT-124)
-/start --mine                    # Show my assigned issues ready to start
-/start --backlog                 # Show backlog issues for a team
+/start <issue-numbers...>   # Start specific issues (e.g., /start 123 124)
+/start --mine                # Show my assigned open issues
+/start --backlog             # Show open issues (the backlog)
 ```
 
 ## Workflow
 
-> **Note:** MCP tool calls shown below use pseudocode syntax for readability.
-> Actual invocation uses Claude's tool use API with the `mcp__linear__*` tools.
-
 ### 1. Parse Input and Fetch Issues
 
-**If specific identifiers provided:**
+**If specific issue numbers provided:**
 
-Fetch each issue using Linear MCP:
+Fetch each issue with the `gh` CLI:
 
-```
-mcp__linear__get_issue(id: "LMT-123", includeRelations: true)
+```bash
+gh issue view <num> --repo luminalityai/delivery-ops --json title,body,labels,assignees,url
 ```
 
 **If `--mine` flag:**
 
-```
-mcp__linear__list_issues(assignee: "me", state: "Todo", limit: 10)
+```bash
+gh issue list --repo luminalityai/delivery-ops --assignee @me --state open
 ```
 
-**If `--backlog` flag (with optional `--team` and `--project` filters):**
+**If `--backlog` flag (with an optional `--label` filter):**
 
-```
-mcp__linear__list_issues(
-  team: "<from --team flag, default: Luminality>",
-  project: "<from --project flag, if provided>",
-  state: "Backlog",
-  limit: 10
-)
+```bash
+gh issue list --repo luminalityai/delivery-ops --state open --limit 10 [--label "<from --label flag>"]
 ```
 
 Present the issues and let the user select which to work on.
@@ -68,15 +62,15 @@ Before starting, verify:
 **Check for blockers:**
 
 ```
-# From get_issue with includeRelations: true
-# Look at the blocking/blockedBy relations
+# From the issue body / labels, look for referenced blocking issues
+# (e.g. "blocked by #120", a "blocked" label, or a task-list dependency).
 ```
 
 If blocked:
 
 ```
-Warning: LMT-123 is blocked by:
-  - LMT-120: "Set up middleware" (In Progress)
+Warning: #123 appears blocked by:
+  - #120: "Set up middleware" (still open)
 
 Options:
 1. Start anyway (work may be blocked)
@@ -86,25 +80,24 @@ Options:
 
 **Check issue readiness:**
 
-- Has description/acceptance criteria?
-- Has assigned estimate?
+- Has a description / acceptance criteria?
+- Has the relevant labels?
 
 If missing context, warn but allow proceeding.
 
-### 3. Update Issue Status
+### 3. Assign the Issue
 
 **Skip this step if `--no-status` flag is provided.**
 
-Update each issue to "In Progress":
+GitHub Issues has no built-in workflow states, so "starting" an issue means assigning it to yourself (optionally leaving a comment that work has begun):
 
-```
-mcp__linear__save_issue(
-  id: "<issue-uuid>",
-  stateId: "<in-progress-state-id>"
-)
+```bash
+gh issue edit <num> --repo luminalityai/delivery-ops --add-assignee @me
+# optional:
+gh issue comment <num> --repo luminalityai/delivery-ops --body "Starting work on this."
 ```
 
-The workflow should not block on Linear failures — local development can proceed.
+The workflow should not block on `gh` failures — local development can proceed.
 
 ### 4. Set Up Worktree
 
@@ -114,7 +107,7 @@ The workflow should not block on Linear failures — local development can proce
 DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@refs/remotes/origin/@@')
 DEFAULT_BRANCH=${DEFAULT_BRANCH:-main}
 git fetch origin "$DEFAULT_BRANCH"
-git worktree add .worktrees/<identifier> -b <branch-name> "origin/$DEFAULT_BRANCH"
+git worktree add .worktrees/<issue-number>-<slug> -b <branch-name> "origin/$DEFAULT_BRANCH"
 ```
 
 **`--no-worktree` flag:** If the user explicitly passes `--no-worktree`, check the current state:
@@ -135,17 +128,16 @@ See `/worktree` skill for full worktree conventions.
 
 **Branch name format:**
 
-Use Linear's `gitBranchName` field if available, or generate:
-`{identifier}/{short-description}` (e.g., `lmt-123/add-feature-name`)
+`<issue-number>-<short-slug>` (e.g., `123-add-feature-name`), or a plain task slug when there's no issue.
 
-**Worktree naming:** `.worktrees/<identifier>` (e.g., `.worktrees/lmt-123`)
+**Worktree naming:** `.worktrees/<issue-number>-<slug>` (e.g., `.worktrees/123-add-feature-name`)
 
 ### 5. Display Issue Context
 
 ```
-Starting: LMT-123
+Starting: #123
 Issue: <title>
-URL: https://linear.app/...
+URL: https://github.com/luminalityai/delivery-ops/issues/123
 
 Description:
 <full description>
@@ -162,28 +154,27 @@ Based on the issue description, create a todo list to track progress.
 
 ## Flags Reference
 
-| Flag               | Description                                                                |
-| ------------------ | -------------------------------------------------------------------------- |
-| `--mine`           | List my assigned issues in Todo state                                      |
-| `--backlog`        | List team backlog issues                                                   |
-| `--no-worktree`    | Skip worktree if on the default branch + clean; stops with error otherwise |
-| `--no-status`      | Skip status update (just create branch)                                    |
-| `--team <name>`    | Filter by team (default: Luminality)                                       |
-| `--project <name>` | Filter by project                                                          |
+| Flag             | Description                                                                |
+| ---------------- | -------------------------------------------------------------------------- |
+| `--mine`         | List my assigned open issues                                               |
+| `--backlog`      | List open issues (the backlog)                                             |
+| `--no-worktree`  | Skip worktree if on the default branch + clean; stops with error otherwise |
+| `--no-status`    | Skip self-assignment (just create branch)                                  |
+| `--label <name>` | Filter the backlog by label                                                |
 
 ## Error Handling
 
-| Error                     | Solution                                                |
-| ------------------------- | ------------------------------------------------------- |
-| Linear MCP unavailable    | Warn and offer to proceed with just git setup           |
-| Issue not found           | Verify identifier, check team access                    |
-| Issue already in progress | Ask if user wants to continue anyway                    |
-| Issue is done/canceled    | Warn and suggest reopening or selecting different issue |
-| Status update fails       | Offer to continue with local setup, retry, or cancel    |
-| Branch already exists     | Offer to checkout existing or create with suffix        |
-| Worktree already exists   | Offer to use existing worktree or create with suffix    |
+| Error                     | Solution                                                       |
+| ------------------------- | -------------------------------------------------------------- |
+| `gh` unavailable/unauth'd | Warn and offer to proceed with just git setup                  |
+| Issue not found           | Verify the number; confirm it's in `luminalityai/delivery-ops` |
+| Issue already assigned    | Ask if user wants to continue anyway                           |
+| Issue is closed           | Warn and suggest reopening or selecting a different issue      |
+| Assignment fails          | Offer to continue with local setup, retry, or cancel           |
+| Branch already exists     | Offer to checkout existing or create with suffix               |
+| Worktree already exists   | Offer to use existing worktree or create with suffix           |
 
 ## Integration with Other Skills
 
 - After completing work, create a PR with `gh pr create`
-- The branch naming convention ensures the Linear issue can be auto-detected from the branch
+- The branch naming convention (`<issue-number>-<slug>`) lets the issue number be auto-detected from the branch for cross-repo PR linking
