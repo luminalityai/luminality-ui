@@ -20,13 +20,15 @@ This skill creates and updates PRs, then continues into the `/babysit` phase, wh
 
 ## Branch Naming
 
-Use the Linear issue identifier when present:
+Use the GitHub issue number when present:
 
 ```
-<identifier>/<short-description>   # e.g. lmt-92/button-focus-ring
+<issue-number>-<short-slug>   # e.g. 92-button-focus-ring
 ```
 
 Otherwise use a task slug (`fix-tooltip-arrow`) or today's date (`2026-05-27`). Match whatever the worktree name is so the two stay in sync.
+
+Issues live in **`luminalityai/delivery-ops`** (issues are disabled on `luminality-ui`), so PR↔issue linking is cross-repo — see step 6.
 
 ## Workflow
 
@@ -82,16 +84,16 @@ git diff $BASE..HEAD --stat
 gh pr view --json url,state 2>/dev/null || echo "No PR exists"
 ```
 
-Extract the Linear identifier from the branch name (e.g. `lmt-92/...` -> `LMT-92`). If no identifier, ask the user once or proceed without linking.
+Extract the issue number from the branch name (e.g. `92-...` -> `92`). If no number, ask the user once or proceed without linking.
 
 **If a PR already exists and is OPEN**, skip PR creation; update the existing PR body if relevant and return its URL.
 
-### 2. Fetch Linear Issue Details (optional)
+### 2. Fetch Issue Details (optional)
 
-If the Linear MCP is available:
+If `gh` is available and a number was extracted:
 
-```
-mcp__linear__get_issue(id: "<IDENTIFIER>")
+```bash
+gh issue view <num> --repo luminalityai/delivery-ops --json title,body,labels,assignees,url
 ```
 
 If unavailable, warn and continue without linking.
@@ -206,8 +208,6 @@ git commit -S -m "$(cat <<'EOF'
 
 <Optional body. Explain WHY, not WHAT — the diff shows what.>
 
-Resolves <IDENTIFIER>
-
 Co-Authored-By: Claude <MODEL> <noreply@anthropic.com>
 EOF
 )"
@@ -242,9 +242,9 @@ gh pr create --title "<type>(<scope>): <summary matching commit>" --body "$(cat 
 - <Key change>
 - <Key change>
 
-## Linear Issue
+## Related issue
 
-Closes <IDENTIFIER>
+Tracks luminalityai/delivery-ops#NN
 
 ## Test Plan
 
@@ -257,13 +257,13 @@ EOF
 )"
 ```
 
-The `Closes <IDENTIFIER>` syntax auto-links the PR to Linear and transitions the issue on merge. Drop it if no identifier is available.
+`Tracks` (not `Closes`/`Resolves`) is intentional: the PR is in `luminality-ui` but the issue lives in `delivery-ops`, and a delivery-ops planning issue may span multiple PRs — so it is closed **manually by a human** after merge, not auto-closed. Drop the line if no issue number is available.
 
 **Do not** add `--reviewer` flags or assign anyone unless the user asks — review routing is owned by humans.
 
 #### Release-PR special case
 
-If this PR is a release prep (version bump + CHANGELOG move), follow `RELEASING.md` instead of this skill — title is `chore: release vX.Y.Z`, no `Closes`, body is the release notes. `/ship` will still work for the PR mechanics, but **do not** push a tag or trigger `release.yml` from this skill. Tagging is a deliberate human step.
+If this PR is a release prep (version bump + CHANGELOG move), follow `RELEASING.md` instead of this skill — title is `chore: release vX.Y.Z`, no issue link, body is the release notes. `/ship` will still work for the PR mechanics, but **do not** push a tag or trigger `release.yml` from this skill. Tagging is a deliberate human step.
 
 ## Hand off to babysit (always-on)
 
@@ -289,7 +289,7 @@ After completing the workflow, report:
 1. Commit hash and one-line subject
 2. PR URL
 3. Whether the dts guard fired any warnings
-4. Note: Linear transitions happen automatically on merge
+4. Note: the linked `delivery-ops` issue is tracked, not auto-closed — close it manually after merge
 5. **Babysit outcome**, one of:
    - **Merged** — the ready gate held (required checks green, approved or no
      review required, `mergeable == MERGEABLE`, not a draft), so the `/babysit`
@@ -315,8 +315,8 @@ After completing the workflow, report:
 
 ## Flags Reference
 
-| Flag          | Description                                                                |
-| ------------- | -------------------------------------------------------------------------- |
-| `--no-squash` | Skip squashing, push existing commits as-is                                |
-| `--draft`     | Create PR as draft                                                         |
-| `--no-link`   | Skip Linear identifier extraction (use when branch name has no identifier) |
+| Flag          | Description                                                             |
+| ------------- | ----------------------------------------------------------------------- |
+| `--no-squash` | Skip squashing, push existing commits as-is                             |
+| `--draft`     | Create PR as draft                                                      |
+| `--no-link`   | Skip issue-number extraction (use when branch name has no issue number) |
