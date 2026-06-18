@@ -30,6 +30,14 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 10
+    ignore:
+      # The org-shared reusable workflows live in the private luminalityai/.github
+      # repo, which Dependabot's updater can't reach (git_dependencies_not_reachable),
+      # hard-failing the github-actions job. They're centrally managed and pinned
+      # (@main / @v2), so there's nothing for Dependabot to bump. No trailing slash:
+      # the glob must match the parent repo (luminalityai/.github) itself, not just
+      # its sub-paths, or Dependabot still chokes resolving the parent.
+      - dependency-name: "luminalityai/.github*"
     groups:
       actions:
         patterns:
