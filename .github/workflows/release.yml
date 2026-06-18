@@ -18,7 +18,7 @@ jobs:
       # trigger downstream workflows — so creating the Release fires publish.yml.
       - name: Generate release-bot token
         id: app-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.RELEASE_BOT_CLIENT_ID }}
           private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
