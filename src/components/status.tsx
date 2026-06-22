@@ -21,7 +21,7 @@ const Status = React.forwardRef<HTMLSpanElement, StatusProps>(
       completed: "text-[var(--color-success)]",
       failed: "text-[var(--color-danger)]",
       cancelled: "text-[var(--color-text-muted)]",
-      processing: "text-[var(--color-warning)]",
+      processing: "text-[var(--color-warning-text)]",
     }
 
     return (
