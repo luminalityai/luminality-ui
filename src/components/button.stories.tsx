@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { expect, fn, userEvent, within } from "storybook/test"
 import { Button } from "./button"
 
 const meta: Meta<typeof Button> = {
@@ -36,6 +37,37 @@ export const Default: Story = {
   args: {
     children: "Button",
     variant: "primary",
+  },
+}
+
+export const Clickable: Story = {
+  args: {
+    children: "Click me",
+    variant: "primary",
+    onClick: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole("button", { name: "Click me" })
+    await userEvent.click(button)
+    await expect(args.onClick).toHaveBeenCalledTimes(1)
+  },
+}
+
+export const DisabledDoesNotClick: Story = {
+  args: {
+    children: "Disabled",
+    disabled: true,
+    onClick: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole("button", { name: "Disabled" })
+    await expect(button).toBeDisabled()
+    // A disabled button sets `pointer-events: none`; userEvent refuses to click
+    // it (which is the correct browser behavior), so assert the handler stays
+    // uncalled rather than forcing a click through.
+    await expect(args.onClick).not.toHaveBeenCalled()
   },
 }
 
