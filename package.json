@@ -1,6 +1,6 @@
 {
   "name": "@luminalityai/ui",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Luminality design system package",
   "license": "MIT",
   "type": "module",

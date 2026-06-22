@@ -4,11 +4,12 @@
   "ignoreDependencies": [
     "@testing-library/dom",
     "@types/react-dom",
+    "@vitest/browser",
     "eslint",
     "lefthook",
+    "playwright",
     "prettier",
-    "react-dom",
-    "storybook"
+    "react-dom"
   ],
   "ignoreBinaries": [
     "eslint",

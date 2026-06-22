@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-06-22
+
+### Changed
+
+- **Darkened the brand color palette to meet WCAG AA contrast**, with automated accessibility checks now enforced in CI. Consumers using the default theme tokens will render slightly darker brand colors. (#143)
+- The package is now published to npm via OIDC trusted publishing, auto-publishing when a GitHub Release is created. (#125)
+- Storybook stories now run as interaction tests in CI with coverage floors; added a manual workflow to regenerate Playwright visual snapshots. (#142, #146)
+- Routine dependency maintenance across the production and dev dependency groups (esbuild, Storybook, vitest 4.1.9, undici, and others). (#123, #135, #137, #138, #140, #144, #145)
+
+### Removed
+
+- CodeQL code-scanning workflow. (#132)
+
 ## [0.6.0] - 2026-06-12
 
 ### Changed
