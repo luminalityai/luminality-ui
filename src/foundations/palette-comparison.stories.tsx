@@ -102,7 +102,7 @@ function luminance(hex: string): number {
     const c = v / 255
     return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
   })
-  return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.4152 * srgb[2]
+  return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2]
 }
 
 function contrastVsWhite(hex: string): number {
