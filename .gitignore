@@ -6,6 +6,7 @@ sandbox/dist/
 .DS_Store
 .env*
 coverage/
+storybook-static/
 /.lefthook-local.yml
 
 # Git worktrees

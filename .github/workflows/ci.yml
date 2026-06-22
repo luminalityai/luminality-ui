@@ -41,8 +41,8 @@ jobs:
       - name: Check for unused code & dependencies
         run: npm run knip
 
-      - name: Test
-        run: npm test
+      - name: Test (with coverage thresholds)
+        run: npm run test:coverage
 
       - name: Run TypeScript type check
         run: npm run check
@@ -52,3 +52,44 @@ jobs:
 
       - name: Verify package contents
         run: npm pack --dry-run
+
+  storybook:
+    name: Storybook story tests (interaction + a11y)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      # Mounts every story in headless Chromium, runs each story's `play`
+      # function, and enforces the a11y checks (preview.ts a11y.test = "error").
+      - name: Run Storybook story tests
+        run: npm run test:storybook
+
+      - name: Verify Storybook builds
+        run: npm run build-storybook
