@@ -10,7 +10,9 @@ const preview: Preview = {
       },
     },
     a11y: {
-      test: "todo",
+      // Fail the Storybook test run (CI `storybook` job) on accessibility
+      // violations, rather than just reporting them.
+      test: "error",
     },
   },
 }
