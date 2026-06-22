@@ -1,0 +1,91 @@
+name: Update Storybook snapshots
+
+# Manually-triggered helper to regenerate the Playwright visual-regression
+# baselines (e2e/**/*.png) on Linux and commit them back to the branch.
+# Snapshots are platform-pinned (-chromium-linux), so they can only be
+# regenerated in this ubuntu environment. The commit is created via the GitHub
+# API so it is signed/verified (main requires signed commits).
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-snapshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update:
+    name: Regenerate visual snapshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true # match the e2e job's rendering conditions exactly
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Regenerate snapshots
+        # Storybook is auto-spawned by Playwright's webServer config.
+        run: npx playwright test --update-snapshots
+
+      - name: Commit regenerated snapshots (signed via API)
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.0.1
+        with:
+          script: |
+            const fs = require("fs");
+            const { execSync } = require("child_process");
+
+            const changed = execSync("git status --porcelain -- e2e", { encoding: "utf8" })
+              .split("\n")
+              .map((l) => l.trim())
+              .filter((l) => l.endsWith(".png"))
+              .map((l) => l.replace(/^[^ ]+\s+/, ""));
+
+            if (changed.length === 0) {
+              core.info("No snapshot changes — nothing to commit.");
+              return;
+            }
+            core.info(`Committing ${changed.length} updated snapshot(s):\n${changed.join("\n")}`);
+
+            const additions = changed.map((path) => ({
+              path,
+              contents: fs.readFileSync(path).toString("base64"),
+            }));
+
+            const expectedHeadOid = execSync("git rev-parse HEAD", { encoding: "utf8" }).trim();
+            const branchName = context.ref.replace("refs/heads/", "");
+
+            await github.graphql(
+              `mutation ($input: CreateCommitOnBranchInput!) {
+                 createCommitOnBranch(input: $input) { commit { oid url } }
+               }`,
+              {
+                input: {
+                  branch: {
+                    repositoryNameWithOwner: `${context.repo.owner}/${context.repo.repo}`,
+                    branchName,
+                  },
+                  message: {
+                    headline: "test(e2e): regenerate visual snapshots for the WCAG-AA palette",
+                  },
+                  fileChanges: { additions },
+                  expectedHeadOid,
+                },
+              },
+            );
