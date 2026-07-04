@@ -17,11 +17,11 @@ Requires Node.js >= 20.
 ## Build
 
 ```bash
-npm run build       # Clean + compile (tsc)
-npm run typecheck   # Type check without emitting
+npm run build       # Bundle with Vite (vite build)
+npm run check       # Type check without emitting (tsc --noEmit)
 ```
 
-Build output goes to `dist/`. The build config (`tsconfig.build.json`) excludes `src/test/`.
+Build output goes to `dist/`. The build runs through Vite (`vite.config.ts`); type declarations are emitted by `vite-plugin-dts`.
 
 ## Test
 
@@ -67,13 +67,19 @@ Knip config is in `knip.json`.
 
 ```
 src/
-  components/       # All UI components (one file per component)
+  components/       # ~21 UI components (one file per component)
     index.ts        # Barrel export for all components
   lib/
     utils.ts        # cn() utility (clsx + tailwind-merge)
+    format-date.ts  # formatDate / formatDateTime / formatRelativeTime / getLocalTimezone
+    json-utils.ts   # parseJsonError / formatJson
+  hooks/
+    use-debounce.ts # useDebounce hook
   styles/
+    index.css       # Entry stylesheet: @import "tailwindcss" + @plugin "tailwindcss-animate", pulls in theme.css + animations.css
     theme.css       # CSS custom properties (design tokens)
-  index.ts          # Package entry point
+    animations.css  # Keyframes / animation utilities
+  index.ts          # Package entry point (re-exports cn, formatDate*, parseJsonError, formatJson, useDebounce, and all components)
   test/
     setup.ts        # Test setup (jest-dom matchers)
     components/     # Component test files
@@ -81,12 +87,12 @@ src/
 
 ## Key Conventions
 
-- **Module resolution**: `moduleResolution: "NodeNext"` — all local imports must use `.js` extensions (e.g., `import { cn } from "../lib/utils.js"`)
+- **Module resolution**: `moduleResolution: "bundler"` — use extensionless local imports (e.g., `import { cn } from "../lib/utils"`). Do **not** add `.js` extensions.
 - **No default exports**: Components use named exports only
 - **Radix UI**: Interactive components wrap Radix primitives with styled variants
 - **CSS variables**: Theming uses CSS custom properties (`var(--color-*)`, `var(--radius-*)`)
 - **`cn()` utility**: All className merging uses `cn()` from `src/lib/utils.ts`
-- **Peer dependencies**: react 19, react-dom 19, tailwindcss 4, tw-animate-css 1
+- **Peer dependencies**: only `react` ^19 and `react-dom` ^19 are declared as peers. Tailwind CSS v4 and `tailwindcss-animate` are bundled as regular dependencies (`tailwindcss-animate` is wired via `@plugin "tailwindcss-animate"` in `src/styles/index.css`).
 
 ## CI
 
