@@ -12,12 +12,12 @@ npm install @luminalityai/ui
 
 ### Peer dependencies
 
-This package requires the following peer dependencies:
+This package declares the following peer dependencies (you must supply them):
 
-- `react` ^19.0.0
-- `react-dom` ^19.0.0
-- `tailwindcss` ^4.0.0
-- `tw-animate-css` ^1.0.0
+- `react` ^19
+- `react-dom` ^19
+
+Tailwind CSS v4 and `tailwindcss-animate` are bundled as regular dependencies (wired up in the package's stylesheet), so you do not need to install them yourself.
 
 ## Usage
 
@@ -33,6 +33,9 @@ Import the stylesheet in your CSS:
 
 ## Scripts
 
-- `npm run build` — compile TypeScript to `dist/`
-- `npm run typecheck` — run TypeScript type checking
-- `npm run clean` — remove build artifacts
+See the `scripts` block in [`package.json`](./package.json) for the authoritative list. The most common ones:
+
+- `npm run build` — build the package to `dist/` with Vite (`vite build`; types emitted via `vite-plugin-dts`)
+- `npm run check` — type-check without emitting (`tsc --noEmit`)
+- `npm run lint` — run ESLint
+- `npm test` — run the Vitest unit suite
