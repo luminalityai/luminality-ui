@@ -1,5 +1,12 @@
 name: Claude Code Review
 
+# Inlined from the org-shared reusable luminalityai/.github claude-code-review.yml.
+# luminality-ui is a PUBLIC repo and GitHub forbids a public repo from consuming
+# reusable workflows stored in the PRIVATE luminalityai/.github; the call
+# resolved as "workflow was not found" and startup-failed. The decision is to
+# keep .github private, so the reusable's logic is embedded here directly.
+# Keep in lockstep with claude.yml (same model/pins).
+
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review]
@@ -8,12 +15,87 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+env:
+  # Single source of truth for the Claude model across this repo's Claude
+  # workflows. Override org-wide via the CLAUDE_MODEL Actions variable; the
+  # literal is a safe fallback so an unset var can't yield an empty --model.
+  CLAUDE_MODEL: "${{ vars.CLAUDE_MODEL || 'claude-opus-4-8' }}"
+
 jobs:
-  review:
+  claude_review:
+    name: Claude Code Review
+    # NOTE: deliberately NOT gating the JOB on dependabot here. A skipped
+    # job reports its required status context as skipped/neutral, which
+    # GitHub treats as not-satisfied -> the required "Claude Code Review"
+    # check stays forever-pending and auto-merge hangs. Instead the job
+    # RUNS for dependabot PRs and the review STEPS are step-gated below, so
+    # the job completes green without spending LLM budget on a version bump.
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       pull-requests: write
       issues: write
       id-token: write
-    uses: luminalityai/.github/.github/workflows/claude-code-review.yml@main
-    secrets: inherit
+
+    steps:
+      # Secrets aren't allowed in `if:` expressions, so route through env and
+      # short-circuit downstream steps when the token is missing. Lets the
+      # workflow run on repos / forks that haven't (yet) been wired up with
+      # the CLAUDE_CODE_OAUTH_TOKEN secret without producing a hard failure.
+      - name: Check for Claude OAuth token
+        id: token-check
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+            echo "::warning::CLAUDE_CODE_OAUTH_TOKEN secret is not configured; skipping Claude review."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout repository
+        if: steps.token-check.outputs.skip != 'true' && github.event.pull_request.user.login != 'dependabot[bot]'
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        if: steps.token-check.outputs.skip != 'true' && github.event.pull_request.user.login != 'dependabot[bot]'
+        uses: anthropics/claude-code-action@ba0aafd4308cbba7165f9f2cdb0cfbed5a3c99ce # v1.0.168 (auth: older bundled CLI 401s on OAuth tokens after the 2026-07-07 Anthropic auth change; see rarebit-ops#119)
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Pass the default Actions token explicitly. Without a github_token the
+          # action tries to exchange the OIDC token for a Claude GitHub App
+          # installation token — which 401s as "Claude Code is not installed"
+          # because that app isn't installed on this org. Supplying the built-in
+          # token skips that exchange; github-actions[bot] has the
+          # pull-requests: write needed to post the review and the track_progress
+          # comment, so no GitHub App / release-bot identity is required.
+          github_token: ${{ github.token }}
+          track_progress: true
+          allowed_bots: "*"
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Please review this pull request and provide feedback on:
+            - Code quality and best practices
+            - Potential bugs or issues
+            - Performance considerations
+            - Security concerns
+            - Test coverage
+
+            Use the repository's CLAUDE.md for guidance on style and conventions.
+            Be constructive and helpful in your feedback.
+
+            Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
+
+          # Read/Glob/Grep let the reviewer inspect the checked-out source
+          # (type defs, tests, the CLAUDE.md the prompt references) instead of
+          # reasoning from `gh pr diff` alone. Deliberately read-only — no Edit
+          # or mutating Bash — so the workflow stays fork-safe and resistant to
+          # prompt injection from untrusted PR content.
+          claude_args: '--model ${{ env.CLAUDE_MODEL }} --allowed-tools "Read,Glob,Grep,Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)" --effort high'

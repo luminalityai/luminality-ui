@@ -1,28 +1,476 @@
 name: Weekly Maintenance
 
+# Inlined from the org-shared reusable luminalityai/.github
+# reusable-weekly-maintenance.yml@v2, specialized to this repo's node-lib stack.
+#
+# luminality-ui is a PUBLIC repo and GitHub forbids a public repo from consuming
+# reusable workflows stored in the PRIVATE luminalityai/.github; the call
+# resolved as "workflow was not found" and startup-failed every week since the
+# 2026-06-11 org migration (luminalityai/luminality-sre#17). The decision is to
+# keep .github private, so the reusable's logic is embedded here directly with
+# the caller's former `with:` inputs baked in as literals:
+#   stack=node-lib, node-version=20,
+#   lint-commands="npm run lint / npm run check",
+#   test-commands="npm test / npm run build".
+# Ruby/JDK/Gradle setup steps (never reached for node-lib) are dropped.
+
 on:
   schedule:
     - cron: "0 0 * * 0"
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
-  id-token: write
-  security-events: read
+permissions: {}
+
+env:
+  # Single source of truth for the Claude model. Override org-wide via the
+  # CLAUDE_MODEL Actions variable; the literal is a safe fallback so an unset
+  # var can't yield an empty --model.
+  CLAUDE_MODEL: "${{ vars.CLAUDE_MODEL || 'claude-opus-4-8' }}"
 
 jobs:
   maintenance:
-    uses: luminalityai/.github/.github/workflows/reusable-weekly-maintenance.yml@v2
-    with:
-      stack: node-lib
-      node-version: "20"
-      lint-commands: |
-        npm run lint
-        npm run check
-      test-commands: |
-        npm test
-        npm run build
-    secrets:
-      claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-      release-bot-private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+    name: Weekly Maintenance (node-lib)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+      security-events: read # read-only: report/fix code-scanning alerts, never dismiss
+
+    steps:
+      - name: Validate required secrets
+        env:
+          CLAUDE_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # A cross-repo delivery-ops write is available when the release-bot app
+          # key (minted below) is present. This step runs before the mint step,
+          # so gate on the secret itself.
+          RELEASE_BOT_KEY: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CLAUDE_TOKEN:-}" ]; then
+            echo "::error::CLAUDE_CODE_OAUTH_TOKEN secret is not set"
+            exit 1
+          fi
+          if [ -z "${RELEASE_BOT_KEY:-}" ]; then
+            echo "::notice::no cross-repo token available (RELEASE_BOT_PRIVATE_KEY not set) - risky-findings issues will not be filed in luminalityai/delivery-ops (the job token cannot write cross-repo); findings will be summarised in the PR body instead"
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Detect default branch
+        id: default-branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef -q '.defaultBranchRef.name' 2>/dev/null || echo "main")
+          echo "branch=$DEFAULT_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Detected default branch: $DEFAULT_BRANCH"
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # ----- stack setup (node-lib) -----
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      # ----- TODO/FIXME census (week-over-week diff via cache) -----
+
+      - name: Restore previous TODO/FIXME census
+        id: census-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .maintenance-cache/todo-fixme.previous.txt
+          key: weekly-maintenance-todo-fixme-${{ github.repository_id }}-${{ github.run_id }}
+          restore-keys: |
+            weekly-maintenance-todo-fixme-${{ github.repository_id }}-
+
+      - name: Capture TODO/FIXME census
+        id: census
+        env:
+          PATHS: "."
+          EXCLUDES: "node_modules/** vendor/** tmp/** log/** .worktrees/** dist/** build/** coverage/** sorbet/rbi/** .maintenance-cache/**"
+        run: |
+          set -euo pipefail
+          mkdir -p .maintenance-cache tmp/maintenance
+          # The scanner generates its own artifacts: .maintenance-cache holds the
+          # week-over-week "previous" census and tmp/maintenance holds this run's
+          # output — both contain TODO/FIXME lines. Always exclude them so the
+          # census never counts itself, regardless of the caller's
+          # todo-fixme-exclude (which an override could otherwise drop).
+          SELF_EXCLUDES='.maintenance-cache/** tmp/maintenance/**'
+          GLOB_ARGS=()
+          for pattern in $EXCLUDES $SELF_EXCLUDES; do
+            GLOB_ARGS+=(--glob "!$pattern")
+          done
+          # shellcheck disable=SC2086
+          if command -v rg >/dev/null 2>&1; then
+            rg -n --no-heading --color=never \
+              -e '\b(TODO|FIXME|XXX|HACK)\b' \
+              "${GLOB_ARGS[@]}" $PATHS \
+              > tmp/maintenance/todo-fixme.current.txt || true
+          else
+            # The grep fallback can't honor the full glob list, but it must at
+            # least skip the scanner's own artifact dirs (the bug this guards).
+            grep -rEn --exclude-dir=.maintenance-cache --exclude-dir=tmp \
+              '\b(TODO|FIXME|XXX|HACK)\b' $PATHS \
+              > tmp/maintenance/todo-fixme.current.txt || true
+          fi
+          CURRENT_COUNT=$(wc -l < tmp/maintenance/todo-fixme.current.txt | tr -d ' ')
+          echo "current_count=$CURRENT_COUNT" >> "$GITHUB_OUTPUT"
+
+          if [ -f .maintenance-cache/todo-fixme.previous.txt ]; then
+            PREVIOUS_COUNT=$(wc -l < .maintenance-cache/todo-fixme.previous.txt | tr -d ' ')
+            DELTA=$((CURRENT_COUNT - PREVIOUS_COUNT))
+            echo "previous_count=$PREVIOUS_COUNT" >> "$GITHUB_OUTPUT"
+            echo "delta=$DELTA" >> "$GITHUB_OUTPUT"
+            diff -u .maintenance-cache/todo-fixme.previous.txt tmp/maintenance/todo-fixme.current.txt \
+              > tmp/maintenance/todo-fixme.diff.txt || true
+          else
+            echo "previous_count=" >> "$GITHUB_OUTPUT"
+            echo "delta=" >> "$GITHUB_OUTPUT"
+            : > tmp/maintenance/todo-fixme.diff.txt
+          fi
+
+          # Refresh cached "previous" for next run.
+          cp tmp/maintenance/todo-fixme.current.txt .maintenance-cache/todo-fixme.previous.txt
+
+          {
+            echo "## TODO/FIXME census"
+            echo
+            echo "- Current count: $CURRENT_COUNT"
+            if [ -n "${PREVIOUS_COUNT:-}" ]; then
+              echo "- Previous count: $PREVIOUS_COUNT"
+              echo "- Delta: $DELTA"
+            else
+              echo "- Previous count: (no prior run)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ----- open security alerts (code scanning) -----
+
+      - name: Capture open code-scanning alerts
+        id: security-alerts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p tmp/maintenance
+          # security-events read may be unavailable (e.g. private repo without
+          # GHAS, or code scanning never enabled); tolerate failure gracefully.
+          # tool_name=CodeQL keeps this strictly CodeQL (other SAST tools are
+          # excluded by design); per_page caps the review at 100 open alerts.
+          if gh api "repos/$REPO/code-scanning/alerts?state=open&per_page=100&tool_name=CodeQL" \
+               > tmp/maintenance/codeql-alerts.json 2>/dev/null; then
+            COUNT=$(jq 'length' tmp/maintenance/codeql-alerts.json)
+          else
+            echo '[]' > tmp/maintenance/codeql-alerts.json
+            COUNT=0
+          fi
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "## Open CodeQL alerts: $COUNT" >> "$GITHUB_STEP_SUMMARY"
+
+      # ----- mint cross-repo delivery-ops token (luminality-release-bot App) -----
+
+      - name: Mint delivery-ops App token
+        id: app-token
+        # Only runs when the release-bot key is supplied. When this step is
+        # skipped, steps.app-token.outputs.token resolves to '' downstream, so
+        # the job-token fallback still applies. Runs before build-prompt so the
+        # prompt gate can see the minted token. (The `secrets` context is not
+        # available in a step-level `if`, so gate on an env var that carries the
+        # secret's presence.)
+        env:
+          RELEASE_BOT_KEY: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+        if: ${{ env.RELEASE_BOT_KEY != '' }}
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: 4029162
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+          owner: luminalityai
+          repositories: delivery-ops
+
+      # ----- assemble prompt + allowed-tools (shell is much easier than expressions) -----
+
+      - name: Assemble Claude prompt and MCP config
+        id: build-prompt
+        env:
+          STACK: "node-lib"
+          BUNDLE_STRATEGY: "lock-update"
+          RUN_BUNDLER_AUDIT: "true"
+          RUN_BRAKEMAN: "false"
+          RUN_SORBET_RBI: "false"
+          RUN_NPM_AUDIT: "true"
+          LINT_COMMANDS: |
+            npm run lint
+            npm run check
+          TEST_COMMANDS: |
+            npm test
+            npm run build
+          GRADLE_TEST_COMMAND: "./gradlew test"
+          # Whether a cross-repo token for delivery-ops is available (the minted
+          # release-bot App token). Avoids leaking the token itself into the
+          # prompt; gates the issue-fallback instructions on whether the write
+          # can actually succeed.
+          DELIVERY_OPS_TOKEN_SET: ${{ steps.app-token.outputs.token != '' }}
+          ADDITIONAL_ALLOWED_TOOLS: ""
+          DEFAULT_BRANCH: ${{ steps.default-branch.outputs.branch }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_ID: ${{ github.run_id }}
+          TODO_CURRENT: ${{ steps.census.outputs.current_count }}
+          TODO_PREVIOUS: ${{ steps.census.outputs.previous_count }}
+          TODO_DELTA: ${{ steps.census.outputs.delta }}
+          REVIEW_SECURITY_ALERTS: "true"
+          CODEQL_ALERT_COUNT: ${{ steps.security-alerts.outputs.count }}
+        run: |
+          set -euo pipefail
+          mkdir -p tmp/maintenance
+
+          PROMPT_FILE=tmp/maintenance/prompt.txt
+          {
+            echo "REPO: $REPO"
+            echo "DEFAULT_BRANCH: $DEFAULT_BRANCH"
+            echo "RUN_URL: $RUN_URL"
+            echo "RUN_ID: $RUN_ID"
+            echo "STACK: $STACK"
+            echo "TODO_FIXME_CURRENT_COUNT: $TODO_CURRENT"
+            echo "TODO_FIXME_PREVIOUS_COUNT: $TODO_PREVIOUS"
+            echo "TODO_FIXME_DELTA: $TODO_DELTA"
+            echo "CENSUS_FILE: tmp/maintenance/todo-fixme.current.txt"
+            echo "CENSUS_DIFF_FILE: tmp/maintenance/todo-fixme.diff.txt"
+            echo
+            echo "Perform weekly repository maintenance. You MUST attempt to create a PR with fixes when changes are produced."
+            echo
+            echo "## Update steps (run in order; skip any that don't apply to this stack)"
+            echo
+
+            case "$STACK" in
+              rails|ruby-gem)
+                if [ "$BUNDLE_STRATEGY" = "conservative" ]; then
+                  echo "- Run \`bundle update --conservative\` then \`bundle install\`"
+                elif [ "$BUNDLE_STRATEGY" = "lock-update" ]; then
+                  echo "- Run \`bundle lock --update\` then \`bundle install\`"
+                fi
+                ;;
+            esac
+
+            case "$STACK" in
+              rails|node-lib|node-app)
+                if [ "$RUN_NPM_AUDIT" = "true" ]; then
+                  echo "- Run \`npm audit fix\` (do NOT run \`npm update\` — Dependabot handles version bumps)"
+                fi
+                ;;
+            esac
+
+            case "$STACK" in
+              rails|ruby-gem)
+                if [ "$RUN_BUNDLER_AUDIT" = "true" ]; then
+                  echo "- Run \`bundle exec bundler-audit check --update\` to surface known gem CVEs"
+                fi
+                ;;
+            esac
+
+            if [ "$STACK" = "rails" ] && [ "$RUN_BRAKEMAN" = "true" ]; then
+              echo "- Run \`bin/brakeman --no-pager -q\` to surface security findings (informational; capture summary in PR body)"
+            fi
+
+            if [ "$STACK" = "rails" ] && [ "$RUN_SORBET_RBI" = "true" ]; then
+              echo "- Regenerate Sorbet RBIs: \`RAILS_ENV=test SECRET_KEY_BASE_DUMMY=1 bin/tapioca dsl --no-halt-upon-load-error && bin/tapioca gems && bin/tapioca annotations\`. Include any \`sorbet/\` drift in the PR."
+            fi
+
+            if [ "$STACK" = "kmp" ]; then
+              echo "- Review \`gradle/libs.versions.toml\` for safe minor/patch dependency bumps"
+            fi
+
+            echo
+            echo "Always:"
+            echo "- Check open PRs older than 90 days: \`gh pr list --state open\`"
+            echo "- Review the TODO/FIXME census at \`tmp/maintenance/todo-fixme.current.txt\`. If TODO_FIXME_DELTA is set, summarise the change in the PR body. If TODO_FIXME_DELTA > 0, include the new entries from \`tmp/maintenance/todo-fixme.diff.txt\`."
+
+            if [ "${REVIEW_SECURITY_ALERTS:-}" = "true" ]; then
+              echo
+              echo "## Security findings (code scanning)"
+              echo "- Open CodeQL alerts: ${CODEQL_ALERT_COUNT:-0} (full details in \`tmp/maintenance/codeql-alerts.json\`)."
+              echo "- For each open alert: if it is genuinely actionable and a safe, minimal fix exists, apply it in this PR. Otherwise summarise it in the PR body (rule id, file:line, and why it's deferred — e.g. false positive / by design)."
+              echo "- Do NOT dismiss code-scanning alerts — dismissal is a human decision."
+              if [ "$DELIVERY_OPS_TOKEN_SET" = "true" ]; then
+                echo "- Route any finding that needs a judgment call or a larger change to the single risky-findings issue in luminalityai/delivery-ops (see Output rules)."
+              fi
+            fi
+            echo
+            echo "## Verification (after updates, before PR)"
+            echo
+            echo "Run every command below. A command qualifies as PASSED only if it"
+            echo "actually executed and exited zero. Do NOT open a PR if any of these"
+            echo "is true:"
+            echo
+            echo "- a command exits non-zero"
+            echo "- a command can't run because a required service is missing (e.g."
+            echo "  database connection refused, redis unreachable, missing binary)"
+            echo "- a command can't run because a precondition isn't met (missing"
+            echo "  config, schema not loaded, env var unset)"
+            echo
+            echo "**Inability to verify counts as verification failure.** Do not"
+            echo "rationalise a skipped check as \"passed in another environment\"."
+            echo "Do not list a check as ✅ in any output if it didn't actually run"
+            echo "to completion in this run. If a check couldn't run, mark it"
+            echo "explicitly (e.g. ⚠️ \"could not run: <reason>\") and treat the run"
+            echo "as failed for the purposes of opening a PR."
+            echo
+
+            if [ -n "$LINT_COMMANDS" ]; then
+              echo "Lint:"
+              echo '```bash'
+              printf '%s\n' "$LINT_COMMANDS"
+              echo '```'
+              echo
+            fi
+
+            if [ -n "$TEST_COMMANDS" ]; then
+              echo "Tests:"
+              echo '```bash'
+              printf '%s\n' "$TEST_COMMANDS"
+              echo '```'
+              echo
+            fi
+
+            if [ "$STACK" = "kmp" ] && [ -n "$GRADLE_TEST_COMMAND" ]; then
+              echo "Tests:"
+              echo '```bash'
+              printf '%s\n' "$GRADLE_TEST_COMMAND"
+              echo '```'
+              echo
+            fi
+
+            echo "## Output rules"
+            echo
+            echo "- If \`git diff\` is empty after updates: output \"No dependency changes needed\" and summarise findings (TODO/FIXME, stale PRs, audit). No PR."
+            echo "- If diff is non-empty AND every verification command actually ran and passed: open a signed PR via the steps below."
+            echo "- If diff is non-empty AND any verification command failed OR could not run: do NOT open a PR; output the failure summary including which checks couldn't run and why."
+            if [ "$DELIVERY_OPS_TOKEN_SET" = "true" ]; then
+              echo "- For risky judgment-call items (major bumps, code-changing fixes, design-decision TODOs): create ONE GitHub issue in luminalityai/delivery-ops summarising the findings. Use: \`gh issue create --repo luminalityai/delivery-ops --title \"...\" --body \"...\"\` (gh is authenticated via the GH_TOKEN env). The issue body MUST include RUN_URL. Create only ONE issue per run; if there are no risky items, create none."
+            else
+              echo "- Risky judgment-call items: no delivery-ops token is configured for cross-repo writes, so do NOT attempt to create an issue. Summarise these items in the PR body (or the no-PR findings summary) instead."
+            fi
+            echo "- Do NOT create or reference GitHub Issues in THIS repo. The only issue you may open is the single risky-findings issue in luminalityai/delivery-ops described above."
+            echo "- Always include RUN_URL in the PR body."
+            echo
+            echo "## PR creation (when there are changes AND verification passes)"
+            echo
+            echo '```bash'
+            echo 'BRANCH="maintenance/weekly-$GITHUB_RUN_ID"'
+            echo 'git checkout -b "$BRANCH"'
+            echo 'git add -A'
+            echo 'git commit -m "chore: weekly dependency maintenance"'
+            echo
+            echo '# Rebase onto the latest default branch BEFORE pushing, so the PR'
+            echo '# starts even with main rather than going stale between dispatch and'
+            echo '# review. If rebase has conflicts, abort cleanly and emit a summary —'
+            echo '# a human will need to resolve.'
+            echo "git fetch origin \"$DEFAULT_BRANCH\""
+            echo "git rebase \"origin/$DEFAULT_BRANCH\" || {"
+            echo "  echo \"ERROR: rebase against $DEFAULT_BRANCH failed; aborting (a human needs to resolve)\" >&2"
+            echo '  git rebase --abort'
+            echo '  exit 1'
+            echo '}'
+            echo
+            echo 'git push -u origin HEAD'
+            echo
+            echo '# Replace the unsigned commit with a signed one via the GitHub API.'
+            echo 'TREE=$(git rev-parse HEAD^{tree})'
+            echo 'PARENT=$(git rev-parse HEAD^)'
+            echo 'SIGNED=$(gh api "repos/$GITHUB_REPOSITORY/git/commits" \'
+            echo '  --method POST \'
+            echo '  -f message="chore: weekly dependency maintenance" \'
+            echo '  -f tree="$TREE" \'
+            echo '  -f "parents[]=$PARENT" \'
+            echo "  --jq '.sha')"
+            echo '[ -z "$SIGNED" ] && { echo "ERROR: failed to create signed commit via API" >&2; exit 1; }'
+            echo
+            echo 'gh api "repos/$GITHUB_REPOSITORY/git/refs/heads/$BRANCH" \'
+            echo '  --method PATCH \'
+            echo '  -f sha="$SIGNED" \'
+            echo '  -F force=true'
+            echo
+            echo '# Verify the ref now points at the signed commit before opening the PR.'
+            echo "UPDATED=\$(gh api \"repos/\$GITHUB_REPOSITORY/git/refs/heads/\$BRANCH\" --jq '.object.sha')"
+            echo '[ "$UPDATED" != "$SIGNED" ] && { echo "ERROR: branch ref did not advance to signed SHA" >&2; exit 1; }'
+            echo '```'
+            echo
+            echo "Then open the PR with \`gh pr create --base \"$DEFAULT_BRANCH\" --title \"chore: weekly dependency maintenance\" --body \"...\"\` and include RUN_URL plus the maintenance findings (audit results, TODO/FIXME delta, stale PRs)."
+          } > "$PROMPT_FILE"
+
+          # Build the --allowed-tools list.
+          BASE_TOOLS='Read,Glob,Grep,Bash(git checkout:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(git fetch:*),Bash(git rebase:*),Bash(git diff:*),Bash(git status:*),Bash(git log:*),Bash(git rev-parse:*),Bash(bundle lock:*),Bash(bundle update:*),Bash(bundle install:*),Bash(bundle exec bundler-audit:*),Bash(bundle exec rubocop:*),Bash(bundle exec rspec:*),Bash(bundle audit:*),Bash(bin/rspec:*),Bash(bin/rubocop:*),Bash(bin/brakeman:*),Bash(bin/tapioca:*),Bash(npm audit:*),Bash(npm run:*),Bash(npm outdated:*),Bash(npm test:*),Bash(./gradlew:*),Bash(cat tmp/maintenance/*),Bash(wc:*),Bash(head:*),Bash(tail:*),Bash(diff:*),Bash(gh pr:*),Bash(gh repo:*),Bash(gh api:*),Bash(gh issue:*)'
+          TOOLS="$BASE_TOOLS"
+          if [ "$STACK" = "kmp" ]; then
+            # KMP has no allowlisted command that can look up the latest
+            # Maven/Gradle dependency versions (the gem/npm stacks get this
+            # for free from bundle/npm). Without a network-capable tool the
+            # agent's version lookups are auto-denied and it wrongly reports
+            # "Maven Central unreachable". Grant WebFetch/WebSearch so it can
+            # query Maven Central / Sonatype directly.
+            TOOLS="$TOOLS,WebFetch,WebSearch"
+          fi
+          if [ -n "$ADDITIONAL_ALLOWED_TOOLS" ]; then
+            TOOLS="$TOOLS,$ADDITIONAL_ALLOWED_TOOLS"
+          fi
+
+          # Emit prompt + tools as outputs. The risky-findings fallback now
+          # routes to a GitHub issue in luminalityai/delivery-ops via the
+          # allowlisted `gh issue create`, so no MCP server is needed.
+          {
+            echo 'prompt<<MAINT_PROMPT_EOF'
+            cat "$PROMPT_FILE"
+            echo 'MAINT_PROMPT_EOF'
+            echo "allowed-tools=$TOOLS"
+          } >> "$GITHUB_OUTPUT"
+
+      # ----- weekly maintenance -----
+
+      - name: Weekly maintenance
+        id: maintenance
+        uses: anthropics/claude-code-action@ba0aafd4308cbba7165f9f2cdb0cfbed5a3c99ce # v1.0.168 (auth: older bundled CLI 401s on OAuth tokens after the 2026-07-07 Anthropic auth change; see rarebit-ops#119)
+        timeout-minutes: 25
+        env:
+          # The agent's `gh`/`git` Bash calls authenticate with this. Precedence:
+          # minted release-bot App token -> job token (scoped to the calling
+          # repo). The minted token grants the cross-repo issue write into
+          # luminalityai/delivery-ops.
+          GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          show_full_output: true
+          prompt: ${{ steps.build-prompt.outputs.prompt }}
+          claude_args: >-
+            --model ${{ env.CLAUDE_MODEL }}
+            --allowed-tools "${{ steps.build-prompt.outputs.allowed-tools }}"
+            --effort high
+
+      # ----- artifacts -----
+
+      - name: Upload maintenance artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: weekly-maintenance-${{ github.run_id }}
+          path: |
+            tmp/maintenance/
+          if-no-files-found: ignore
+          retention-days: 90
