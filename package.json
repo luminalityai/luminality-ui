@@ -11,7 +11,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./styles": "./dist/styles/index.css"
+    "./styles": "./dist/styles/index.css",
+    "./theme.css": "./dist/theme.css"
   },
   "sideEffects": [
     "*.css"
@@ -34,7 +35,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && node scripts/copy-theme.mjs",
     "check": "tsc --noEmit",
     "test": "vitest run --project=unit",
     "test:watch": "vitest --project=unit",
