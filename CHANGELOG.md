@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **New `@luminalityai/ui/theme.css` export — the raw design tokens, importable by apps that compile their own Tailwind.**
+
+  The existing `@luminalityai/ui/styles` export is a complete ~32KB Tailwind build (banner, preflight, the lot). That's right for a consumer with no Tailwind of its own, but unusable for one that has it: importing it stacks a second Tailwind and a **duplicate preflight** on top of theirs. And the raw `theme.css` was never published (`files: ["dist"]`), so there was no third option.
+
+  The consequence was predictable in hindsight — the only way to get these tokens into an app that already runs Tailwind was to **copy them**. luminality-web did exactly that, and the fork drifted: it still carries the pre-WCAG palette that 0.7.0 fixed, so **that accessibility fix never reached production** despite shipping to npm in June.
+
+  Consumers with their own Tailwind can now share the tokens by reference:
+
+  ```css
+  @import "tailwindcss";
+  @import "@luminalityai/ui/theme.css";
+  ```
+
+  Verified against a real consumer build: the raw import yields **1 preflight / ~7.5KB**, versus **2 preflights / ~46KB** for the compiled bundle. `@luminalityai/ui/styles` is unchanged and still correct for standalone use.
+
 ## [0.7.0] - 2026-06-22
 
 ### Changed
