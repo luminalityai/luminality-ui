@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The dark theme now meets WCAG AA — it had never been audited at all.** The package ships two palettes (a light `@theme` default and a `[data-theme="dark"]` override block), but Storybook pinned neither, so every story only ever rendered light. Gating the dark theme surfaced **48 `color-contrast` nodes across 17 stories**, tracing to **five dark tokens plus one light one**:
+
+  | token                             | theme | before                            | after     | worst background                       | ratio               |
+  | --------------------------------- | ----- | --------------------------------- | --------- | -------------------------------------- | ------------------- |
+  | `--color-primary-foreground-dark` | dark  | `#faf8f3`                         | `#1a1815` | `--color-primary-dark` `#e85d75`       | 3.16:1 → **5.28:1** |
+  | `--color-primary-hover-dark`      | dark  | `#d94563`                         | `#ee7b8f` | (ink `#1a1815` on it)                  | 4.20:1 → **6.64:1** |
+  | `--color-secondary-dark`          | dark  | `#9e5e8a`                         | `#935780` | (ink `#faf8f3` on it)                  | 4.47:1 → **5.05:1** |
+  | `--color-text-muted-dark`         | dark  | `#8a7f6f`                         | `#a8a093` | `--color-surface-hover-dark` `#3a3228` | 3.20:1 → **4.87:1** |
+  | `--color-muted-foreground-dark`   | dark  | `#9a8f7f`                         | `#bcb4aa` | `--color-muted-hover-dark` `#4a4238`   | 3.96:1 → **4.82:1** |
+  | `--color-warning-text`            | light | `#946c00`                         | `#7d5b00` | `--color-muted-hover` `#e8e2d1`        | 4.49:1 → **4.82:1** |
+  | `--color-warning-text-dark`       | dark  | _(none — the light value leaked)_ | `#cf9700` | `--color-surface-hover-dark` `#3a3228` | 3.71:1 → **4.85:1** |
+
+  **No brand fill was retuned to satisfy a text bar.** `--color-primary-dark` `#e85d75` is untouched: like every other fill in the dark theme it is _light_, so the near-white ON colour was the defect, not the brand. Flipping the ink to the canvas near-black (`#1a1815`) matches what `--color-accent-foreground-dark`, `--color-info-foreground-dark`, `--color-success-foreground-dark`, `--color-danger-foreground-dark` and `--color-warning-foreground-dark` already did — primary and secondary were the outliers.
+
+  `--color-warning-text` was the sharper lesson: it was tuned against `#ffffff` (4.60:1), but it renders on `--color-background` `#faf8f3`, where it measured **4.49:1** and failed. It also had **no dark counterpart at all**, so the light value leaked into the dark theme at 3.71:1.
+
+  **4.5:1 (body text) was applied throughout** — every affected label is 10–16px at normal weight, so none reaches the 3:1 large-text allowance. The 3:1 non-text cases (focus rings, the outline Button border, the Checkbox fill) are never seen by axe and were reasoned about by hand; they use tokens that clear 4.5:1 and therefore 3:1 with room.
+
+  **Consumer impact:** apps consuming `@luminalityai/ui/theme.css` or `@luminalityai/ui/styles` get the corrected values automatically. Dark-theme primary and secondary Buttons/Badges/Checkboxes now render **near-black** label text instead of cream — an intentional, visible change. Apps that override any of the seven tokens above should re-check their own values against the backgrounds listed.
+
+### Changed
+
+- The Storybook a11y gate now runs the full **2×2 matrix** — {phone 414, desktop 1280} × {light, dark} — instead of one width and one theme, with both globals pinned through each Vitest browser instance's `provide` key. 106 → **220** tests. `parameters.a11y.test` stays `'error'`; no rule is parked anywhere.
+- `@storybook/{addon-vitest,addon-a11y,react-vite}` and `storybook` bumped to `^10.5.5`. **Required, not housekeeping:** the `storybook/test-initial-globals` provide key does not exist before `addon-vitest` 10.5, so the two-width matrix added in #169 was **inert** — both instances were in fact running at the addon's hardcoded 1200×900.
+
 ## [0.8.0] - 2026-07-15
 
 ### Added

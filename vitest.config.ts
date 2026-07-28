@@ -76,11 +76,13 @@ export default defineConfig({
         },
         test: {
           name: "storybook",
-          // Every story now runs twice (see `instances` below), so the pool is
-          // twice as contended. Vitest's 5s default is not survivable under
-          // that: files fail on queueing, not on anything a story does.
-          testTimeout: 120_000,
-          hookTimeout: 120_000,
+          // Every story now runs FOUR times (see `instances` below), so the
+          // pool is four times as contended. Vitest's 5s default is not
+          // survivable under that: files fail on queueing, not on anything a
+          // story does. Raised 120s -> 180s when the theme axis doubled the
+          // instance count again; never lower it to "speed up" a saturated run.
+          testTimeout: 180_000,
+          hookTimeout: 180_000,
           // Each instance is a separate project with its own pool of headless
           // browser contexts, so leaving this unbounded doubles the concurrent
           // Chromium count and starves the runner — files then die on "Cannot
@@ -112,26 +114,73 @@ export default defineConfig({
             // below are the built-in MINIMAL_VIEWPORTS entries: `mobile2` is
             // 414x896 and `desktop` is 1280x1024.
             //
-            // Both instances therefore widen coverage relative to the old
+            // Both widths therefore widen coverage relative to the old
             // 1200x900 run: `mobile2` reaches everything below `md:` (which was
             // never audited anywhere in the estate), and `desktop` reaches `xl:`
             // (1280) which 1200 did not.
+            //
+            // !! That lever requires @storybook/addon-vitest >= 10.5.0. This
+            // repo was on 10.4.6, which does not read the
+            // `storybook/test-initial-globals` provide key AT ALL — so the
+            // two-width matrix landed in #169 was inert and BOTH instances were
+            // in fact running at 1200x900. `src/test/audit-matrix.stories.tsx`
+            // is what caught that, and is exactly why the tripwire is committed
+            // rather than thrown away. Do not drop the addon below 10.5.
+            //
+            // ...and at BOTH themes. This package ships a light `@theme`
+            // default AND a `[data-theme="dark"]` override block, so it
+            // publishes two palettes — but Storybook pinned neither, so every
+            // story only ever rendered light and the dark palette had never
+            // been audited at all.
+            //
+            // Theme rides the SAME `storybook/test-initial-globals` provide key
+            // as the viewport, and both globals MUST live in one object
+            // literal: a per-instance `provide` REPLACES the plugin's provide
+            // object rather than merging into it, so a second `provide` entry
+            // silently drops the first.
+            //
+            // A full 2x2 rather than a cheaper L-shape, because the axes are
+            // independent: width decides WHICH elements exist (anything behind
+            // an `md:`/`lg:` breakpoint is unreachable — not passing — at the
+            // other width) and theme decides WHAT COLOUR they are.
             instances: [
               {
                 browser: "chromium",
-                name: "storybook-mobile",
+                name: "storybook-mobile-light",
                 provide: {
                   "storybook/test-initial-globals": {
                     viewport: { value: "mobile2" },
+                    theme: "light",
                   },
                 },
               },
               {
                 browser: "chromium",
-                name: "storybook-desktop",
+                name: "storybook-mobile-dark",
+                provide: {
+                  "storybook/test-initial-globals": {
+                    viewport: { value: "mobile2" },
+                    theme: "dark",
+                  },
+                },
+              },
+              {
+                browser: "chromium",
+                name: "storybook-desktop-light",
                 provide: {
                   "storybook/test-initial-globals": {
                     viewport: { value: "desktop" },
+                    theme: "light",
+                  },
+                },
+              },
+              {
+                browser: "chromium",
+                name: "storybook-desktop-dark",
+                provide: {
+                  "storybook/test-initial-globals": {
+                    viewport: { value: "desktop" },
+                    theme: "dark",
                   },
                 },
               },

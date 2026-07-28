@@ -37,9 +37,13 @@
   --color-warning: #fcd34d;
   --color-warning-hover: #fbbf24;
   --color-warning-foreground: #78350f;
-  /* The amber warning fill is unreadable as text on white; use this darker
-     amber when warning is rendered as text (e.g. Status `processing`). */
-  --color-warning-text: #946c00; /* 4.6:1 on white */
+  /* The amber warning fill is unreadable as text; use this darker amber when
+     warning is rendered as text (e.g. Status `processing`).
+     Was #946c00, tuned against #ffffff (4.60:1) — but the canvas is
+     --color-background #faf8f3, where it measured 4.49:1 and FAILED. Retuned
+     against the darkest light surface it can land on, --color-muted-hover
+     #e8e2d1: now 4.82:1 there, 5.87:1 on the canvas, 6.23:1 on white. */
+  --color-warning-text: #7d5b00;
 
   --color-muted: #f0ede4;
   --color-muted-hover: #e8e2d1;
@@ -56,12 +60,24 @@
   --color-border-dark: #4a4238;
   --color-border-hover-dark: #5a5248;
 
+  /* The dark theme's brand fills are LIGHT (see accent/info/success/danger
+     below), so a near-white ON colour cannot work on them — that is the
+     dark-theme-specific failure mode a light-theme audit can never see.
+     --color-primary-dark itself is untouched: it is the brand, and it is
+     correct AS A FILL (near-black on it is 5.28:1). Only the ink flips. */
   --color-primary-dark: #e85d75;
-  --color-primary-hover-dark: #d94563;
-  --color-primary-foreground-dark: #faf8f3;
+  /* Was #d94563 — DARKER than the fill, i.e. hover stepped away from the user
+     in a dark theme, and near-black on it was only 4.20:1. Now one step
+     lighter, matching the direction hover has in the light theme, at 6.64:1. */
+  --color-primary-hover-dark: #ee7b8f;
+  --color-primary-foreground-dark: #1a1815; /* was #faf8f3 — 3.16:1 on the fill */
 
-  --color-secondary-dark: #9e5e8a;
-  --color-secondary-hover-dark: #8b4d77;
+  /* Secondary's dark fill sits mid-ladder, so unlike primary it keeps a
+     near-white ink and the FILL moves instead — one step darker, the same
+     white-on-fill remedy used across the estate. Was #9e5e8a: 4.47:1, failing
+     by a rounding width. Now 5.05:1. */
+  --color-secondary-dark: #935780;
+  --color-secondary-hover-dark: #8b4d77; /* #faf8f3 on it: 5.78:1 */
   --color-secondary-foreground-dark: #faf8f3;
 
   --color-accent-dark: #f5a962;
@@ -83,14 +99,28 @@
   --color-warning-dark: #fcd34d;
   --color-warning-hover-dark: #fbbf24;
   --color-warning-foreground-dark: #78350f;
+  /* --color-warning-text had NO dark counterpart at all, so the light value
+     leaked into the dark theme and measured 3.71:1 on the #1a1815 canvas. A
+     "text" token has to invert with the theme like every other one: same hue,
+     lifted until it clears 4.5:1 on the lightest dark surface (#3a3228,
+     4.85:1); 6.82:1 on the canvas. */
+  --color-warning-text-dark: #cf9700;
 
   --color-muted-dark: #3a3228;
   --color-muted-hover-dark: #4a4238;
-  --color-muted-foreground-dark: #9a8f7f;
+  /* Was #9a8f7f — 3.96:1 on --color-muted-dark and worse on the hover step it
+     also renders over. Tuned against the darkest case, --color-muted-hover-dark
+     #4a4238: 4.82:1 there, 6.15:1 on --color-muted-dark. */
+  --color-muted-foreground-dark: #bcb4aa;
 
   --color-text-dark: #faf8f3;
   --color-text-secondary-dark: #d4cfc0;
-  --color-text-muted-dark: #8a7f6f;
+  /* Was #8a7f6f — the light theme's muted value stepped the wrong way for a
+     dark canvas: 3.82:1 on --color-surface-dark and 3.20:1 on
+     --color-surface-hover-dark. Muted text must step AWAY from a dark canvas,
+     i.e. lighter. Tuned against the lightest surface it lands on (#3a3228,
+     4.87:1); 5.81:1 on --color-surface-dark, 6.85:1 on the canvas. */
+  --color-text-muted-dark: #a8a093;
 
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
@@ -132,6 +162,7 @@
   --color-warning: var(--color-warning-dark);
   --color-warning-hover: var(--color-warning-hover-dark);
   --color-warning-foreground: var(--color-warning-foreground-dark);
+  --color-warning-text: var(--color-warning-text-dark);
 
   --color-muted: var(--color-muted-dark);
   --color-muted-hover: var(--color-muted-hover-dark);
