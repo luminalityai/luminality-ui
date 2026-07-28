@@ -76,11 +76,66 @@ export default defineConfig({
         },
         test: {
           name: "storybook",
+          // Every story now runs twice (see `instances` below), so the pool is
+          // twice as contended. Vitest's 5s default is not survivable under
+          // that: files fail on queueing, not on anything a story does.
+          testTimeout: 120_000,
+          hookTimeout: 120_000,
+          // Each instance is a separate project with its own pool of headless
+          // browser contexts, so leaving this unbounded doubles the concurrent
+          // Chromium count and starves the runner — files then die on "Cannot
+          // connect to the server in 60 seconds". Cap it per instance.
+          maxWorkers: 3,
           browser: {
             enabled: true,
             provider: playwright(),
             headless: true,
-            instances: [{ browser: "chromium" }],
+            // Audit every story at BOTH a phone and a desktop width.
+            //
+            // NB the viewport is NOT set via `browser.viewport` or the
+            // per-instance `viewport` key. Both are inert here:
+            //
+            //  1. `@vitest/browser-playwright` 4.1.x has the line that would
+            //     apply it to the Playwright context commented out, so Vitest's
+            //     documented 414x896 default never reaches the browser; and
+            //  2. `@storybook/addon-vitest` calls `page.viewport(w, h)` before
+            //     EVERY story from `setViewport()` in its own test-utils, which
+            //     would override it regardless. With no Storybook viewport
+            //     selected it uses that helper's own hardcoded default of
+            //     1200x900 — which is why the pre-existing baseline was in fact
+            //     a ~desktop measurement, not the 414x896 phone one Vitest's
+            //     docs imply.
+            //
+            // The lever that actually works is Storybook's own viewport global,
+            // which addon-vitest reads from the `storybook/test-initial-globals`
+            // provide key — and `provide` IS settable per instance. The values
+            // below are the built-in MINIMAL_VIEWPORTS entries: `mobile2` is
+            // 414x896 and `desktop` is 1280x1024.
+            //
+            // Both instances therefore widen coverage relative to the old
+            // 1200x900 run: `mobile2` reaches everything below `md:` (which was
+            // never audited anywhere in the estate), and `desktop` reaches `xl:`
+            // (1280) which 1200 did not.
+            instances: [
+              {
+                browser: "chromium",
+                name: "storybook-mobile",
+                provide: {
+                  "storybook/test-initial-globals": {
+                    viewport: { value: "mobile2" },
+                  },
+                },
+              },
+              {
+                browser: "chromium",
+                name: "storybook-desktop",
+                provide: {
+                  "storybook/test-initial-globals": {
+                    viewport: { value: "desktop" },
+                  },
+                },
+              },
+            ],
           },
         },
       },
