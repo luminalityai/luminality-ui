@@ -25,7 +25,9 @@ env:
   # Single source of truth for the Claude model across this repo's Claude
   # workflows. Override org-wide via the CLAUDE_MODEL Actions variable; the
   # literal is a safe fallback so an unset var can't yield an empty --model.
-  CLAUDE_MODEL: "${{ vars.CLAUDE_MODEL || 'claude-opus-4-8' }}"
+  CLAUDE_MODEL: "${{ vars.CLAUDE_MODEL || 'claude-sonnet-5' }}"
+  # Reasoning effort, same pattern — an org-wide var, not a hardcoded 'high'.
+  CLAUDE_EFFORT: "${{ vars.CLAUDE_EFFORT || 'high' }}"
 
 jobs:
   claude:
@@ -58,4 +60,4 @@ jobs:
             actions: read
           # Pin the model so the interactive agent doesn't silently shift when
           # the action's default changes. Keep in lockstep with claude-code-review.yml.
-          claude_args: "--model ${{ env.CLAUDE_MODEL }} --effort high"
+          claude_args: "--model ${{ env.CLAUDE_MODEL }} --effort ${{ env.CLAUDE_EFFORT }}"

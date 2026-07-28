@@ -25,7 +25,9 @@ env:
   # Single source of truth for the Claude model. Override org-wide via the
   # CLAUDE_MODEL Actions variable; the literal is a safe fallback so an unset
   # var can't yield an empty --model.
-  CLAUDE_MODEL: "${{ vars.CLAUDE_MODEL || 'claude-opus-4-8' }}"
+  CLAUDE_MODEL: "${{ vars.CLAUDE_MODEL || 'claude-sonnet-5' }}"
+  # Reasoning effort, same pattern — an org-wide var, not a hardcoded 'high'.
+  CLAUDE_EFFORT: "${{ vars.CLAUDE_EFFORT || 'high' }}"
 
 jobs:
   maintenance:
@@ -461,7 +463,7 @@ jobs:
           claude_args: >-
             --model ${{ env.CLAUDE_MODEL }}
             --allowed-tools "${{ steps.build-prompt.outputs.allowed-tools }}"
-            --effort high
+            --effort ${{ env.CLAUDE_EFFORT }}
 
       # ----- artifacts -----
 
