@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-07-29
+
 ### Fixed
 
 - **The dark theme now meets WCAG AA — it had never been audited at all.** The package ships two palettes (a light `@theme` default and a `[data-theme="dark"]` override block), but Storybook pinned neither, so every story only ever rendered light. Gating the dark theme surfaced **48 `color-contrast` nodes across 17 stories**, tracing to **five dark tokens plus one light one**:
@@ -161,7 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Core UI components: Button, Card, Dialog, AlertDialog (#2)
 - Design tokens and `cn()` utility (#1)
 
-[Unreleased]: https://github.com/luminalityai/luminality-ui/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/luminalityai/luminality-ui/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/luminalityai/luminality-ui/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/luminalityai/luminality-ui/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/luminalityai/luminality-ui/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/luminalityai/luminality-ui/compare/v0.5.0...v0.6.0
