@@ -1,0 +1,80 @@
+name: Publish Storybook
+
+# Publishes the built Storybook to GitHub Pages so consuming apps
+# (luminality-web) can compose it via `refs` in their own .storybook/main.ts
+# without cloning this repo.
+#
+# Deliberately a SEPARATE workflow from ci.yml, triggered only on push to main:
+#   * it never reports a status check on a pull request, so it can never become
+#     (or be mistaken for) a required check, and
+#   * it does not touch the `Storybook story tests (interaction + a11y)` job in
+#     ci.yml, which IS a required check context and must keep its exact name.
+#
+# Published on every merge to main (not only on release) so the composed
+# catalog always matches what consumers see on their own main.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never cancel an in-flight Pages deployment — a cancelled deploy can leave the
+# site serving a half-uploaded artifact. Queue instead.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Storybook
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: storybook-static
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
