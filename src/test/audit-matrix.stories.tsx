@@ -10,7 +10,12 @@ import { expect } from "storybook/test"
  * entirely non-obvious: a dependency bump that changes the provide key, the
  * globals' shape, or `setViewport()`'s precedence collapses all four instances
  * back onto a single cell — and EVERY story still passes, and the test count is
- * still exactly 4x. There is no other signal. These two stories are it.
+ * still exactly 4x. There is no other signal. `AuditsBothWidths` and
+ * `AuditsBothThemes` are it.
+ *
+ * `FreezesEntryAnimations` covers a third axis that is not about coverage but
+ * about determinism: whether the frame axe samples is the settled one. It fails
+ * silently in the same way — as flakiness rather than as a failure.
  *
  * Both derive their expectation from the VITEST INSTANCE NAME rather than from
  * an allow-list, and for the theme axis that is the whole point:
@@ -69,6 +74,51 @@ function AuditMatrixProbe() {
   )
 }
 
+/**
+ * Carries this repo's REAL animation utilities rather than a hand-written
+ * `@keyframes`, and both of the mechanisms actually in play:
+ *
+ *  - the `tailwindcss-animate` plugin classes that `dialog`, `alert-dialog`,
+ *    `dropdown-menu` and `tooltip` mount with (`data-[state=open]:animate-in`
+ *    + `fade-in-0` + `zoom-in-95` + `slide-in-from-top-*`), driven here by a
+ *    literal `data-state="open"` so the variants apply without a Radix root; and
+ *  - `animate-fade-in` from `src/styles/animations.css`, which is hand-written
+ *    and ships in the package's CSS for consumers.
+ *
+ * The freeze has to beat whatever those emit. A bespoke animation here would let
+ * this tripwire keep passing after a `tailwindcss-animate` upgrade changed the
+ * mechanism out from under it.
+ *
+ * `duration-1000` rather than the components' own `duration-200`: the assertion
+ * has to be able to FAIL when the freeze is removed, and 200ms is short enough
+ * that the play function could land after it finished by luck. Colours are
+ * pinned inline (#000000 on #ffffff, 21:1) so the probe can never itself trip
+ * the contrast gate — in either theme.
+ */
+function MotionProbe() {
+  return (
+    <div>
+      <output
+        data-testid="motion-probe"
+        data-state="open"
+        className="block duration-1000 ease-out data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-[48%]"
+        style={{ backgroundColor: "#ffffff", color: "#000000" }}
+      >
+        Motion probe (tailwindcss-animate) — asserts the gate samples settled
+        frames, not mid-animation ones.
+      </output>
+      <output
+        data-testid="motion-probe-keyframes"
+        className="block animate-fade-in"
+        style={{ backgroundColor: "#ffffff", color: "#000000" }}
+      >
+        Motion probe (hand-written animations.css) — same assertion, other
+        mechanism.
+      </output>
+    </div>
+  )
+}
+
 const meta = {
   title: "Test/AuditMatrix",
   component: AuditMatrixProbe,
@@ -115,5 +165,63 @@ export const AuditsBothThemes: Story = {
       .trim()
       .toLowerCase()
     await expect(background).toBe(theme === "dark" ? "#1a1815" : "#faf8f3")
+  },
+}
+
+/**
+ * The DETERMINISM axis — not about coverage, but about whether the frame axe
+ * samples is the settled one.
+ *
+ * axe reads computed style. While a component is fading, zooming or sliding in
+ * it is partly transparent and partly offset, so its contrast is a different
+ * number than the one that ships — and a different number on each run, depending
+ * on where the sample lands in the animation. On `fundbright-web` that produced
+ * the worst possible outcome: a 2.17:1 button FAILED the gate on one PR and
+ * PASSED on `main` with byte-identical code, so a real violation reached
+ * production through a green pipeline.
+ *
+ * `.storybook/preview.ts` fixes this by collapsing every animation and
+ * transition to 1ms with a negative delay under the test runner, landing each
+ * element on its final frame. This story asserts that freeze is actually in
+ * effect, because if it silently stops applying the symptom is not a failure —
+ * it is a return to intermittent flakiness, which reads as ordinary CI noise.
+ *
+ * The assertion is on RENDERED OPACITY, not on the presence of the style tag.
+ * The style tag existing proves nothing about whether its rule won the cascade;
+ * opacity is the property axe actually consumes.
+ *
+ * Negative control: removing `withFrozenMotion` from the `decorators` array in
+ * `.storybook/preview.ts` must make this story fail. Verified by doing exactly
+ * that — and the unfrozen reading was **opacity 0 on all four instances**
+ * (storybook-{mobile,desktop}-{light,dark}), not some partial value. axe was
+ * sampling a fully invisible element, which is why the result is a coin flip
+ * rather than a consistently wrong number: at opacity 0 there is no colour to
+ * measure, so whether a contrast violation is reported at all depends on where
+ * the sample lands. If you change the freeze, re-run that check; a tripwire that
+ * has never been seen to fail is not a tripwire.
+ */
+export const FreezesEntryAnimations: Story = {
+  render: () => <MotionProbe />,
+  play: async ({ canvas }) => {
+    const probe = canvas.getByTestId("motion-probe")
+    const computed = getComputedStyle(probe)
+
+    // The frame axe would measure. Anything below 1 is a frame no user settles
+    // on, and the contrast reading taken from it is meaningless.
+    await expect(computed.opacity).toBe("1")
+
+    // Belt and braces on the mechanism itself: a `duration-1000` element whose
+    // animation is still declared as running would drift back to flaky even if
+    // this particular sample happened to land at full opacity.
+    await expect(computed.animationDuration).toBe("0.001s")
+
+    // The second mechanism. `animate-fade-in` bakes its 0.3s into
+    // `animations.css`, so no utility can lengthen it — the duration assertion
+    // is the reliable one here, and it is the one that proves the freeze reaches
+    // hand-written keyframes and not just the plugin's.
+    const keyframesProbe = canvas.getByTestId("motion-probe-keyframes")
+    await expect(getComputedStyle(keyframesProbe).animationDuration).toBe(
+      "0.001s",
+    )
   },
 }

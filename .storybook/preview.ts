@@ -46,6 +46,65 @@ const withTheme: Decorator = (Story, context) => {
   return Story()
 }
 
+/**
+ * Freeze entry animations and transitions — for the TEST RUNNER ONLY.
+ *
+ * axe measures COMPUTED style. A component that fades, zooms or slides in is,
+ * for the length of its animation, a different element than the one that ships:
+ * partly transparent, partly offset, and composited against whatever is behind
+ * it. A contrast reading taken mid-animation is therefore a reading of a frame
+ * no user ever settles on, and it is a different number every run.
+ *
+ * That is not theoretical. On `fundbright-web` the same gap produced a
+ * deterministic 2.17:1 contrast failure that the gate FAILED on in one PR and
+ * PASSED on `main` with byte-identical code — a real violation reached
+ * production through a green pipeline. The measured cause there: the probe read
+ * `opacity: 0`, i.e. axe was sampling a fully invisible element, so there was no
+ * colour to measure and whether anything got reported at all was a coin flip.
+ *
+ * This package is squarely exposed: `dialog`, `alert-dialog`, `dropdown-menu`
+ * and `tooltip` all mount through `tailwindcss-animate`'s
+ * `data-[state=open]:animate-in … fade-in-0 … zoom-in-95 … slide-in-from-*`,
+ * and `src/styles/animations.css` ships hand-written `animate-fade-in` /
+ * `animate-accordion-*` on top of that. Two mechanisms, both animating opacity.
+ *
+ * `1ms` rather than `none`, deliberately: `animation: none` can leave an element
+ * at its PRE-animation base state, which for an entry animation is the invisible
+ * one — trading a random frame for a guaranteed-wrong frame. Running the
+ * animation to completion in 1ms with a negative delay lands every element on
+ * its FINAL frame instead, which is the state that ships.
+ *
+ * Gated on the runner so interactive Storybook keeps its animations: motion is a
+ * design property and reviewers should see it. That matters more here than in an
+ * app — this Storybook is the published, browsable catalog for the design
+ * system. `__vitest_worker__` is the same discriminator
+ * `src/test/audit-matrix.stories.tsx` already uses to read its instance name.
+ *
+ * The freeze fails SILENTLY if it stops applying — stories just go back to being
+ * flaky, which reads as ordinary CI noise and gets retried rather than
+ * investigated. `FreezesEntryAnimations` in `src/test/audit-matrix.stories.tsx`
+ * asserts it is live.
+ */
+const FROZEN_MOTION_STYLE_ID = "sb-frozen-motion"
+
+const withFrozenMotion: Decorator = (Story) => {
+  const underTestRunner = "__vitest_worker__" in globalThis
+  if (underTestRunner && !document.getElementById(FROZEN_MOTION_STYLE_ID)) {
+    const style = document.createElement("style")
+    style.id = FROZEN_MOTION_STYLE_ID
+    style.textContent = `*, *::before, *::after {
+      animation-delay: -1ms !important;
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-delay: -1ms !important;
+      transition-duration: 1ms !important;
+      scroll-behavior: auto !important;
+    }`
+    document.head.appendChild(style)
+  }
+  return Story()
+}
+
 const preview: Preview = {
   globalTypes: {
     theme: {
@@ -65,7 +124,7 @@ const preview: Preview = {
   initialGlobals: {
     theme: "light",
   },
-  decorators: [withTheme],
+  decorators: [withTheme, withFrozenMotion],
   parameters: {
     controls: {
       matchers: {
