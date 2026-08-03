@@ -47,9 +47,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         "hover:bg-[var(--color-surface-hover)] text-[var(--color-text-secondary)] border-transparent",
       muted:
         "bg-[var(--color-muted)] text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted-hover)] border-[var(--color-border)]",
+      // `outline` and `link` render primary as TEXT on the page surface, which
+      // is a different contrast pair from the fill carrying its own foreground
+      // — so they take the ink sibling, not the fill. The border keeps the fill
+      // (a boundary is a graphic, judged at 3:1, and the fill clears that), and
+      // the hover state still swaps to fill + its own foreground.
+      // The `var(ink, fill)` fallback keeps hosts that predate the token, or
+      // that ship their own palette without it, rendering exactly as before.
       outline:
-        "border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-[var(--color-primary-foreground)]",
-      link: "bg-transparent border-0 text-[var(--color-text)] hover:text-[var(--color-primary)]",
+        "border-[var(--color-primary)] text-[var(--color-primary-text,var(--color-primary))] hover:bg-[var(--color-primary)] hover:text-[var(--color-primary-foreground)]",
+      link: "bg-transparent border-0 text-[var(--color-text)] hover:text-[var(--color-primary-text,var(--color-primary))]",
     }
 
     const sizes = {

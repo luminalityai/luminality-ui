@@ -143,7 +143,9 @@ const ListItem = React.forwardRef<
               type="button"
               key={action.label}
               onClick={action.onClick}
-              className="w-14 h-14 flex flex-col items-center justify-center gap-1 p-2.5 rounded-[var(--radius-sm)] hover:bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors cursor-pointer"
+              // Hover renders primary as TEXT (label + icon), so it takes the
+              // ink sibling rather than the fill.
+              className="w-14 h-14 flex flex-col items-center justify-center gap-1 p-2.5 rounded-[var(--radius-sm)] hover:bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:text-[var(--color-primary-text,var(--color-primary))] transition-colors cursor-pointer"
               title={action.label}
               aria-label={action.label}
             >
