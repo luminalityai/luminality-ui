@@ -49,6 +49,30 @@ export default defineConfig({
         test: {
           name: "unit",
           environment: "jsdom",
+          // Vitest's 5s default is not survivable on a contended machine, and
+          // these tests fail on STARVATION rather than on anything they assert.
+          //
+          // Measured on a 10-core laptop (luminalityai/delivery-ops#308):
+          //
+          //   quiet-ish machine, suite alone .... slowest test  2.4s
+          //   full pre-push fan-out (6 jobs) .... slowest test  4.4s  (87% of 5s)
+          //   loaded machine, suite alone ....... slowest test  7.3s  -> FAILS
+          //
+          // The failures are exactly the tests that crossed 5000ms — jsdom
+          // `userEvent` interactions and the axe passes, both of which do a lot
+          // of async work per assertion and degrade linearly with CPU
+          // contention. Nothing about them is genuinely slow; they queue.
+          //
+          // Note the last row: the suite blows the 5s ceiling with NO other
+          // pre-push job running, purely from unrelated load on the box. That
+          // is why the ceiling — not lefthook's `parallel: true` — is the fix
+          // here; serialising the hook was measured and does not prevent it.
+          //
+          // 20s is ~3x the worst observed starvation and ~8x the quiet-machine
+          // worst case. Passing tests never wait for a timeout, so a high
+          // ceiling costs nothing on green runs; it only changes how long a
+          // genuinely hung test takes to report, which is still 20s.
+          testTimeout: 20_000,
           setupFiles: ["./src/test/setup.ts"],
           include: ["src/test/**/*.{test,spec}.{ts,tsx}"],
           exclude: [
