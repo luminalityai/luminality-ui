@@ -41,7 +41,9 @@ const TabsTrigger = React.forwardRef<
     className={cn(
       "flex items-center gap-1.5 bg-transparent border-0 border-b-2 border-solid px-4 py-2 cursor-pointer text-[13px] font-semibold -mb-px transition-colors",
       "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)]",
-      "data-[state=active]:border-[var(--color-primary)] data-[state=active]:text-[var(--color-primary)]",
+      // The active label is primary rendered as TEXT, so it takes the ink
+      // sibling; the underline keeps the fill (a graphic, judged at 3:1).
+      "data-[state=active]:border-[var(--color-primary)] data-[state=active]:text-[var(--color-primary-text,var(--color-primary))]",
       className,
     )}
     {...props}

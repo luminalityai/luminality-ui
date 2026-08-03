@@ -13,6 +13,21 @@
   --color-primary: #c5274a; /* was #d94563 — 5.58:1 */
   --color-primary-hover: #b21f3f;
   --color-primary-foreground: #ffffff;
+  /* Ink sibling for --color-primary, for the places primary is rendered as
+     TEXT rather than as a fill: Button `outline` and `link`, the active
+     TabsTrigger, and the List hover affordance.
+
+     A fill and an ink have OPPOSITE requirements against the same surface
+     ladder — the fill must be far enough from --color-primary-foreground to
+     carry it, while text must be far enough from the SURFACE to be read on it.
+     One value cannot satisfy both, which is why this is a sibling token and
+     not a retune of the brand fill.
+
+     In the light theme the two coincide, because --color-primary was already
+     darkened for exactly this reason (5.16:1 worst case, on --color-surface-
+     hover). It is spelled out anyway so the pair exists in both themes and the
+     dark override below has something to override. */
+  --color-primary-text: #c5274a;
 
   --color-secondary: #8b4d77;
   --color-secondary-hover: #7a3d67;
@@ -71,6 +86,18 @@
      lighter, matching the direction hover has in the light theme, at 6.64:1. */
   --color-primary-hover-dark: #ee7b8f;
   --color-primary-foreground-dark: #1a1815; /* was #faf8f3 — 3.16:1 on the fill */
+  /* The dark half of the fill/ink split, and the case that motivated the pair.
+     --color-primary-dark is tuned to carry near-black ON it, which makes it far
+     too close to the dark surfaces to be READ against them: as text it measured
+     5.28:1 on the canvas but 4.48:1 on --color-surface-dark and 3.75:1 on
+     --color-surface-hover-dark — i.e. it failed on the two surfaces Button
+     `outline`, the active TabsTrigger and the List hover actually sit on, and
+     passed only on the one an audit is most likely to sample. Same hue (349.6)
+     and saturation (75.1%) as the fill, lifted to the first lightness that
+     clears 4.5:1 on the worst of those surfaces: 4.90:1 on
+     --color-surface-hover-dark, 5.84:1 on --color-surface-dark, 6.89:1 on the
+     canvas. The fill itself is untouched. */
+  --color-primary-text-dark: #ed8193;
 
   /* Secondary's dark fill sits mid-ladder, so unlike primary it keeps a
      near-white ink and the FILL moves instead — one step darker, the same
@@ -138,6 +165,7 @@
   --color-primary: var(--color-primary-dark);
   --color-primary-hover: var(--color-primary-hover-dark);
   --color-primary-foreground: var(--color-primary-foreground-dark);
+  --color-primary-text: var(--color-primary-text-dark);
 
   --color-secondary: var(--color-secondary-dark);
   --color-secondary-hover: var(--color-secondary-hover-dark);
