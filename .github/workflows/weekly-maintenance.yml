@@ -21,6 +21,12 @@ on:
 
 permissions: {}
 
+# Weekly, and it opens PRs / touches security state — a cancelled half-run is
+# worse than a queued one, so never cancel in progress.
+concurrency:
+  group: weekly-maintenance
+  cancel-in-progress: false
+
 env:
   # Single source of truth for the Claude model. Override org-wide via the
   # CLAUDE_MODEL Actions variable; the literal is a safe fallback so an unset
@@ -476,3 +482,48 @@ jobs:
             tmp/maintenance/
           if-no-files-found: ignore
           retention-days: 90
+
+  # Crash-heartbeat. The beat's own fail-loud only helps if the job REACHED it;
+  # if the run dies earlier (token mint, runner death, quota) the missed weekly
+  # pass must still be visible. Dedupes into ONE open issue and closes it only on
+  # a real recovery — an all-skipped run is not recovery.
+  #
+  # Copied verbatim from luminalityai/.github@v2's reusable so the inlined copy
+  # cannot drift from it. NOTE: issues are DISABLED on this repo, so every
+  # `gh issue` call is best-effort and a real failure degrades to a ::warning::.
+  # That also stops a bare `gh issue list` under `set -euo pipefail` turning a
+  # GREEN run RED. GH_REPO is required: this job does NOT check out, so `gh` has
+  # no repo context without it.
+  alert:
+    needs: [maintenance]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Flag failure or clear on recovery
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          FAILED: ${{ contains(needs.*.result, 'failure') }}
+          SUCCEEDED: ${{ contains(needs.*.result, 'success') }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          WF="weekly-maintenance"
+          EXISTING="$(gh issue list --search "\"beat failure: ${WF}\" in:title" --state open --json number --jq '.[0].number // empty' 2>/dev/null || true)"
+          if [ "${FAILED}" != "true" ]; then
+            if [ "${SUCCEEDED}" = "true" ] && [ -n "$EXISTING" ]; then
+              gh issue close "$EXISTING" --comment "Recovered: ${WF} succeeded — ${RUN_URL}." 2>/dev/null || true
+            fi
+            exit 0
+          fi
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "Failed again: ${RUN_URL}" 2>/dev/null || true
+          else
+            gh issue create \
+              --title "beat failure: ${WF} ($(date -u +%F))" \
+              --body "The \`${WF}\` beat failed before it could report — the weekly dependency/security pass did NOT run to completion. See ${RUN_URL}" 2>/dev/null \
+              || echo "::warning::${WF} FAILED and issues are unavailable on this repo — see ${RUN_URL}"
+          fi
