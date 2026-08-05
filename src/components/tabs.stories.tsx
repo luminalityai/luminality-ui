@@ -84,3 +84,42 @@ export const SwitchesTabs: Story = {
     )
   },
 }
+
+// Same structural gap as Button's `OnSurfaces` — see that story for the full
+// argument. The active `TabsTrigger` carries its ink directly on whatever
+// surface the tab strip sits on, and in the consuming apps that is a Card, not
+// the page canvas. Storying it only on `--color-background` means the gate
+// measures the one pair the #297 defect passed on.
+// luminalityai/delivery-ops#309.
+const TAB_SURFACES = [
+  ["--color-surface", "on --color-surface"],
+  ["--color-surface-hover", "on --color-surface-hover"],
+] as const
+
+export const OnSurfaces: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      {TAB_SURFACES.map(([token, label]) => (
+        <div
+          key={token}
+          className="rounded-lg p-4"
+          style={{ background: `var(${token})` }}
+        >
+          <p className="mb-2 text-sm text-[var(--color-text)]">{label}</p>
+          <Tabs defaultValue="overview" className="w-[480px]">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="activity">Activity</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview">
+              <p className="text-sm text-[var(--color-text-secondary)]">
+                High-level summary of the project.
+              </p>
+            </TabsContent>
+          </Tabs>
+        </div>
+      ))}
+    </div>
+  ),
+}
