@@ -454,7 +454,7 @@ jobs:
 
       - name: Weekly maintenance
         id: maintenance
-        uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.168 (auth: older bundled CLI 401s on OAuth tokens after the 2026-07-07 Anthropic auth change; see rarebit-ops#119)
+        uses: anthropics/claude-code-action@5ccc3a35a6367cdb8e6fbd0728287467540ecfe2 # v1.0.168 (auth: older bundled CLI 401s on OAuth tokens after the 2026-07-07 Anthropic auth change; see rarebit-ops#119)
         timeout-minutes: 25
         env:
           # The agent's `gh`/`git` Bash calls authenticate with this. Precedence:
