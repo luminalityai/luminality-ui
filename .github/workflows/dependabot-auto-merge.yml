@@ -6,8 +6,8 @@ name: Dependabot auto-merge
 # dependabot-auto-merge.yml. luminality-ui is a PUBLIC repo and GitHub forbids a
 # public repo from consuming reusable workflows stored in the PRIVATE
 # luminalityai/.github; the call resolved as "workflow was not found" and
-# startup-failed. The decision is to keep .github private, so the reusable's
-# logic is embedded here directly.
+# startup-failed, so the reusable's logic is embedded here directly. Keep this
+# copy's gates in sync with the org workflow.
 #
 # It lands two classes of PR by enabling squash auto-merge (GitHub merges once
 # the repo's required checks go green):
@@ -32,13 +32,20 @@ concurrency:
 
 jobs:
   auto-merge:
-    # Act on Dependabot's own PRs and on autonomous SRE engine PRs (identified
-    # by their head-ref prefix).
+    # Act on Dependabot's own PRs and on autonomous SRE engine PRs. The engine
+    # path gates on the head-ref prefix AND the PR being opened by the
+    # release-bot App from a branch in THIS repo. The prefix alone is
+    # spoofable: this repo is public, so anyone can open a fork PR from a
+    # branch named ci-fix/* and, without these checks, get squash auto-merge
+    # enabled with no human review (mirrors luminalityai/.github#36, which this
+    # inlined copy never picked up).
     if: >-
       github.actor == 'dependabot[bot]' ||
-      startsWith(github.event.pull_request.head.ref, 'issue-worker/') ||
-      startsWith(github.event.pull_request.head.ref, 'ci-fix/') ||
-      startsWith(github.event.pull_request.head.ref, 'sentry-autofix/')
+      ( github.event.pull_request.user.login == 'luminality-release-bot[bot]' &&
+        github.event.pull_request.head.repo.full_name == github.repository && (
+        startsWith(github.event.pull_request.head.ref, 'issue-worker/') ||
+        startsWith(github.event.pull_request.head.ref, 'ci-fix/') ||
+        startsWith(github.event.pull_request.head.ref, 'sentry-autofix/') ) )
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -64,7 +71,11 @@ jobs:
           gh pr merge --auto --squash "$PR_URL" || echo "::warning::auto-merge not enabled for $PR_URL"
 
       - name: Enable auto-merge — autonomous SRE engine PR
-        if: github.actor != 'dependabot[bot]'
+        # Positive author check (not just "!= dependabot"): only the release-bot
+        # App's same-repo PRs may take this path.
+        if: >-
+          github.event.pull_request.user.login == 'luminality-release-bot[bot]' &&
+          github.event.pull_request.head.repo.full_name == github.repository
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
