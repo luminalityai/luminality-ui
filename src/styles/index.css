@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 
+/* design/ holds non-shipping reference material (e.g. an archived Figma mock).
+   Keep Tailwind's automatic source detection from scanning it, or its class
+   names leak into the published stylesheet. */
+@source not "../../design";
+
 @import "./theme.css";
 @import "./animations.css";
