@@ -25,7 +25,11 @@ env:
 
 jobs:
   pin-check:
-    name: Actions pinning gate
+    # The org `auto-merge gate` ruleset (2026-09-24) requires the status context
+    # `pin-check / Actions pinning gate` -- the name a CALLER of the org reusable
+    # gets (`<caller job> / <callee job>`). Inlined, a job's context is just its
+    # `name:`, so it is spelled out here in full. Renaming this blocks every PR.
+    name: pin-check / Actions pinning gate
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
