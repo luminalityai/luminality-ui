@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Luminality</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   DESIGN TOKENS from Figma Color Palettes
+   ============================================ */
+:root {
+  /* Night Forest - Primary palette */
+  --purple-deep: #3B2D8B;
+  --purple-mid: #6A4DC7;
+  --purple-light: #B4A0E8;
+  --purple-pale: #D4BBFC;
+  --navy: #0E0D2C;
+  --navy-light: #1A1842;
+  --navy-mid: #252357;
+
+  /* Gold/Amber accents */
+  --gold: #E8B84B;
+  --gold-light: #F5D98A;
+  --gold-pale: #FFF4D6;
+  --amber: #D4A043;
+  --cream: #FAEDCD;
+
+  /* Pearly Lavender Whisper */
+  --lavender: #9667E0;
+  --lavender-light: #D4BBFC;
+  --lavender-pale: #EBD9FC;
+  --lavender-ghost: #F2EBFB;
+  --lavender-white: #FBFAFF;
+
+  /* Delicate Pastel Dreams */
+  --peach: #E8A598;
+  --peach-light: #FFB5A7;
+  --peach-pale: #FEC5BB;
+  --blush: #FCD5CE;
+  --blush-light: #FAE1DD;
+
+  /* Ethereal Hues */
+  --ethereal-cream: #F2DFD7;
+  --ethereal-white: #FEF9FF;
+  --ethereal-lilac: #D4C1EC;
+  --ethereal-periwinkle: #9F9FED;
+  --ethereal-blue: #736CED;
+
+  /* Functional */
+  --bg-dark: #0E0D2C;
+  --bg-card: #1A1842;
+  --bg-card-hover: #252357;
+  --text-primary: #FEFAFF;
+  --text-secondary: #B4A0E8;
+  --text-muted: #7B6FA8;
+  --text-gold: #F5D98A;
+  --success: #6BCB77;
+  --warning: #FFD93D;
+  --danger: #FF6B6B;
+
+  /* Spacing & Sizing */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-xl: 36px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 4px 24px rgba(14,13,44,0.4);
+  --shadow-glow: 0 0 30px rgba(106,77,199,0.3);
+  --shadow-gold: 0 0 20px rgba(232,184,75,0.3);
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Nunito', -apple-system, sans-serif;
+  background: #08071C;
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   PHONE FRAME
+   ============================================ */
+.phone-frame {
+  width: 393px;
+  height: 852px;
+  background: var(--bg-dark);
+  border-radius: 48px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 3px #2A2860, 0 0 60px rgba(106,77,199,0.2);
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: linear-gradient(to bottom, var(--bg-dark) 60%, transparent);
+}
+.status-bar .time { font-size: 15px; font-weight: 700; }
+.status-bar .icons { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+
+/* ============================================
+   SCREENS CONTAINER
+   ============================================ */
+.screens-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.screen {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transform: translateX(20px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.screen::-webkit-scrollbar { display: none; }
+
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+
+/* ============================================
+   BOTTOM NAV
+   ============================================ */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding: 10px 8px 28px;
+  background: linear-gradient(to top, var(--bg-dark) 70%, transparent);
+  z-index: 90;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  transition: all 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item span {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.25s ease;
+}
+.nav-item svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: all 0.25s ease;
+}
+.nav-item.active svg { stroke: var(--gold); filter: drop-shadow(0 0 8px rgba(232,184,75,0.4)); }
+.nav-item.active span { color: var(--gold); }
+
+/* Central check-in button */
+.nav-item.check-in-btn {
+  position: relative;
+  top: -16px;
+}
+.nav-item.check-in-btn .btn-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--amber) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(232,184,75,0.4);
+  transition: all 0.3s ease;
+}
+.nav-item.check-in-btn .btn-circle svg {
+  stroke: var(--navy);
+  width: 28px;
+  height: 28px;
+}
+.nav-item.check-in-btn:hover .btn-circle {
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(232,184,75,0.5);
+}
+.nav-item.check-in-btn span { color: var(--gold-light); }
+
+/* ============================================
+   SCREEN 1: HOME
+   ============================================ */
+.home-screen {
+  padding: 54px 20px 100px;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.home-greeting h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.home-greeting p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.home-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--purple-mid);
+}
+.home-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Nomi Card */
+.nomi-card {
+  background: linear-gradient(135deg, var(--purple-deep) 0%, var(--navy-mid) 100%);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(180,160,232,0.15);
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+.nomi-card:hover { border-color: rgba(232,184,75,0.3); }
+.nomi-card::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(232,184,75,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.nomi-card-inner {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.nomi-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: radial-gradient(circle, rgba(245,217,138,0.2), transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nomi-avatar img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+.nomi-text h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--gold-light);
+  margin-bottom: 4px;
+}
+.nomi-text p {
+  font-size: 13.5px;
+  color: var(--lavender-light);
+  line-height: 1.45;
+}
+.nomi-text .nomi-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 6px 14px;
+  background: rgba(232,184,75,0.15);
+  border: 1px solid rgba(232,184,75,0.3);
+  border-radius: var(--radius-full);
+  color: var(--gold-light);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.nomi-text .nomi-cta:hover { background: rgba(232,184,75,0.25); }
+
+/* Streak */
+.streak-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.streak-item {
+  flex: 1;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  text-align: center;
+  border: 1px solid rgba(180,160,232,0.08);
+}
+.streak-item .streak-num {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.streak-item .streak-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.streak-item.highlight {
+  background: linear-gradient(135deg, rgba(232,184,75,0.12), rgba(232,184,75,0.04));
+  border-color: rgba(232,184,75,0.2);
+}
+
+/* Section headers */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  margin-top: 8px;
+}
+.section-header h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.section-header a {
+  font-size: 13px;
+  color: var(--purple-light);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Mood History */
+.mood-history {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.mood-history::-webkit-scrollbar { display: none; }
+
+.mood-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 52px;
+}
+.mood-day .day-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.mood-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.mood-day .mood-time {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Journal Preview Cards */
+.journal-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.journal-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: 1px solid rgba(180,160,232,0.08);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.journal-card:hover { background: var(--bg-card-hover); border-color: rgba(180,160,232,0.15); }
+.journal-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.journal-card-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.journal-card-mood { font-size: 18px; }
+.journal-card h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.journal-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.journal-card-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.tag {
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(106,77,199,0.15);
+  color: var(--purple-light);
+  border: 1px solid rgba(106,77,199,0.2);
+}
+.tag.gold {
+  background: rgba(232,184,75,0.12);
+  color: var(--gold-light);
+  border-color: rgba(232,184,75,0.2);
+}
+
+/* ============================================
+   SCREEN 2: CHECK-IN
+   ============================================ */
+.checkin-screen {
+  padding: 54px 20px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.checkin-header {
+  text-align: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+.checkin-header h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+.checkin-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.emotion-wheel {
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  position: relative;
+  margin-bottom: 30px;
+  cursor: pointer;
+}
+.emotion-wheel-ring {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid rgba(180,160,232,0.2);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s;
+}
+.emotion-wheel-ring:hover { border-color: rgba(232,184,75,0.4); }
+.emotion-wheel-center {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--amber) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 40px rgba(232,184,75,0.3);
+  transition: transform 0.3s;
+}
+.emotion-wheel-center:hover { transform: scale(1.05); }
+.emotion-wheel-center svg {
+  width: 32px;
+  height: 32px;
+  stroke: var(--navy);
+  fill: none;
+  stroke-width: 2.5;
+}
+
+.emotion-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+.emotion-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid rgba(180,160,232,0.08);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.emotion-btn:hover, .emotion-btn.selected {
+  border-color: rgba(232,184,75,0.4);
+  background: rgba(232,184,75,0.08);
+  transform: translateY(-2px);
+}
+.emotion-btn .emoji { font-size: 28px; }
+.emotion-btn .label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.emotion-btn.selected .label { color: var(--gold-light); }
+
+.checkin-slider-container {
+  width: 100%;
+  margin-bottom: 24px;
+}
+.checkin-slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.checkin-slider {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--purple-deep), var(--gold));
+  outline: none;
+}
+.checkin-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 12px rgba(232,184,75,0.4);
+  cursor: pointer;
+}
+
+.checkin-note {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid rgba(180,160,232,0.1);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  color: var(--text-primary);
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  resize: none;
+  min-height: 80px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.checkin-note::placeholder { color: var(--text-muted); }
+.checkin-note:focus { border-color: var(--purple-mid); }
+
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: none;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--amber) 100%);
+  color: var(--navy);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  box-shadow: 0 4px 20px rgba(232,184,75,0.3);
+  transition: all 0.25s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(232,184,75,0.4); }
+
+/* ============================================
+   SCREEN 3: JOURNAL
+   ============================================ */
+.journal-screen {
+  padding: 54px 20px 100px;
+}
+.journal-screen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.journal-screen-header h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+}
+.journal-add-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-gold);
+  transition: transform 0.2s;
+}
+.journal-add-btn:hover { transform: scale(1.1); }
+.journal-add-btn svg { stroke: var(--navy); width: 22px; height: 22px; }
+
+.journal-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.journal-filters::-webkit-scrollbar { display: none; }
+.filter-chip {
+  padding: 7px 16px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid rgba(180,160,232,0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-chip.active {
+  background: rgba(232,184,75,0.15);
+  color: var(--gold-light);
+  border-color: rgba(232,184,75,0.3);
+}
+
+.journal-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.journal-entry {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(180,160,232,0.08);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.journal-entry:hover { border-color: rgba(180,160,232,0.18); }
+.journal-entry-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.journal-entry-body {
+  padding: 14px 16px;
+}
+.journal-entry-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.journal-entry-date { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.journal-entry-mood { font-size: 16px; }
+.journal-entry h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.journal-entry p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.journal-entry-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.journal-entry-location svg { width: 12px; height: 12px; stroke: var(--text-muted); }
+
+/* ============================================
+   SCREEN 4: GALLERY / COLLECTIBLES
+   ============================================ */
+.gallery-screen {
+  padding: 54px 20px 100px;
+}
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.gallery-header h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+}
+.gallery-stats {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.gallery-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.gallery-stat .coin { color: var(--gold); }
+.gallery-stat .gem { color: var(--lavender); }
+
+.gallery-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.gallery-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 18px;
+  background: var(--bg-card);
+  border-radius: var(--radius-full);
+  padding: 3px;
+}
+.gallery-tab {
+  flex: 1;
+  padding: 9px 12px;
+  text-align: center;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.gallery-tab.active {
+  background: var(--purple-deep);
+  color: var(--text-primary);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.gallery-item {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.25s;
+  aspect-ratio: 1;
+  background: var(--bg-card);
+  border: 1px solid rgba(180,160,232,0.08);
+}
+.gallery-item:hover { transform: scale(1.03); }
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gallery-item-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(14,13,44,0.7);
+  backdrop-filter: blur(8px);
+  color: var(--gold-light);
+}
+.gallery-item.locked {
+  opacity: 0.5;
+  filter: grayscale(0.5);
+}
+.gallery-item.locked::after {
+  content: '🔒';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 28px;
+}
+
+/* Pack section */
+.packs-section {
+  margin-top: 8px;
+}
+.pack-cards {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.pack-cards::-webkit-scrollbar { display: none; }
+.pack-card {
+  min-width: 140px;
+  background: linear-gradient(135deg, var(--purple-deep), var(--navy-mid));
+  border-radius: var(--radius-md);
+  padding: 16px 14px;
+  text-align: center;
+  border: 1px solid rgba(180,160,232,0.15);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.pack-card:hover { transform: translateY(-3px); border-color: rgba(232,184,75,0.3); }
+.pack-card .pack-icon { font-size: 36px; margin-bottom: 8px; }
+.pack-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.pack-card .pack-cost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+/* ============================================
+   SCREEN 5: PROFILE / ANALYZE
+   ============================================ */
+.profile-screen {
+  padding: 54px 20px 100px;
+}
+.profile-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  overflow: hidden;
+  border: 3px solid var(--purple-mid);
+  background: var(--bg-card);
+}
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.profile-header h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+}
+.profile-header p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.profile-stat {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 16px 10px;
+  text-align: center;
+  border: 1px solid rgba(180,160,232,0.08);
+}
+.profile-stat .num {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.profile-stat .label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Mood breakdown chart */
+.mood-chart {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(180,160,232,0.08);
+}
+.mood-chart h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.mood-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mood-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mood-bar-emoji { font-size: 20px; width: 28px; text-align: center; }
+.mood-bar-track {
+  flex: 1;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(180,160,232,0.1);
+  overflow: hidden;
+}
+.mood-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 1s ease;
+}
+.mood-bar-pct {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  width: 32px;
+  text-align: right;
+}
+
+/* Settings items */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.settings-item:first-child { border-radius: var(--radius-md) var(--radius-md) var(--radius-sm) var(--radius-sm); }
+.settings-item:last-child { border-radius: var(--radius-sm) var(--radius-sm) var(--radius-md) var(--radius-md); }
+.settings-item:hover { background: var(--bg-card-hover); }
+.settings-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.settings-item-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.settings-item-label { font-size: 14px; font-weight: 600; }
+.settings-item svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--text-muted);
+}
+
+/* ============================================
+   SCREEN 6: JOURNAL WRITE
+   ============================================ */
+.write-screen {
+  padding: 54px 20px 30px;
+  min-height: 100%;
+}
+.write-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.write-header .back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--purple-light);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.write-header .back-btn svg { width: 20px; height: 20px; stroke: var(--purple-light); }
+.write-header .save-btn {
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+}
+
+.write-date {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+.write-title {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+  margin-bottom: 16px;
+}
+.write-title::placeholder { color: var(--text-muted); }
+
+.write-body {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.7;
+  outline: none;
+  resize: none;
+  min-height: 300px;
+}
+.write-body::placeholder { color: var(--text-muted); }
+
+.write-toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(180,160,232,0.1);
+  margin-top: auto;
+}
+.write-tool {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid rgba(180,160,232,0.08);
+}
+.write-tool:hover { background: var(--bg-card-hover); border-color: rgba(180,160,232,0.2); }
+.write-tool svg { width: 20px; height: 20px; stroke: var(--text-secondary); }
+
+/* ============================================
+   SCREEN 7: CHECK-IN SUCCESS / REWARD
+   ============================================ */
+.reward-screen {
+  padding: 54px 20px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.reward-nomi {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
+  animation: nomi-bounce 2s ease-in-out infinite;
+}
+.reward-nomi img { width: 100%; height: 100%; object-fit: contain; }
+
+@keyframes nomi-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.reward-screen h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.reward-screen .reward-sub {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.reward-card {
+  width: 100%;
+  background: linear-gradient(135deg, var(--purple-deep), var(--navy-mid));
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  border: 1px solid rgba(232,184,75,0.2);
+  margin-bottom: 16px;
+}
+.reward-card h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 15px;
+  color: var(--gold-light);
+  margin-bottom: 12px;
+}
+.reward-items {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.reward-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.reward-item-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(232,184,75,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  border: 1px solid rgba(232,184,75,0.2);
+}
+.reward-item span {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.reward-streak {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+.streak-dot {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid rgba(180,160,232,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.streak-dot.filled {
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  border-color: var(--gold);
+  color: var(--navy);
+}
+.streak-dot.today {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(232,184,75,0.3);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-in > * {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease forwards;
+}
+.animate-in > *:nth-child(1) { animation-delay: 0.05s; }
+.animate-in > *:nth-child(2) { animation-delay: 0.1s; }
+.animate-in > *:nth-child(3) { animation-delay: 0.15s; }
+.animate-in > *:nth-child(4) { animation-delay: 0.2s; }
+.animate-in > *:nth-child(5) { animation-delay: 0.25s; }
+.animate-in > *:nth-child(6) { animation-delay: 0.3s; }
+.animate-in > *:nth-child(7) { animation-delay: 0.35s; }
+.animate-in > *:nth-child(8) { animation-delay: 0.4s; }
+.animate-in > *:nth-child(9) { animation-delay: 0.45s; }
+.animate-in > *:nth-child(10) { animation-delay: 0.5s; }
+
+/* ============================================
+   MODAL / OVERLAY
+   ============================================ */
+.modal-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(8,7,28,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.visible { display: flex; }
+.modal-sheet {
+  width: 100%;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 20px 20px 40px;
+  max-height: 75%;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.modal-handle {
+  width: 40px;
+  height: 4px;
+  background: rgba(180,160,232,0.3);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+/* ============================================
+   TOAST
+   ============================================ */
+.toast {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  padding: 10px 20px;
+  background: var(--purple-deep);
+  border: 1px solid rgba(232,184,75,0.3);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold-light);
+  opacity: 0;
+  z-index: 300;
+  transition: all 0.3s;
+  pointer-events: none;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><rect x="0" y="8" width="3" height="4" rx="0.5"/><rect x="4.5" y="5" width="3" height="7" rx="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5"/><rect x="13.5" y="0" width="2.5" height="12" rx="0.5"/></svg>
+      <svg width="16" height="12" viewBox="0 0 24 14" fill="white"><path d="M1 5a8 8 0 0116 0" stroke="white" stroke-width="2" fill="none"/><path d="M5 9a4 4 0 018 0" stroke="white" stroke-width="2" fill="none"/><circle cx="9" cy="12" r="1.5"/></svg>
+      <svg width="25" height="12" viewBox="0 0 28 14" fill="none"><rect x="0.5" y="0.5" width="23" height="13" rx="3" stroke="white" stroke-opacity="0.4"/><rect x="2" y="2" width="18" height="10" rx="2" fill="white"/><path d="M25 5v4a2.5 2.5 0 000-4z" fill="white" fill-opacity="0.4"/></svg>
+    </div>
+  </div>
+
+  <div class="screens-container">
+
+    <!-- ==============================
+         SCREEN 1: HOME
+         ============================== -->
+    <div id="screen-home" class="screen home-screen active animate-in">
+      <div class="home-header">
+        <div class="home-greeting">
+          <h1>Good evening, Jaryl</h1>
+          <p>How are you feeling today?</p>
+        </div>
+        <div class="home-avatar">
+          <img src="assets/logo-purple.png" alt="Avatar">
+        </div>
+      </div>
+
+      <!-- Nomi Companion Card -->
+      <div class="nomi-card" onclick="navigateTo('screen-checkin')">
+        <div class="nomi-card-inner">
+          <div class="nomi-avatar">
+            <img src="assets/nomi-idle.png" alt="Nomi">
+          </div>
+          <div class="nomi-text">
+            <h3>Nomi says...</h3>
+            <p>You've been on a great streak! Want to check in and share how your day went?</p>
+            <div class="nomi-cta">
+              Check in now ✨
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Streak stats -->
+      <div class="streak-bar">
+        <div class="streak-item highlight">
+          <div class="streak-num">7</div>
+          <div class="streak-label">Day Streak 🔥</div>
+        </div>
+        <div class="streak-item">
+          <div class="streak-num">23</div>
+          <div class="streak-label">Check-ins</div>
+        </div>
+        <div class="streak-item">
+          <div class="streak-num">12</div>
+          <div class="streak-label">Collectibles</div>
+        </div>
+      </div>
+
+      <!-- Recent Moods -->
+      <div class="section-header">
+        <h2>This Week</h2>
+        <a onclick="navigateTo('screen-profile')">See all</a>
+      </div>
+      <div class="mood-history">
+        <div class="mood-day">
+          <span class="day-label">Mon</span>
+          <div class="mood-dot" style="background:rgba(107,203,119,0.15)">😊</div>
+        </div>
+        <div class="mood-day">
+          <span class="day-label">Tue</span>
+          <div class="mood-dot" style="background:rgba(245,217,138,0.15)">😌</div>
+        </div>
+        <div class="mood-day">
+          <span class="day-label">Wed</span>
+          <div class="mood-dot" style="background:rgba(232,165,152,0.15)">😤</div>
+        </div>
+        <div class="mood-day">
+          <span class="day-label">Thu</span>
+          <div class="mood-dot" style="background:rgba(107,203,119,0.15)">😊</div>
+        </div>
+        <div class="mood-day">
+          <span class="day-label">Fri</span>
+          <div class="mood-dot" style="background:rgba(159,159,237,0.15)">😴</div>
+        </div>
+        <div class="mood-day">
+          <span class="day-label">Sat</span>
+          <div class="mood-dot" style="background:rgba(245,217,138,0.15)">😄</div>
+        </div>
+        <div class="mood-day">
+          <span class="day-label">Sun</span>
+          <div class="mood-dot" style="background:rgba(212,187,252,0.15)">✨</div>
+        </div>
+      </div>
+
+      <!-- Recent Journal Entries -->
+      <div class="section-header">
+        <h2>Recent Entries</h2>
+        <a onclick="navigateTo('screen-journal')">See all</a>
+      </div>
+      <div class="journal-cards">
+        <div class="journal-card" onclick="navigateTo('screen-write')">
+          <div class="journal-card-top">
+            <span class="journal-card-date">Today, 8:42 PM</span>
+            <span class="journal-card-mood">😊</span>
+          </div>
+          <h4>Sunset at East Coast Park</h4>
+          <p>The sky was incredible today — layers of orange and purple blending together. Spent time reading by the water and felt completely at peace.</p>
+          <div class="journal-card-tags">
+            <span class="tag">Grateful</span>
+            <span class="tag gold">Nature</span>
+          </div>
+        </div>
+        <div class="journal-card" onclick="navigateTo('screen-write')">
+          <div class="journal-card-top">
+            <span class="journal-card-date">Yesterday, 10:15 PM</span>
+            <span class="journal-card-mood">😌</span>
+          </div>
+          <h4>Coffee with an old friend</h4>
+          <p>Bumped into Mei at the hawker centre. We talked for two hours about everything and nothing. Reminded me how important these small connections are.</p>
+          <div class="journal-card-tags">
+            <span class="tag">Connection</span>
+            <span class="tag">Nostalgia</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================
+         SCREEN 2: CHECK-IN
+         ============================== -->
+    <div id="screen-checkin" class="screen checkin-screen">
+      <div class="checkin-header">
+        <h1>How are you feeling<br>this evening?</h1>
+        <p>Take a moment to check in with yourself</p>
+      </div>
+
+      <div class="emotion-wheel" onclick="document.querySelector('.emotion-options').scrollIntoView({behavior:'smooth'})">
+        <div class="emotion-wheel-ring">
+          <div class="emotion-wheel-center">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="emotion-options">
+        <div class="emotion-btn" onclick="selectEmotion(this)">
+          <span class="emoji">😊</span>
+          <span class="label">Happy</span>
+        </div>
+        <div class="emotion-btn" onclick="selectEmotion(this)">
+          <span class="emoji">😌</span>
+          <span class="label">Calm</span>
+        </div>
+        <div class="emotion-btn" onclick="selectEmotion(this)">
+          <span class="emoji">😴</span>
+          <span class="label">Tired</span>
+        </div>
+        <div class="emotion-btn" onclick="selectEmotion(this)">
+          <span class="emoji">😤</span>
+          <span class="label">Stressed</span>
+        </div>
+        <div class="emotion-btn" onclick="selectEmotion(this)">
+          <span class="emoji">😢</span>
+          <span class="label">Sad</span>
+        </div>
+        <div class="emotion-btn" onclick="selectEmotion(this)">
+          <span class="emoji">😄</span>
+          <span class="label">Excited</span>
+        </div>
+        <div class="emotion-btn" onclick="selectEmotion(this)">
+          <span class="emoji">🥰</span>
+          <span class="label">Loved</span>
+        </div>
+        <div class="emotion-btn" onclick="selectEmotion(this)">
+          <span class="emoji">😐</span>
+          <span class="label">Neutral</span>
+        </div>
+      </div>
+
+      <div class="checkin-slider-container">
+        <div class="checkin-slider-label">
+          <span>Low energy</span>
+          <span>High energy</span>
+        </div>
+        <input type="range" class="checkin-slider" min="1" max="10" value="6">
+      </div>
+
+      <textarea class="checkin-note" placeholder="Add a note about how you're feeling... (optional)"></textarea>
+
+      <button class="btn-primary" onclick="navigateTo('screen-reward')">Save Check-in</button>
+    </div>
+
+    <!-- ==============================
+         SCREEN 3: JOURNAL
+         ============================== -->
+    <div id="screen-journal" class="screen journal-screen">
+      <div class="journal-screen-header">
+        <h1>Journal</h1>
+        <div class="journal-add-btn" onclick="navigateTo('screen-write')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+      </div>
+
+      <div class="journal-filters">
+        <div class="filter-chip active">All</div>
+        <div class="filter-chip" onclick="this.classList.toggle('active')">Grateful</div>
+        <div class="filter-chip" onclick="this.classList.toggle('active')">Nature</div>
+        <div class="filter-chip" onclick="this.classList.toggle('active')">Connection</div>
+        <div class="filter-chip" onclick="this.classList.toggle('active')">Growth</div>
+      </div>
+
+      <div class="journal-entries">
+        <div class="journal-entry" onclick="navigateTo('screen-write')">
+          <img class="journal-entry-img" src="assets/bg-sunset.png" alt="">
+          <div class="journal-entry-body">
+            <div class="journal-entry-meta">
+              <span class="journal-entry-date">Feb 16, 2026</span>
+              <span class="journal-entry-mood">😊</span>
+            </div>
+            <h4>Sunset at East Coast Park</h4>
+            <p>The sky was incredible today — layers of orange and purple blending together. Spent time reading by the water.</p>
+            <div class="journal-entry-location">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              East Coast Park, Singapore
+            </div>
+          </div>
+        </div>
+
+        <div class="journal-entry" onclick="navigateTo('screen-write')">
+          <img class="journal-entry-img" src="assets/photo-hawker.png" alt="">
+          <div class="journal-entry-body">
+            <div class="journal-entry-meta">
+              <span class="journal-entry-date">Feb 15, 2026</span>
+              <span class="journal-entry-mood">😌</span>
+            </div>
+            <h4>Coffee with an old friend</h4>
+            <p>Bumped into Mei at the hawker centre. We talked for hours about everything and nothing.</p>
+            <div class="journal-entry-location">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Compassvale, Singapore
+            </div>
+          </div>
+        </div>
+
+        <div class="journal-entry" onclick="navigateTo('screen-write')">
+          <img class="journal-entry-img" src="assets/bg-night.png" alt="">
+          <div class="journal-entry-body">
+            <div class="journal-entry-meta">
+              <span class="journal-entry-date">Feb 14, 2026</span>
+              <span class="journal-entry-mood">🥰</span>
+            </div>
+            <h4>Quiet Valentine's evening</h4>
+            <p>Stayed in, cooked pasta, and watched the stars from the balcony. Sometimes the simplest things are the best.</p>
+          </div>
+        </div>
+
+        <div class="journal-entry" onclick="navigateTo('screen-write')">
+          <div class="journal-entry-body">
+            <div class="journal-entry-meta">
+              <span class="journal-entry-date">Feb 13, 2026</span>
+              <span class="journal-entry-mood">😤</span>
+            </div>
+            <h4>Tough day at work</h4>
+            <p>Deadline crunch and miscommunication with the team. Need to remember that bad days don't erase the good ones.</p>
+            <div class="journal-card-tags" style="margin-top:8px">
+              <span class="tag">Growth</span>
+              <span class="tag">Reflection</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================
+         SCREEN 4: GALLERY
+         ============================== -->
+    <div id="screen-gallery" class="screen gallery-screen">
+      <div class="gallery-header">
+        <h1>Gallery</h1>
+        <div class="gallery-stats">
+          <div class="gallery-stat"><span class="coin">🪙</span> 505</div>
+          <div class="gallery-stat"><span class="gem">💎</span> 25</div>
+        </div>
+      </div>
+      <p class="gallery-subtitle">Collect art by checking in and journaling</p>
+
+      <div class="gallery-tabs">
+        <div class="gallery-tab active" onclick="switchGalleryTab(this)">Collection</div>
+        <div class="gallery-tab" onclick="switchGalleryTab(this)">Packs</div>
+        <div class="gallery-tab" onclick="switchGalleryTab(this)">Backgrounds</div>
+      </div>
+
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <img src="assets/pixel-cafe-sm.png" alt="Raccoon Café">
+          <span class="gallery-item-badge">Rare ✨</span>
+        </div>
+        <div class="gallery-item">
+          <img src="assets/pixel-cat-tv.png" alt="Cat TV">
+          <span class="gallery-item-badge">Common</span>
+        </div>
+        <div class="gallery-item">
+          <img src="assets/illust-guitar.png" alt="Guitar Girl">
+          <span class="gallery-item-badge">Epic 💜</span>
+        </div>
+        <div class="gallery-item">
+          <img src="assets/illust-nap.png" alt="Peaceful Nap">
+          <span class="gallery-item-badge">Rare ✨</span>
+        </div>
+        <div class="gallery-item">
+          <img src="assets/illust-garden.png" alt="Garden">
+          <span class="gallery-item-badge">Common</span>
+        </div>
+        <div class="gallery-item">
+          <img src="assets/pixel-vending.png" alt="Forest Vending">
+          <span class="gallery-item-badge">Epic 💜</span>
+        </div>
+        <div class="gallery-item locked">
+          <img src="assets/pixel-dragon.png" alt="Dragon Festival">
+        </div>
+        <div class="gallery-item locked">
+          <img src="assets/bg-lake.png" alt="Lakeside">
+        </div>
+      </div>
+
+      <div class="packs-section">
+        <div class="section-header">
+          <h2>Open Packs</h2>
+        </div>
+        <div class="pack-cards">
+          <div class="pack-card" onclick="showToast('Opening pack...')">
+            <div class="pack-icon">📦</div>
+            <h4>Basic Pack</h4>
+            <div class="pack-cost">🪙 Free</div>
+          </div>
+          <div class="pack-card" onclick="showToast('Not enough gems!')">
+            <div class="pack-icon">✨</div>
+            <h4>Silver Pack</h4>
+            <div class="pack-cost">💎 10</div>
+          </div>
+          <div class="pack-card" onclick="showToast('Not enough gems!')">
+            <div class="pack-icon">👑</div>
+            <h4>Gold Pack</h4>
+            <div class="pack-cost">💎 50</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================
+         SCREEN 5: PROFILE / ANALYZE
+         ============================== -->
+    <div id="screen-profile" class="screen profile-screen">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <img src="assets/logo-purple.png" alt="Profile">
+        </div>
+        <h1>Jaryl</h1>
+        <p>On a wellness journey since Jan 2026</p>
+      </div>
+
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="num">23</div>
+          <div class="label">Check-ins</div>
+        </div>
+        <div class="profile-stat">
+          <div class="num">7</div>
+          <div class="label">Day Streak</div>
+        </div>
+        <div class="profile-stat">
+          <div class="num">12</div>
+          <div class="label">Collected</div>
+        </div>
+      </div>
+
+      <div class="mood-chart">
+        <h3>Your Mood Breakdown</h3>
+        <div class="mood-bars">
+          <div class="mood-bar-row">
+            <span class="mood-bar-emoji">😊</span>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:42%;background:linear-gradient(90deg,#6BCB77,#4CAF50)"></div></div>
+            <span class="mood-bar-pct">42%</span>
+          </div>
+          <div class="mood-bar-row">
+            <span class="mood-bar-emoji">😌</span>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:24%;background:linear-gradient(90deg,#F5D98A,#E8B84B)"></div></div>
+            <span class="mood-bar-pct">24%</span>
+          </div>
+          <div class="mood-bar-row">
+            <span class="mood-bar-emoji">😤</span>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:15%;background:linear-gradient(90deg,#E8A598,#FF6B6B)"></div></div>
+            <span class="mood-bar-pct">15%</span>
+          </div>
+          <div class="mood-bar-row">
+            <span class="mood-bar-emoji">😴</span>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:12%;background:linear-gradient(90deg,#9F9FED,#736CED)"></div></div>
+            <span class="mood-bar-pct">12%</span>
+          </div>
+          <div class="mood-bar-row">
+            <span class="mood-bar-emoji">😢</span>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:7%;background:linear-gradient(90deg,#A5ADFF,#9BA9FF)"></div></div>
+            <span class="mood-bar-pct">7%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h2>Settings</h2>
+      </div>
+      <div class="settings-list">
+        <div class="settings-item" onclick="showToast('Notifications settings')">
+          <div class="settings-item-left">
+            <div class="settings-item-icon" style="background:rgba(107,203,119,0.12)">🔔</div>
+            <span class="settings-item-label">Reminders</span>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="settings-item" onclick="showToast('Theme settings')">
+          <div class="settings-item-left">
+            <div class="settings-item-icon" style="background:rgba(159,159,237,0.12)">🎨</div>
+            <span class="settings-item-label">Theme & Display</span>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="settings-item" onclick="showToast('Privacy settings')">
+          <div class="settings-item-left">
+            <div class="settings-item-icon" style="background:rgba(232,184,75,0.12)">🔒</div>
+            <span class="settings-item-label">Privacy & Data</span>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="settings-item" onclick="showToast('About Luminality')">
+          <div class="settings-item-left">
+            <div class="settings-item-icon" style="background:rgba(180,160,232,0.12)">💜</div>
+            <span class="settings-item-label">About Luminality</span>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================
+         SCREEN 6: JOURNAL WRITE
+         ============================== -->
+    <div id="screen-write" class="screen write-screen">
+      <div class="write-header">
+        <div class="back-btn" onclick="navigateTo('screen-journal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </div>
+        <button class="save-btn" onclick="showToast('Entry saved! ✨'); setTimeout(()=>navigateTo('screen-journal'), 800)">Done</button>
+      </div>
+      <div class="write-date">Tuesday, 16 February</div>
+      <input class="write-title" type="text" placeholder="Title" value="Sunset at East Coast Park">
+      <textarea class="write-body" placeholder="Start writing...">The sky was incredible today — layers of orange and purple blending together like watercolours. I sat on the rocks by the water with my book and just breathed.
+
+Sometimes I forget how healing it is to just be present. No phone, no rushing. Just the sound of waves and the feeling of warm wind.
+
+Mei texted asking if I wanted to grab dinner. We ended up at that little Thai place near Marine Parade. She's going through some stuff at work too, and it was nice to just talk honestly about the hard parts.
+
+Grateful for: the sunset, honest conversations, good pad thai.</textarea>
+
+      <div class="write-toolbar">
+        <div class="write-tool">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="write-tool">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div class="write-tool">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="write-tool">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        </div>
+        <div class="write-tool">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 7V4a2 2 0 012-2h8.5L20 7.5V20a2 2 0 01-2 2H4"/><path d="M8 12h8"/><path d="M8 16h6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================
+         SCREEN 7: CHECK-IN REWARD
+         ============================== -->
+    <div id="screen-reward" class="screen reward-screen">
+      <div class="reward-nomi">
+        <img src="assets/nomi-happy.png" alt="Nomi happy">
+      </div>
+
+      <h1>Great check-in!</h1>
+      <p class="reward-sub">Nomi is proud of you for taking a moment to reflect. Keep your streak going!</p>
+
+      <div class="reward-streak">
+        <div class="streak-dot filled">M</div>
+        <div class="streak-dot filled">T</div>
+        <div class="streak-dot filled">W</div>
+        <div class="streak-dot filled">T</div>
+        <div class="streak-dot filled">F</div>
+        <div class="streak-dot filled">S</div>
+        <div class="streak-dot filled today">S</div>
+      </div>
+
+      <div class="reward-card">
+        <h3>Rewards Earned</h3>
+        <div class="reward-items">
+          <div class="reward-item">
+            <div class="reward-item-icon">🪙</div>
+            <span>+15 Coins</span>
+          </div>
+          <div class="reward-item">
+            <div class="reward-item-icon">📦</div>
+            <span>1 Free Pack</span>
+          </div>
+          <div class="reward-item">
+            <div class="reward-item-icon">🔥</div>
+            <span>7-Day Streak!</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="navigateTo('screen-home')" style="margin-top:8px">Continue</button>
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- ==============================
+       BOTTOM NAVIGATION
+       ============================== -->
+  <div class="bottom-nav">
+    <div class="nav-item active" data-screen="screen-home" onclick="navTo(this)">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" data-screen="screen-journal" onclick="navTo(this)">
+      <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      <span>Journal</span>
+    </div>
+    <div class="nav-item check-in-btn" data-screen="screen-checkin" onclick="navTo(this)">
+      <div class="btn-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <span>Check in</span>
+    </div>
+    <div class="nav-item" data-screen="screen-gallery" onclick="navTo(this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Gallery</span>
+    </div>
+    <div class="nav-item" data-screen="screen-profile" onclick="navTo(this)">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Profile</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// NAVIGATION
+// ============================================
+function navigateTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(screenId);
+  if (target) {
+    target.classList.add('active');
+    target.scrollTop = 0;
+  }
+
+  // Update nav highlighting
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navItem = document.querySelector(`.nav-item[data-screen="${screenId}"]`);
+  if (navItem) navItem.classList.add('active');
+
+  // Show/hide bottom nav for write screen
+  const bottomNav = document.querySelector('.bottom-nav');
+  if (screenId === 'screen-write') {
+    bottomNav.style.display = 'none';
+  } else {
+    bottomNav.style.display = 'flex';
+  }
+}
+
+function navTo(el) {
+  const screenId = el.dataset.screen;
+  navigateTo(screenId);
+}
+
+// ============================================
+// EMOTION SELECT
+// ============================================
+function selectEmotion(el) {
+  document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ============================================
+// GALLERY TABS
+// ============================================
+function switchGalleryTab(el) {
+  el.parentElement.querySelectorAll('.gallery-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ============================================
+// TOAST
+// ============================================
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ============================================
+// FILTER CHIPS
+// ============================================
+document.querySelectorAll('.journal-filters .filter-chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    if (this.textContent === 'All') {
+      document.querySelectorAll('.journal-filters .filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+    } else {
+      document.querySelector('.journal-filters .filter-chip:first-child').classList.remove('active');
+    }
+  });
+});
+</script>
+
+</body>
+</html>
