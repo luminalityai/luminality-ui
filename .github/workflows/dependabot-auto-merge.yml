@@ -82,9 +82,8 @@ jobs:
               echo "The merge will be attributed to \`github-actions[bot]\` and will emit **no \`push\` event**, so push-triggered and \`workflow_run\`-chained workflows (deploy, sentry-release) **will not fire** for it."
               echo ""
               echo "Check, in order:"
-              echo "1. the caller passes \`secrets: inherit\`;"
-              echo "2. the \`luminality-release-bot\` App is installed on this repository;"
-              echo "3. \`RELEASE_BOT_CLIENT_ID\` (org variable) and \`RELEASE_BOT_PRIVATE_KEY\` (org secret) are both visible to it."
+              echo "1. the \`luminality-release-bot\` App is installed on this repository;"
+              echo "2. \`RELEASE_BOT_CLIENT_ID\` (org variable) and \`RELEASE_BOT_PRIVATE_KEY\` (org secret) are both visible to it."
             } >> "$GITHUB_STEP_SUMMARY"
           fi
 
