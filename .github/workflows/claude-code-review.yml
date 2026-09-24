@@ -79,7 +79,11 @@ jobs:
           # comment, so no GitHub App / release-bot identity is required.
           github_token: ${{ github.token }}
           track_progress: true
-          allowed_bots: "*"
+          # Explicit list, never "*" — this repo is PUBLIC, so "*" lets any
+          # third-party App actor drive the review. Observed bot actors on
+          # non-Dependabot PRs: luminality-release-bot[bot], claude[bot]
+          # (weekly-maintenance PRs). Dependabot is step-gated out above.
+          allowed_bots: luminality-release-bot,claude
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
