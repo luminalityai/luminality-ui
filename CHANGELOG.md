@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`PlatformBadge` — a static, non-interactive app brand tile.** It is `PlatformSwitcher`'s square icon tile without the menu: a `role="img"` element named by `label`, so it is announced once as the app name and is **not focusable**.
+
+  `PlatformSwitcher` with `interactive={false}` was the only way to get the tile before, and it was wrong on two counts: it renders a focusable `<button>` that does nothing, and it still bundles the dropdown menu.
+
+  ```tsx
+  import { PlatformBadge } from "@luminalityai/ui"
+
+  ;<PlatformBadge icon={<Lightbulb className="h-6 w-6" />} label="Luminality" />
+  ```
+
+  It is built for an app's always-loaded shell, so it imports nothing but React — not even `cn()`, whose `tailwind-merge` alone measured +8.8 kB gzip on luminality-web's initial load. `className` is therefore **appended, not merged**; recolour the tile via `--color-primary` / `--color-primary-foreground` rather than a conflicting `bg-*`. The icon follows `--color-primary-foreground` (near-black in the dark theme), where `PlatformSwitcher`'s trigger hardcodes white.
+
+### Changed
+
+- **The package is now tree-shakable: `dist/` is emitted one module per source module** (`preserveModules`) instead of a single `dist/index.js`. With one file, importing _any_ export gave the consumer the _whole_ library — every component's top-level `forwardRef` call counts as a side effect, so nothing could be dropped. luminality-web hit exactly that (luminality-web#1188): statically importing one `PlatformSwitcher` into its sidebar added **+53.6 kB gzip** to its initial load. Per-module output plus the existing `sideEffects: ["*.css"]` field lets the consumer's bundler skip every module it does not import. A new unit test builds the library with the real config and bundles a consumer against it, failing if `PlatformBadge` can reach the dropdown menu or `tailwind-merge`.
+
+  The public API and import paths are unchanged (`@luminalityai/ui`, `/styles`, `/theme.css`). `date-fns` and `date-fns-tz` are now resolved from the package's declared `dependencies` instead of being inlined into `dist/`.
+
 ## [0.9.0] - 2026-07-29
 
 ### Fixed

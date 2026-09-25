@@ -21,7 +21,7 @@ npm run build       # Bundle with Vite (vite build)
 npm run check       # Type check without emitting (tsc --noEmit)
 ```
 
-Build output goes to `dist/`. The build runs through Vite (`vite.config.ts`); type declarations are emitted by `vite-plugin-dts`.
+Build output goes to `dist/`, one module per source module (`preserveModules`, so consumers can tree-shake). The build runs through Vite (`vite.config.ts`); type declarations are emitted by `vite-plugin-dts`.
 
 ## Test
 
