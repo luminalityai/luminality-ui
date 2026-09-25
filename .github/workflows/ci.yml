@@ -52,6 +52,9 @@ jobs:
       - name: Build package
         run: npm run build
 
+      - name: Verify type declarations
+        run: node scripts/verify-dts.mjs
+
       - name: Verify package contents
         run: npm pack --dry-run
 
