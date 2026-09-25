@@ -10,6 +10,9 @@ export default defineConfig({
     tailwindcss(),
     dts({
       include: ["src"],
+      // Tests and stories are not part of the public API; keep their .d.ts
+      // out of dist/ (and so out of the packed tarball).
+      exclude: ["node_modules/**", "src/test/**", "src/**/*.stories.tsx"],
       outDir: "dist",
       rollupTypes: true,
     }),

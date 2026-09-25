@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   The public API and import paths are unchanged (`@luminalityai/ui`, `/styles`, `/theme.css`). `date-fns` and `date-fns-tz` are now resolved from the package's declared `dependencies` instead of being inlined into `dist/`.
 
+### Fixed
+
+- **`PlatformBadge` no longer accepts `aria-label` / `aria-labelledby`.** Both were spread over the tile after its own `aria-label`, so a caller could silently replace the `label`-based accessible name. They are now omitted from `PlatformBadgeProps` (typed `never`, since TypeScript otherwise allows any hyphenated JSX attribute), and the tile ignores them at runtime.
+- **Test and story type declarations are no longer published.** `dist/` (and so the npm tarball) included a `.d.ts` for every `src/test/**` file and every `*.stories.tsx`; the declaration build now excludes them.
+
 ## [0.9.0] - 2026-07-29
 
 ### Fixed
