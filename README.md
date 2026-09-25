@@ -35,7 +35,7 @@ Import the stylesheet in your CSS:
 
 See the `scripts` block in [`package.json`](./package.json) for the authoritative list. The most common ones:
 
-- `npm run build` — build the package to `dist/` with Vite (`vite build`; types emitted via `vite-plugin-dts`)
+- `npm run build` — build the package to `dist/` with Vite (`vite build`; types rolled up into one `dist/index.d.ts` via `vite-plugin-dts` + `@microsoft/api-extractor`, checked by `node scripts/verify-dts.mjs`)
 - `npm run check` — type-check without emitting (`tsc --noEmit`)
 - `npm run lint` — run ESLint
 - `npm test` — run the Vitest unit suite

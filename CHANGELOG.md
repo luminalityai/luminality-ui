@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Published types are one rolled-up `dist/index.d.ts` again.** `rollupTypes: true` was silently ignored by `vite-plugin-dts` 5 (the option is now `bundleTypes` and needs `@microsoft/api-extractor`), so 0.9.0 and 0.10.0 shipped a 345-byte `export *` barrel plus one `.d.ts` per module. Types still resolved for consumers; the tarball now carries a single self-contained declaration file (same 110 exports) and no per-module `.d.ts`. The JS output stays per-module, so tree-shaking is unchanged. (luminalityai/delivery-ops#441)
+
+### Changed
+
+- **The declaration guard checks what consumers rely on, not byte counts.** `scripts/verify-dts.mjs` replaces the `/ship` skill's byte/export-count check and the publish workflow's barrel check. It fails when `dist/index.d.ts` is missing, not rolled up, carries a triple-slash reference, does not typecheck with `skipLibCheck: false`, or does not declare exactly the names `dist/index.js` exports. It now also runs in CI.
+
 ## [0.10.0] - 2026-09-25
 
 ### Added

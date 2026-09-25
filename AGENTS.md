@@ -21,7 +21,7 @@ npm run build       # Bundle with Vite (vite build)
 npm run check       # Type check without emitting (tsc --noEmit)
 ```
 
-Build output goes to `dist/`, one module per source module (`preserveModules`, so consumers can tree-shake). The build runs through Vite (`vite.config.ts`); type declarations are emitted by `vite-plugin-dts`.
+Build output goes to `dist/`, one module per source module (`preserveModules`, so consumers can tree-shake). The build runs through Vite (`vite.config.ts`); type declarations are emitted by `vite-plugin-dts` and rolled up into a single `dist/index.d.ts` (`bundleTypes`, via `@microsoft/api-extractor`). `node scripts/verify-dts.mjs` checks that file after a build.
 
 ## Test
 
@@ -105,7 +105,8 @@ CI runs on every PR and push to `main` via GitHub Actions (`.github/workflows/ci
 5. `npm test`
 6. `npm run check` (typecheck)
 7. `npm run build`
-8. `npm pack --dry-run`
+8. `node scripts/verify-dts.mjs` (declarations are rolled up, typecheck, and match the JS exports)
+9. `npm pack --dry-run`
 
 All steps must pass before merge.
 
