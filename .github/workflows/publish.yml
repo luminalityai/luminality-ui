@@ -53,50 +53,12 @@ jobs:
         run: npm run build
 
       - name: Verify d.ts entry exports types
-        run: |
-          set -eu
-
-          # This package emits a MULTI-FILE declaration tree: dist/index.d.ts is a
-          # thin re-export barrel that carries no `declare` of its own and points at
-          # sibling .d.ts files. So "does index.d.ts itself declare things" is the
-          # wrong question here — but the old `grep -q '^export'` was too weak in the
-          # other direction, because a bare `export { }` stub passes it. sidekick-ui
-          # shipped exactly that stub (sidekick-ui#122): v0.7.0 built "successfully",
-          # was tagged, and was never publishable. Guard the shape we actually have.
-
-          if [ ! -f dist/index.d.ts ]; then
-            echo "::error::dist/index.d.ts is missing — check the dts plugin config (entryRoot must match the build entry directory)."
-            exit 1
-          fi
-
-          # 1. The barrel must re-export something real — `export *` or a named list
-          #    with at least one identifier in it. An empty `export { }` fails here.
-          if ! grep -qE "^export[[:space:]]+(\*|\{[[:space:]]*[A-Za-z_])" dist/index.d.ts; then
-            echo "::error::dist/index.d.ts has no non-empty re-exports (looks like an empty 'export { }' stub) — the declaration build is broken. See sidekick-ui#122."
-            echo "::group::dist/index.d.ts"
-            cat dist/index.d.ts
-            echo "::endgroup::"
-            exit 1
-          fi
-
-          # 2. Every module the barrel points at must actually exist on disk —
-          #    a dangling re-export type-errors in the consumer, not here.
-          missing=0
-          for spec in $(grep -oE "from '\./[^']+'" dist/index.d.ts | sed "s/^from '//; s/'$//"); do
-            if [ ! -f "dist/${spec}.d.ts" ] && [ ! -f "dist/${spec}/index.d.ts" ]; then
-              echo "::error::dist/index.d.ts re-exports from '${spec}', but no matching .d.ts was emitted."
-              missing=1
-            fi
-          done
-          [ "$missing" -eq 0 ] || exit 1
-
-          # 3. The tree behind the barrel must contain real type declarations.
-          DECL_FILES=$(grep -rlE '\bdeclare\b' dist --include='*.d.ts' | wc -l | tr -d ' ')
-          if [ "$DECL_FILES" -lt 10 ]; then
-            echo "::error::Only $DECL_FILES .d.ts files under dist/ contain declarations — implausibly few for the full public API. Suspect a broken declaration build."
-            exit 1
-          fi
-          echo "::notice::Declaration tree OK — $DECL_FILES .d.ts files with declarations behind dist/index.d.ts"
+        # dist/index.d.ts is ONE rolled-up file (vite-plugin-dts `bundleTypes`).
+        # The script fails on a missing file, an empty `export { }` stub
+        # (sidekick-ui#122), an un-rolled `export *` barrel (delivery-ops#441),
+        # a file that does not typecheck with skipLibCheck: false, or any
+        # mismatch between its exports and dist/index.js's.
+        run: node scripts/verify-dts.mjs
 
       - name: Verify subpath exports resolve
         run: |

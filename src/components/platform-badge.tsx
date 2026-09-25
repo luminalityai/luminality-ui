@@ -15,8 +15,17 @@ import * as React from "react"
 
 export interface PlatformBadgeProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  "children" | "role"
+  // `aria-label` / `aria-labelledby` are omitted so a caller cannot silently
+  // replace the `label`-based accessible name.
+  "children" | "role" | "aria-label" | "aria-labelledby"
 > {
+  // TypeScript accepts any hyphenated JSX attribute that is not declared, so
+  // `Omit` alone would not reject `<PlatformBadge aria-label="…" />`.
+  // Declaring them as `never` makes that a type error.
+  /** Not supported — the accessible name is always `label`. */
+  "aria-label"?: never
+  /** Not supported — the accessible name is always `label`. */
+  "aria-labelledby"?: never
   /**
    * App brand icon (ReactNode, e.g. an SVG or lucide icon). Rendered inside a
    * square tile filled with `--color-primary`. The tile is exposed as a single
@@ -45,11 +54,12 @@ const TILE_CLASSES =
 const PlatformBadge = React.forwardRef<HTMLDivElement, PlatformBadgeProps>(
   ({ icon, label, className, ...props }, ref) => (
     <div
+      {...props}
       ref={ref}
       role="img"
       aria-label={label}
+      aria-labelledby={undefined}
       className={className ? `${TILE_CLASSES} ${className}` : TILE_CLASSES}
-      {...props}
     >
       {icon}
     </div>

@@ -8,7 +8,7 @@ model: sonnet
 
 Finalize changes in the `@luminalityai/ui` design-system package, create a signed commit, and open a GitHub PR.
 
-`luminality-ui` is an npm package published to npm (registry.npmjs.org) via a tag-driven release workflow — it builds with Vite library mode and emits rolled-up `.d.ts` via `vite-plugin-dts`. The dts plugin has historically shipped a near-empty `export {}` when something silently broke, so this skill explicitly guards against that on every PR.
+`luminality-ui` is an npm package published to npm (registry.npmjs.org) via a tag-driven release workflow — it builds with Vite library mode and emits a single rolled-up `dist/index.d.ts` via `vite-plugin-dts` (`bundleTypes`, powered by `@microsoft/api-extractor`). The dts plugin has historically shipped a near-empty `export {}` when something silently broke, so this skill explicitly guards against that on every PR.
 
 ## Scope
 
@@ -141,36 +141,24 @@ If a test fails:
 
 #### 3e. Build + dts emission guard
 
-This is the load-bearing check that distinguishes this skill from a generic JS-package `/ship`. `vite-plugin-dts` with `rollupTypes: true` can silently emit a near-empty `dist/index.d.ts` (essentially `export {}`) if rollup fails to resolve internal types — the build still "succeeds", but consumers (luminality-web) lose every type. We catch that here.
+This is the load-bearing check that distinguishes this skill from a generic JS-package `/ship`. `vite-plugin-dts` (with `bundleTypes: true`, which rolls every declaration into one `dist/index.d.ts` via `@microsoft/api-extractor`) can "succeed" while emitting useless types: an empty `export {}` stub, or — as 0.9.0/0.10.0 did when the option was still spelled `rollupTypes` and silently ignored — a barrel of `export *` lines instead of the rolled-up file. The build still passes, and consumers (luminality-web) lose types. We catch that here.
 
 ```bash
 npm run build
 
 # (1) Required artifacts exist
 test -f dist/index.js     || { echo "ABORT: dist/index.js not emitted"; exit 1; }
-test -f dist/index.d.ts   || { echo "ABORT: dist/index.d.ts not emitted"; exit 1; }
 test -f dist/styles/index.css || echo "WARN: dist/styles/index.css missing — CSS export may break"
 
-# (2) dts is not an empty stub
-DTS_BYTES=$(wc -c < dist/index.d.ts | tr -d ' ')
-DTS_EXPORTS=$(grep -cE '^export ' dist/index.d.ts || true)
-if [ "$DTS_BYTES" -lt 500 ] || [ "$DTS_EXPORTS" -lt 5 ]; then
-  echo "ABORT: dist/index.d.ts looks like an empty stub ($DTS_BYTES bytes, $DTS_EXPORTS exports)."
-  echo "  vite-plugin-dts probably failed silently. Check the build output for 'rollupTypes' warnings."
-  echo "  Re-run with: rm -rf dist && npm run build"
-  exit 1
-fi
-
-# (3) Public surface is reachable from the entry. Grep for a handful of
-# top-level component names that should always be exported. Update this
-# list as the public API evolves — but it should never shrink to zero.
-for sym in Button Card Dialog; do
-  grep -q "export.*\\b${sym}\\b" dist/index.d.ts \
-    || echo "WARN: '${sym}' not found in dist/index.d.ts — confirm intentional"
-done
+# (2) Declarations are real: dist/index.d.ts exists, is ONE self-contained file
+# (no relative imports, no triple-slash references), typechecks on its own with
+# skipLibCheck: false, and declares exactly the names dist/index.js exports.
+node scripts/verify-dts.mjs || { echo "ABORT: declaration build is broken (see above)"; exit 1; }
 ```
 
-If the dts guard fires an **ABORT**, do not push. Investigate the vite-plugin-dts output, fix the underlying re-export / type-resolution issue, and rebuild. Do not lower the byte/export thresholds to "make it green" — they exist because we shipped a broken `export {}` to consumers before.
+The same script runs in CI (`ci.yml`) and before publishing (`publish.yml`).
+
+If the dts guard fires an **ABORT**, do not push. Read the `verify-dts: FAIL:` lines, investigate the `vite-plugin-dts` / api-extractor output, fix the underlying re-export / type-resolution issue, and rebuild. Do not weaken `scripts/verify-dts.mjs` to "make it green" — it exists because broken declaration builds have shipped before (sidekick-ui#122, luminalityai/delivery-ops#441).
 
 #### 3f. Whitespace check
 
@@ -250,7 +238,7 @@ Tracks luminalityai/delivery-ops#NN
 
 - [ ] `npm run check` clean
 - [ ] `npm test` passes
-- [ ] `npm run build` emits non-empty `dist/index.d.ts` with the expected public exports
+- [ ] `npm run build` + `node scripts/verify-dts.mjs` pass (rolled-up `dist/index.d.ts` declares every public export)
 - [ ] Storybook renders new/changed components (if applicable)
 - [ ] Verified in `luminality-web` against a local `npm link` (if visual regression risk)
 EOF
@@ -308,7 +296,7 @@ After completing the workflow, report:
 | `node_modules` missing                    | Run `npm ci` (allowed) before retrying validation.                                     |
 | Branch behind `origin/main`               | Rebase (`git rebase origin/main`), re-run pre-flight.                                  |
 | Knip flags new dead code                  | Fix it in the same commit.                                                             |
-| dts guard ABORT                           | Investigate `vite-plugin-dts` output, fix re-exports, rebuild. Never lower thresholds. |
+| dts guard ABORT                           | Investigate `vite-plugin-dts` output, fix re-exports, rebuild. Never weaken the check. |
 | Lefthook still fires despite `LEFTHOOK=0` | Stop — env may not be propagating; surface to user.                                    |
 | PR already exists (OPEN)                  | Update its body if needed, return URL.                                                 |
 | `gh pr create` fails                      | Run `gh pr view` to check if a PR exists; otherwise surface error.                     |

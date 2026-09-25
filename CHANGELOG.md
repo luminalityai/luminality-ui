@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Published types are one rolled-up `dist/index.d.ts` again.** `rollupTypes: true` was silently ignored by `vite-plugin-dts` 5 (the option is now `bundleTypes` and needs `@microsoft/api-extractor`), so 0.9.0 and 0.10.0 shipped a 345-byte `export *` barrel plus one `.d.ts` per module. Types still resolved for consumers; the tarball now carries a single self-contained declaration file (same 110 exports) and no per-module `.d.ts`. The JS output stays per-module, so tree-shaking is unchanged. (luminalityai/delivery-ops#441)
+
+### Changed
+
+- **The declaration guard checks what consumers rely on, not byte counts.** `scripts/verify-dts.mjs` replaces the `/ship` skill's byte/export-count check and the publish workflow's barrel check. It fails when `dist/index.d.ts` is missing, not rolled up, carries a triple-slash reference, does not typecheck with `skipLibCheck: false`, or does not declare exactly the names `dist/index.js` exports. It now also runs in CI.
+
+## [0.10.0] - 2026-09-25
+
 ### Added
 
 - **`PlatformBadge` — a static, non-interactive app brand tile.** It is `PlatformSwitcher`'s square icon tile without the menu: a `role="img"` element named by `label`, so it is announced once as the app name and is **not focusable**.
@@ -26,6 +36,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The package is now tree-shakable: `dist/` is emitted one module per source module** (`preserveModules`) instead of a single `dist/index.js`. With one file, importing _any_ export gave the consumer the _whole_ library — every component's top-level `forwardRef` call counts as a side effect, so nothing could be dropped. luminality-web hit exactly that (luminality-web#1188): statically importing one `PlatformSwitcher` into its sidebar added **+53.6 kB gzip** to its initial load. Per-module output plus the existing `sideEffects: ["*.css"]` field lets the consumer's bundler skip every module it does not import. A new unit test builds the library with the real config and bundles a consumer against it, failing if `PlatformBadge` can reach the dropdown menu or `tailwind-merge`.
 
   The public API and import paths are unchanged (`@luminalityai/ui`, `/styles`, `/theme.css`). `date-fns` and `date-fns-tz` are now resolved from the package's declared `dependencies` instead of being inlined into `dist/`.
+
+### Fixed
+
+- **`PlatformBadge` no longer accepts `aria-label` / `aria-labelledby`.** Both were spread over the tile after its own `aria-label`, so a caller could silently replace the `label`-based accessible name. They are now omitted from `PlatformBadgeProps` (typed `never`, since TypeScript otherwise allows any hyphenated JSX attribute), and the tile ignores them at runtime.
+- **Test and story type declarations are no longer published.** `dist/` (and so the npm tarball) included a `.d.ts` for every `src/test/**` file and every `*.stories.tsx`; the declaration build now excludes them.
 
 ## [0.9.0] - 2026-07-29
 
@@ -183,7 +198,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Core UI components: Button, Card, Dialog, AlertDialog (#2)
 - Design tokens and `cn()` utility (#1)
 
-[Unreleased]: https://github.com/luminalityai/luminality-ui/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/luminalityai/luminality-ui/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/luminalityai/luminality-ui/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/luminalityai/luminality-ui/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/luminalityai/luminality-ui/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/luminalityai/luminality-ui/compare/v0.6.0...v0.7.0
