@@ -40,7 +40,11 @@ export interface PlatformSwitcherProps {
   activeOrganisationId?: string
   /** Callback when an organisation is selected */
   onSwitchOrganisation?: (id: string) => void
-  /** When false, renders a static icon with no dropdown (default: true) */
+  /**
+   * When false, renders the trigger button with no dropdown (default: true).
+   * Prefer `PlatformBadge` for a static tile: this component still bundles the
+   * dropdown code and renders a (no-op) focusable button even when false.
+   */
   interactive?: boolean
   /** Optional className to override the trigger button styles (e.g. background color) */
   className?: string
