@@ -151,6 +151,6 @@ jobs:
             echo "::notice::Dry run — skipping publish"
             npm publish --dry-run
           else
-            echo "::notice::Publishing ${{ env.TARBALL }} via OIDC trusted publishing"
+            echo "::notice::Publishing ${TARBALL} via OIDC trusted publishing"
             npm publish
           fi
