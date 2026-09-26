@@ -1,10 +1,21 @@
 @import "tailwindcss";
-@plugin "tailwindcss-animate";
+
+/* Enter/exit animation utilities for the Radix overlays and Accordion:
+   `animate-in`/`animate-out`, `fade-*`, `zoom-*`, `slide-in-from-*`/`slide-out-to-*`
+   and `animate-accordion-down`/`-up`. tw-animate-css is the Tailwind v4 CSS-first
+   successor to the v3 plugin `tailwindcss-animate`, with the same class names.
+   It is compiled into dist/styles/index.css at build time, so it is a
+   devDependency. Reduced-motion handling is in animations.css. */
+@import "tw-animate-css";
 
 /* design/ holds non-shipping reference material (e.g. an archived Figma mock).
    Keep Tailwind's automatic source detection from scanning it, or its class
    names leak into the published stylesheet. */
 @source not "../../design";
+
+/* The same goes for the Markdown docs at the repo root (CHANGELOG, README, ...):
+   class names written there as prose would otherwise ship as CSS. */
+@source not "../../*.md";
 
 @import "./theme.css";
 @import "./animations.css";

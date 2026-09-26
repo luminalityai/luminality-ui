@@ -17,7 +17,7 @@ This package declares the following peer dependencies (you must supply them):
 - `react` ^19
 - `react-dom` ^19
 
-Tailwind CSS v4 and `tailwindcss-animate` are bundled as regular dependencies (wired up in the package's stylesheet), so you do not need to install them yourself.
+The package's stylesheet is precompiled: Tailwind CSS v4 and its animation utilities (`tw-animate-css`) are built into `@luminalityai/ui/styles`, so you do not need to install them yourself.
 
 ## Usage
 

@@ -63,10 +63,10 @@ const withTheme: Decorator = (Story, context) => {
  * colour to measure and whether anything got reported at all was a coin flip.
  *
  * This package is squarely exposed: `dialog`, `alert-dialog`, `dropdown-menu`
- * and `tooltip` all mount through `tailwindcss-animate`'s
+ * and `tooltip` all mount through `tw-animate-css`'s
  * `data-[state=open]:animate-in … fade-in-0 … zoom-in-95 … slide-in-from-*`,
- * and `src/styles/animations.css` ships hand-written `animate-fade-in` /
- * `animate-accordion-*` on top of that. Two mechanisms, both animating opacity.
+ * and `src/styles/animations.css` ships a hand-written `animate-fade-in` on top
+ * of that. Two mechanisms, both animating opacity.
  *
  * `1ms` rather than `none`, deliberately: `animation: none` can leave an element
  * at its PRE-animation base state, which for an entry animation is the invisible

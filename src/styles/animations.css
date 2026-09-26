@@ -14,31 +14,30 @@
   animation: fade-in 0.3s ease-out;
 }
 
-/* --radix-accordion-content-height is set automatically by @radix-ui/react-accordion */
-@keyframes accordion-down {
-  from {
-    height: 0;
+/* `animate-accordion-down`/`-up` come from tw-animate-css (index.css). Its
+   keyframes read --radix-accordion-content-height, set by @radix-ui/react-accordion. */
+
+/* Honour prefers-reduced-motion for the entrance/exit animations. Kept in step
+   with luminality-web's application.css (luminality-web#1255).
+
+   tw-animate-css does not do this itself. Every animation it generates
+   (`animate-in`, `animate-out`, `animate-accordion-*`) reads its duration from
+   `--tw-animation-duration` first, so pinning that to ~0 makes each one jump
+   straight to its final frame. `!important` is needed because a `*` rule would
+   otherwise lose to any `animation-duration-*` utility. It is 0.01ms rather than
+   0 so `animationend` still fires: Radix's Presence waits for that event before
+   it unmounts a closing Dialog, Tooltip or menu.
+
+   `animate-spin`/`animate-pulse` loaders are left alone on purpose. They show
+   that something is loading, and they don't move content across the screen. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    --tw-animation-duration: 0.01ms !important;
   }
 
-  to {
-    height: var(--radix-accordion-content-height);
+  .animate-fade-in {
+    animation: none;
   }
-}
-
-@keyframes accordion-up {
-  from {
-    height: var(--radix-accordion-content-height);
-  }
-
-  to {
-    height: 0;
-  }
-}
-
-.animate-accordion-down {
-  animation: accordion-down 0.2s ease-out;
-}
-
-.animate-accordion-up {
-  animation: accordion-up 0.2s ease-out;
 }
