@@ -76,9 +76,9 @@ src/
   hooks/
     use-debounce.ts # useDebounce hook
   styles/
-    index.css       # Entry stylesheet: @import "tailwindcss" + @plugin "tailwindcss-animate", pulls in theme.css + animations.css
+    index.css       # Entry stylesheet: @import "tailwindcss" + @import "tw-animate-css", pulls in theme.css + animations.css
     theme.css       # CSS custom properties (design tokens)
-    animations.css  # Keyframes / animation utilities
+    animations.css  # Hand-written `animate-fade-in` + the prefers-reduced-motion override
   index.ts          # Package entry point (re-exports cn, formatDate*, parseJsonError, formatJson, useDebounce, and all components)
   test/
     setup.ts        # Test setup (jest-dom matchers)
@@ -92,7 +92,7 @@ src/
 - **Radix UI**: Interactive components wrap Radix primitives with styled variants
 - **CSS variables**: Theming uses CSS custom properties (`var(--color-*)`, `var(--radius-*)`)
 - **`cn()` utility**: All className merging uses `cn()` from `src/lib/utils.ts`
-- **Peer dependencies**: only `react` ^19 and `react-dom` ^19 are declared as peers. Tailwind CSS v4 and `tailwindcss-animate` are bundled as regular dependencies (`tailwindcss-animate` is wired via `@plugin "tailwindcss-animate"` in `src/styles/index.css`).
+- **Peer dependencies**: only `react` ^19 and `react-dom` ^19 are declared as peers. Tailwind CSS v4 and `tw-animate-css` (wired via `@import "tw-animate-css"` in `src/styles/index.css`) are devDependencies: both are compiled into the published `dist/styles/index.css` at build time.
 
 ## CI
 

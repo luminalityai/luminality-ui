@@ -78,7 +78,7 @@ function AuditMatrixProbe() {
  * Carries this repo's REAL animation utilities rather than a hand-written
  * `@keyframes`, and both of the mechanisms actually in play:
  *
- *  - the `tailwindcss-animate` plugin classes that `dialog`, `alert-dialog`,
+ *  - the `tw-animate-css` classes that `dialog`, `alert-dialog`,
  *    `dropdown-menu` and `tooltip` mount with (`data-[state=open]:animate-in`
  *    + `fade-in-0` + `zoom-in-95` + `slide-in-from-top-*`), driven here by a
  *    literal `data-state="open"` so the variants apply without a Radix root; and
@@ -86,7 +86,7 @@ function AuditMatrixProbe() {
  *    and ships in the package's CSS for consumers.
  *
  * The freeze has to beat whatever those emit. A bespoke animation here would let
- * this tripwire keep passing after a `tailwindcss-animate` upgrade changed the
+ * this tripwire keep passing after a `tw-animate-css` upgrade changed the
  * mechanism out from under it.
  *
  * `duration-1000` rather than the components' own `duration-200`: the assertion
@@ -104,8 +104,8 @@ function MotionProbe() {
         className="block duration-1000 ease-out data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-[48%]"
         style={{ backgroundColor: "#ffffff", color: "#000000" }}
       >
-        Motion probe (tailwindcss-animate) — asserts the gate samples settled
-        frames, not mid-animation ones.
+        Motion probe (tw-animate-css) — asserts the gate samples settled frames,
+        not mid-animation ones.
       </output>
       <output
         data-testid="motion-probe-keyframes"
@@ -214,6 +214,12 @@ export const FreezesEntryAnimations: Story = {
     // animation is still declared as running would drift back to flaky even if
     // this particular sample happened to land at full opacity.
     await expect(computed.animationDuration).toBe("0.001s")
+
+    // ...and the animation is actually generated. The freeze only shortens the
+    // duration, so the name stays `enter`. Without it the overlays' classes are
+    // in the DOM with no CSS behind them and they open and close unanimated,
+    // while the opacity and duration checks above still pass.
+    await expect(computed.animationName).toBe("enter")
 
     // The second mechanism. `animate-fade-in` bakes its 0.3s into
     // `animations.css`, so no utility can lengthen it — the duration assertion
