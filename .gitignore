@@ -11,3 +11,6 @@ storybook-static/
 
 # Git worktrees
 .worktrees/
+
+# Local build/tool caches (the lefthook vite build writes here; untracked, it raced the prettier check)
+tmp/
