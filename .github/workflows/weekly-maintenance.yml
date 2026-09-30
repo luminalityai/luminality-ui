@@ -31,8 +31,9 @@ env:
   # Single source of truth for the Claude model. Override org-wide via the
   # CLAUDE_MODEL Actions variable; the literal is a safe fallback so an unset
   # var can't yield an empty --model.
-  CLAUDE_MODEL: "${{ vars.CLAUDE_MODEL || 'claude-sonnet-5' }}"
-  # Reasoning effort, same pattern — an org-wide var, not a hardcoded 'high'.
+  CLAUDE_MODEL: "${{ vars.CLAUDE_MODEL || 'claude-sonnet-5-5' }}"
+  # Reasoning effort, same pattern. The estate standard is high (org var
+  # CLAUDE_EFFORT=high); the literal matches it.
   CLAUDE_EFFORT: "${{ vars.CLAUDE_EFFORT || 'high' }}"
 
 jobs:
@@ -454,7 +455,7 @@ jobs:
 
       - name: Weekly maintenance
         id: maintenance
-        uses: anthropics/claude-code-action@5ccc3a35a6367cdb8e6fbd0728287467540ecfe2 # v1.0.168 (auth: older bundled CLI 401s on OAuth tokens after the 2026-07-07 Anthropic auth change; see rarebit-ops#119)
+        uses: anthropics/claude-code-action@8ce9314fa9a404564fa7e954cd84f25bcba2b829 # v1.0.236 (bundled CLI 2.1.284 is the first that knows claude-sonnet-5-5)
         timeout-minutes: 25
         env:
           # The agent's `gh`/`git` Bash calls authenticate with this. Precedence:
