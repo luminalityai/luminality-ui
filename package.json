@@ -95,15 +95,15 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.0",
-    "@vitest/browser": "^4.1.9",
-    "@vitest/browser-playwright": "^4.1.9",
-    "@vitest/coverage-v8": "^4.1.6",
+    "@vitest/browser": "^5.0.2",
+    "@vitest/browser-playwright": "^5.0.2",
+    "@vitest/coverage-v8": "^5.0.2",
     "eslint": "^10.2.0",
     "globals": "^17.6.0",
     "jsdom": "^30.0.1",
     "knip": "^6.12.2",
     "lefthook": "^2.1",
-    "playwright": "1.62.1",
+    "playwright": "1.63.0",
     "prettier": "^3.8.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
@@ -114,7 +114,7 @@
     "typescript-eslint": "^8.59.3",
     "vite": "^8.0.12",
     "vite-plugin-dts": "^5.0.0",
-    "vitest": "^4.1.9",
+    "vitest": "^5.0.2",
     "vitest-axe": "1.0.0-pre.5"
   }
 }
