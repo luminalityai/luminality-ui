@@ -1,13 +1,5 @@
 name: estate-check
 
-# Agent-config lint (rarebit-one/estate-check), report-only.
-#
-# This repo is PUBLIC, and a public repo cannot call a reusable workflow that
-# lives in a private repo: luminalityai/.github is private, so `uses:` of its
-# estate-check.yml failed at startup with no jobs on every run. Call the public
-# action directly instead, mirroring that reusable's single job. Keep the pins
-# in step with luminalityai/.github/.github/workflows/estate-check.yml.
-
 on:
   pull_request:
   push:
@@ -20,12 +12,6 @@ permissions:
 
 jobs:
   estate-check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: rarebit-one/estate-check@4c19f6e7db0424a30262d493dc3336374ed6064a # v1.1.0
-        with:
-          mode: report
+    uses: luminalityai/.github/.github/workflows/estate-check.yml@main
+    with:
+      mode: report
