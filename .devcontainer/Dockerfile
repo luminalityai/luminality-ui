@@ -1,4 +1,4 @@
-FROM node:26-bookworm-slim
+FROM node:22-bookworm-slim
 
 # Install system dependencies and GitHub CLI
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
