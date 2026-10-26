@@ -46,8 +46,12 @@ updates:
         patterns:
           - "*"
 
+  # directory must be "/": Dependabot searches .devcontainer.json,
+  # .devcontainer/devcontainer.json and .devcontainer/*/devcontainer.json FROM
+  # the given directory, so "/.devcontainer" found nothing. Matches
+  # luminality-web. It updates features only; devcontainer.json has none yet.
   - package-ecosystem: devcontainers
-    directory: "/.devcontainer"
+    directory: "/"
     schedule:
       interval: monthly
     cooldown:
