@@ -3,7 +3,10 @@ updates:
   - package-ecosystem: npm
     directory: "/"
     schedule:
-      interval: monthly
+      interval: weekly
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
     open-pull-requests-limit: 10
     ignore:
       # eslint-plugin-react and eslint-plugin-react-hooks don't support ESLint 10 yet
@@ -26,7 +29,10 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: monthly
+      interval: weekly
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
     open-pull-requests-limit: 10
     ignore:
       # The org-shared reusable workflows live in the private luminalityai/.github
@@ -45,6 +51,9 @@ updates:
     directory: "/.devcontainer"
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
     open-pull-requests-limit: 5
 
   # The devcontainer's base image (.devcontainer/Dockerfile FROM). Grouped so a
@@ -54,6 +63,9 @@ updates:
     directory: "/.devcontainer"
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
     open-pull-requests-limit: 5
     groups:
       docker:
