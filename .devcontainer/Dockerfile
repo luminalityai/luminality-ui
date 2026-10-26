@@ -1,5 +1,4 @@
-ARG NODE_VERSION=20
-FROM node:${NODE_VERSION}-bookworm-slim
+FROM node:20-bookworm-slim
 
 # Install system dependencies and GitHub CLI
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
