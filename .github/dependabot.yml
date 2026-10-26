@@ -3,7 +3,10 @@ updates:
   - package-ecosystem: npm
     directory: "/"
     schedule:
-      interval: monthly
+      interval: weekly
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
     open-pull-requests-limit: 10
     ignore:
       # eslint-plugin-react and eslint-plugin-react-hooks don't support ESLint 10 yet
@@ -26,7 +29,9 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: monthly
+      interval: weekly
+    cooldown:
+      default-days: 3
     open-pull-requests-limit: 10
     ignore:
       # The org-shared reusable workflows live in the private luminalityai/.github
@@ -41,8 +46,29 @@ updates:
         patterns:
           - "*"
 
+  # directory must be "/": Dependabot searches .devcontainer.json,
+  # .devcontainer/devcontainer.json and .devcontainer/*/devcontainer.json FROM
+  # the given directory, so "/.devcontainer" found nothing. Matches
+  # luminality-web. It updates features only; devcontainer.json has none yet.
   - package-ecosystem: devcontainers
+    directory: "/"
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 3
+    open-pull-requests-limit: 5
+
+  # The devcontainer's base image (.devcontainer/Dockerfile FROM). Grouped so a
+  # base-image bump arrives as one PR, matching luminality-web. Keep that FROM a
+  # literal tag: Dependabot's docker parser doesn't resolve an ARG in FROM.
+  - package-ecosystem: docker
     directory: "/.devcontainer"
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 3
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
