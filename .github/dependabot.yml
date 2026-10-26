@@ -46,3 +46,19 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 5
+
+  # The devcontainer's base image (.devcontainer/Dockerfile FROM). Grouped so a
+  # base-image bump arrives as one PR, matching luminality-web.
+  #
+  # CAVEAT: the FROM is `node:${NODE_VERSION}-bookworm-slim` (an ARG), which
+  # Dependabot's docker parser may not resolve, in which case this entry finds
+  # nothing to bump until the tag is a literal.
+  - package-ecosystem: docker
+    directory: "/.devcontainer"
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
