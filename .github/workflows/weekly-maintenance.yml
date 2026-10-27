@@ -455,7 +455,7 @@ jobs:
 
       - name: Weekly maintenance
         id: maintenance
-        uses: anthropics/claude-code-action@16f9f71ab9c490faf367f94dd294897edc25be33 # v1.0.236 (bundled CLI 2.1.284 is the first that knows claude-sonnet-5-5)
+        uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.236 (bundled CLI 2.1.284 is the first that knows claude-sonnet-5-5)
         timeout-minutes: 25
         env:
           # The agent's `gh`/`git` Bash calls authenticate with this. Precedence:
