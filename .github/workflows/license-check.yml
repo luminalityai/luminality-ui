@@ -41,6 +41,4 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # Pinned to luminalityai/.github#118's commit so this runs before that PR
-      # merges. Repin to main once it lands.
-      - uses: luminalityai/.github/.github/actions/license-check@76f91267b94a3d9d4f948fa58e43be4137ed4d07 # feat/license-check
+      - uses: luminalityai/.github/.github/actions/license-check@cd78aafee7b2d0dcb44cafc308e29e915ee27bb0 # main @ 2026-11-10 (luminalityai/.github#118)
