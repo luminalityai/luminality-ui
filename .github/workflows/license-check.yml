@@ -1,0 +1,46 @@
+name: Licence check
+
+# Thin caller for the org licence-policy action in luminalityai/.github.
+# Classifies every package in this repo's lockfiles: warns on GPL/LGPL/EPL or
+# no detectable licence, fails the job on AGPL/SSPL/BUSL/FSL and other
+# source-available or noncommercial terms. Results land in the job summary.
+# Exceptions and declared licences: .github/license-policy.json.
+#
+# ADVISORY: continue-on-error, not a required check, and deliberately not in
+# CI Complete's needs. Finding 7 of the 2026-11-10 licensing audit.
+
+on:
+  pull_request:
+    paths:
+      - 'package-lock.json'
+      - '.github/license-policy.json'
+      - '.github/workflows/license-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'package-lock.json'
+      - '.github/license-policy.json'
+      - '.github/workflows/license-check.yml'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: license-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  license-check:
+    name: Licence check
+    runs-on: ubuntu-latest # STAYS HOSTED: public repo (the jdb fleet refuses public repos)
+    timeout-minutes: 10
+    continue-on-error: true
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Pinned to luminalityai/.github#118's commit so this runs before that PR
+      # merges. Repin to main once it lands.
+      - uses: luminalityai/.github/.github/actions/license-check@76f91267b94a3d9d4f948fa58e43be4137ed4d07 # feat/license-check
