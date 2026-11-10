@@ -12,15 +12,15 @@ name: Licence check
 on:
   pull_request:
     paths:
-      - 'package-lock.json'
-      - '.github/license-policy.json'
-      - '.github/workflows/license-check.yml'
+      - "package-lock.json"
+      - ".github/license-policy.json"
+      - ".github/workflows/license-check.yml"
   push:
     branches: [main]
     paths:
-      - 'package-lock.json'
-      - '.github/license-policy.json'
-      - '.github/workflows/license-check.yml'
+      - "package-lock.json"
+      - ".github/license-policy.json"
+      - ".github/workflows/license-check.yml"
   workflow_dispatch:
 
 permissions: {}
