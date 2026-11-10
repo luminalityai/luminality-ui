@@ -1,25 +1,4 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "project": ["src/**/*.{ts,tsx}"],
-  "ignoreDependencies": [
-    "@testing-library/dom",
-    "@types/react-dom",
-    "@vitest/browser",
-    "eslint",
-    "lefthook",
-    "playwright",
-    "prettier",
-    "react-dom"
-  ],
-  "ignoreBinaries": [
-    "eslint",
-    "knip",
-    "lefthook",
-    "playwright",
-    "prettier",
-    "storybook",
-    "tsc",
-    "vite",
-    "vitest"
-  ]
+  "project": ["src/**/*.{ts,tsx}"]
 }
