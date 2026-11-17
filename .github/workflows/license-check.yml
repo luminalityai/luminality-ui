@@ -6,8 +6,10 @@ name: Licence check
 # source-available or noncommercial terms. Results land in the job summary.
 # Exceptions and declared licences: .github/license-policy.json.
 #
-# ADVISORY: continue-on-error, not a required check, and deliberately not in
-# CI Complete's needs. Finding 7 of the 2026-11-10 licensing audit.
+# ENFORCING since 2026-11-25: a blocked licence (AGPL/SSPL/BUSL/FSL/Commons
+# Clause/Elastic/PolyForm/noncommercial) fails this workflow. Warnings
+# (GPL/LGPL/EPL/unknown) still pass. Whether it is a REQUIRED check is a
+# repository ruleset setting, deliberately not changed here.
 
 on:
   pull_request:
@@ -34,7 +36,6 @@ jobs:
     name: Licence check
     runs-on: ubuntu-latest # STAYS HOSTED: public repo (the jdb fleet refuses public repos)
     timeout-minutes: 10
-    continue-on-error: true
     permissions:
       contents: read
     steps:
