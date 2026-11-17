@@ -10,11 +10,9 @@ name: Licence check
 # CI Complete's needs. Finding 7 of the 2026-11-10 licensing audit.
 
 on:
+  # pull_request has no paths filter on purpose: the job then reports "Licence check" on every
+  # PR, so it can be a required status check (owner decision 2026-11-13). It takes seconds.
   pull_request:
-    paths:
-      - "package-lock.json"
-      - ".github/license-policy.json"
-      - ".github/workflows/license-check.yml"
   push:
     branches: [main]
     paths:
